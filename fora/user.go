@@ -18,11 +18,11 @@ func (user *user) Kind() Kind {
 }
 
 func (user *user) NewBoard(boardId bid, desc string) Board {
-	return NewBoard(user, boardId, desc)
+	return newBoard(user, boardId, desc)
 }
 
 func (user *user) GetBoard(boardId bid) Board {
-	return GetBoard(user, boardId)
+	return getBoard(user, boardId)
 }
 
 func (user *user) NewUser(name string, kind Kind) User {
@@ -44,7 +44,7 @@ func Anonymous() User {
 
 func GetUser(name string) User {
 	u := Anonymous()
-	return UserStore(u).GetUser(name)
+	return userStore(u).GetUser(name)
 }
 
 func NewUser(name string, kind Kind) User {
@@ -53,10 +53,8 @@ func NewUser(name string, kind Kind) User {
 		kind: kind,
 	}
 	u := Anonymous()
-	UserStore(u).PersistUser(user)
+	userStore(u).PersistUser(user)
 	return user
 }
-
-
 
 

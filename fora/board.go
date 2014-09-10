@@ -25,35 +25,35 @@ func (board *board) Creator() User {
 }
 
 func (board *board) NewThread(title string, body string) Thread {
-	return NewThread(board, title, body)
+	return newThread(board, title, body)
 }
 
 func (board *board) GetThread(tid tid) Thread {
-	return GetThread(board, tid)
+	return getThread(board, tid)
 	//thread := Store().GetThread(tid)
 	//thread.currentUser = board.currentUser()
 }
 
 func (board *board) GetThreads() []Thread {
-	return GetThreads(board)
+	return getThreads(board)
 }
 
 func (board *board) GetPage(pageno int) []Thread {
 	// stub, just return all threads for the mean time
-	store := UserStore(board.CurrentUser())
+	store := userStore(board.CurrentUser())
 	//var threads []Thread
 	return store.GetThreads(board.Id())
 }
 
-func GetBoard(currentUser User, bid bid) Board {
-	return UserStore(currentUser).GetBoard(bid)
+func getBoard(currentUser User, bid bid) Board {
+	return userStore(currentUser).GetBoard(bid)
 }
 
 func BoardExists(bid bid) bool {
-	return GetBoard(Anonymous(), bid) != nil
+	return getBoard(Anonymous(), bid) != nil
 }
 
-func NewBoard(creator User, bid bid, desc string) Board {
+func newBoard(creator User, bid bid, desc string) Board {
 	//if BoardExists(bid) {
 	//	return nil, nil
 	//}
@@ -64,7 +64,7 @@ func NewBoard(creator User, bid bid, desc string) Board {
 		desc:        desc,
 		creator:     creator,
 	}
-	UserStore(creator).PersistBoard(b)
+	userStore(creator).PersistBoard(b)
 	return b
 }
 

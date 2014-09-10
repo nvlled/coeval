@@ -23,12 +23,16 @@ type Store interface {
 	PersistUser(u *user) error
 }
 
-func UserStore(user User) Store {
+func userStore(user User) Store {
 	return activeStore.New(user)
 }
 
+func SetUserStore(store Store) {
+	activeStore = store
+}
+
 func init() {
-	activeStore = NewMemStore()
+	SetUserStore(newMemStore())
 }
 
 

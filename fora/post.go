@@ -51,7 +51,7 @@ func (p *post) Reply(title string, body string) Post {
 		thread: p.Thread(),
 		parent: p,
 	}
-	UserStore(user).PersistPost(replypost) // handle error
+	userStore(user).PersistPost(replypost) // handle error
 	return replypost
 }
 
@@ -59,10 +59,10 @@ func (p *post) Replies() []Post {
 	u := p.CurrentUser()
 	t := p.Thread()
 	b := t.Board()
-	return UserStore(u).GetReplies(b.Id(), t.Id(), p.Id())
+	return userStore(u).GetReplies(b.Id(), t.Id(), p.Id())
 }
 
-func CreatePost(creator User, title string, body string) *post {
+func createPost(creator User, title string, body string) *post {
 	return &post{
 		creator: creator,
 		title: title,
@@ -70,15 +70,15 @@ func CreatePost(creator User, title string, body string) *post {
 	}
 }
 
-func NewPost(thread Thread, title string, body string) Post {
+func newPost(thread Thread, title string, body string) Post {
 	op := thread.GetOp()
 	return op.Reply(title, body)
 }
 
-func GetPost(t Thread, pid pid) Post {
+func getPost(t Thread, pid pid) Post {
 	u := t.CurrentUser()
 	bid := t.Board().Id()
-	return UserStore(u).GetPost(bid, t.Id(), pid)
+	return userStore(u).GetPost(bid, t.Id(), pid)
 }
 
 

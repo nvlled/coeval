@@ -56,7 +56,7 @@ func (store *memstore) New(user User) Store {
 	}
 }
 
-func NewMemStore() Store {
+func newMemStore() Store {
 	return &memstore{data: &memstoredata{
 		users:   make(usermap),
 		boards:  make(boardmap),
