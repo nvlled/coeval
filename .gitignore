@@ -1,0 +1,5 @@
+**/*.swp
+trash/
+**/design
+**/routes
+
