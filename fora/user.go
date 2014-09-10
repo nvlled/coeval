@@ -1,5 +1,8 @@
 
 package fora
+import (
+	"fmt"
+)
 
 type user struct {
 	name string
@@ -25,6 +28,11 @@ func (user *user) GetBoard(boardId bid) Board {
 func (user *user) NewUser(name string, kind Kind) User {
 	//if kind != Anon user.Kind() == Admin &&
 	return NewUser(name, kind)
+}
+
+func (user *user) String() string {
+	return fmt.Sprintf("user{name=%v, %v}",
+	user.name,user.kind)
 }
 
 func Anonymous() User {

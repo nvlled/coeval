@@ -7,6 +7,15 @@ const (
 	Anon
 )
 
+func (k Kind) String() string {
+	switch k {
+	case Admin: return "Admin"
+	case Mod: return "Mod"
+	case Anon: return "Anonymous"
+	}
+	return "---"
+}
+
 type bid string
 type tid string
 type pid string
@@ -57,7 +66,6 @@ type Post interface {
 	Id() pid
 	Thread() Thread
 	Creator() User
-	//Delete()
 	Parent() Post
 	Reply(title string, body string) Post
 	Replies() []Post
@@ -67,9 +75,4 @@ type Post interface {
 //func GetBoard(bid bid) *Board{ }
 //func GetThread(tid tid) *Thread{ }
 //func GetPost(pid pid) *Post{ }
-
-
-
-
-
 

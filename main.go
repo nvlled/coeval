@@ -71,13 +71,11 @@ func main() {
 	fmt.Printf("[%v] %v\n", err, url)
 	log.Println("Server started")
 
+	fora.NewUser("test", fora.Mod)
 	fmt.Println(fora.GetUser("test"))
 	//board.Create("g", "technology")
 	//board.NewThread("title", "body")
 
 	log.Fatal(http.ListenAndServe(":8080", routes))
 }
-
-
-
 
