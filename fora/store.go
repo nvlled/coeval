@@ -6,17 +6,17 @@ type Store interface {
 	New(user User) Store
 	CurrentUser() User
 
-	GetBoard(bid bid) Board
+	GetBoard(bid Bid) Board
 	GetBoards() []Board
 	PersistBoard(*board) error
 
-	GetThread(bid bid, tid tid) Thread
-	GetThreads(bid bid) []Thread
+	GetThread(bid Bid, tid Tid) Thread
+	GetThreads(bid Bid) []Thread
 	PersistThread(t *thread) error
 
-	GetPost(bid bid, tid tid, pid pid) Post
-	GetReplies(bid bid, tid tid, pid pid) []Post
-	GetPosts(bid bid, tid tid) []Post
+	GetPost(bid Bid, tid Tid, pid Pid) Post
+	GetReplies(bid Bid, tid Tid, pid Pid) []Post
+	GetPosts(bid Bid, tid Tid) []Post
 	PersistPost(t *post) error
 
 	GetUser(name string) User

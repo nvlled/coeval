@@ -17,16 +17,15 @@ func (user *user) Kind() Kind {
 	return user.kind
 }
 
-func (user *user) NewBoard(boardId bid, desc string) Board {
+func (user *user) NewBoard(boardId Bid, desc string) (Board, error) {
 	return newBoard(user, boardId, desc)
 }
 
-func (user *user) GetBoard(boardId bid) Board {
+func (user *user) GetBoard(boardId Bid) Board {
 	return getBoard(user, boardId)
 }
 
 func (user *user) NewUser(name string, kind Kind) User {
-	//if kind != Anon user.Kind() == Admin &&
 	return NewUser(name, kind)
 }
 

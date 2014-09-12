@@ -4,7 +4,7 @@ package fora
 type post struct {
 	creator User
 	currentUser User
-	id pid
+	id Pid
 	title string
 	body string
 	thread Thread
@@ -15,7 +15,7 @@ func (post *post) CurrentUser() User {
 	return post.currentUser
 }
 
-func (post *post) Id() pid {
+func (post *post) Id() Pid {
 	return post.id
 }
 
@@ -75,7 +75,7 @@ func newPost(thread Thread, title string, body string) Post {
 	return op.Reply(title, body)
 }
 
-func getPost(t Thread, pid pid) Post {
+func getPost(t Thread, pid Pid) Post {
 	u := t.CurrentUser()
 	bid := t.Board().Id()
 	return userStore(u).GetPost(bid, t.Id(), pid)

@@ -3,7 +3,7 @@ package fora
 
 type thread struct {
 	currentUser User
-	id tid
+	id Tid
 	op Post
 	board Board
 	//posts map[string]*Thread
@@ -13,7 +13,7 @@ func (thread *thread) CurrentUser() User {
 	return thread.currentUser
 }
 
-func (thread *thread) Id() tid {
+func (thread *thread) Id() Tid {
 	return thread.id
 }
 
@@ -37,7 +37,7 @@ func (thread *thread) GetOp() Post {
 	return thread.op
 }
 
-func (thread *thread) GetPost(id pid) Post {
+func (thread *thread) GetPost(id Pid) Post {
 	return getPost(thread, id)
 }
 
@@ -66,7 +66,7 @@ func newThread(board Board, title string, body string) Thread {
 	return t
 }
 
-func getThread(board Board, tid tid) Thread {
+func getThread(board Board, tid Tid) Thread {
 	u := board.CurrentUser()
 	return userStore(u).GetThread(board.Id(), tid)
 }

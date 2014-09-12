@@ -16,16 +16,16 @@ func (k Kind) String() string {
 	return "---"
 }
 
-type bid string
-type tid string
-type pid string
+type Bid string
+type Tid string
+type Pid string
 
 type User interface {
 	Name() string
 	Kind() Kind
 	NewUser(name string, kind Kind) User
-	NewBoard(boardId bid, desc string) Board
-	GetBoard(boardId bid) Board
+	NewBoard(boardId Bid, desc string) (Board, error)
+	GetBoard(boardId Bid) Board
 }
 
 type UserContainer interface {
@@ -34,11 +34,11 @@ type UserContainer interface {
 
 type Board interface {
 	UserContainer
-	Id() bid
+	Id() Bid
 	Desc() string
 	Creator() User
 	NewThread(title string, body string) Thread
-	GetThread(tid tid) Thread
+	GetThread(tid Tid) Thread
 	GetThreads() []Thread
 	GetPage(page int) []Thread
 }
@@ -51,11 +51,11 @@ type PostData interface {
 type Thread interface {
 	UserContainer
 	PostData
-	Id() tid
+	Id() Tid
 	Board() Board
 	Creator() User
 	GetOp() Post
-	GetPost(pid pid) Post
+	GetPost(pid Pid) Post
 	Reply(title string, body string) Post
 	Replies() []Post
 }
@@ -63,7 +63,7 @@ type Thread interface {
 type Post interface {
 	UserContainer
 	PostData
-	Id() pid
+	Id() Pid
 	Thread() Thread
 	Creator() User
 	Parent() Post
@@ -75,4 +75,6 @@ type Post interface {
 //func GetBoard(bid bid) *Board{ }
 //func GetThread(tid tid) *Thread{ }
 //func GetPost(pid pid) *Post{ }
+
+
 

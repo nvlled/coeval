@@ -2,16 +2,16 @@
 package fora
 
 type usermap   map[string]*user
-type boardmap  map[bid]*board
-type threadmap map[tid]*thread
-type postmap   map[pid]*post
+type boardmap  map[Bid]*board
+type threadmap map[Tid]*thread
+type postmap   map[Pid]*post
 
 type memstoredata struct {
-	users usermap
-	boards boardmap
-	threads map[bid]threadmap
-	posts map[tid]postmap
-	replies map[pid][]pid
+	users	usermap
+	boards	boardmap
+	threads map[Bid]threadmap
+	posts	map[Tid]postmap
+	replies map[Pid][]Pid
 }
 
 var defaultstore memstoredata
@@ -21,11 +21,11 @@ type memstore struct {
 	data *memstoredata
 }
 
-func (store *memstore) lookupBoard(bid bid) *board {
+func (store *memstore) lookupBoard(bid Bid) *board {
 	return store.data.boards[bid]
 }
 
-func (store *memstore) lookupThread(bid bid, tid tid) *thread {
+func (store *memstore) lookupThread(bid Bid, tid Tid) *thread {
 	data := store.data
 	if _, ok := data.threads[bid]; !ok {
 		data.threads[bid] = make(threadmap)
@@ -33,7 +33,7 @@ func (store *memstore) lookupThread(bid bid, tid tid) *thread {
 	return data.threads[bid][tid]
 }
 
-func (store *memstore) lookupPost(tid tid, pid pid) *post {
+func (store *memstore) lookupPost(tid Tid, pid Pid) *post {
 	data := store.data
 	if _, ok := data.posts[tid]; !ok {
 		data.posts[tid] = make(postmap)
@@ -41,11 +41,11 @@ func (store *memstore) lookupPost(tid tid, pid pid) *post {
 	return data.posts[tid][pid]
 }
 
-func (store *memstore) threadExists(bid bid, tid tid) bool {
+func (store *memstore) threadExists(bid Bid, tid Tid) bool {
 	return store.lookupThread(bid, tid) != nil
 }
 
-func (store *memstore) postExists(bid bid, tid tid, pid pid) bool {
+func (store *memstore) postExists(bid Bid, tid Tid, pid Pid) bool {
 	return store.lookupThread(bid, tid) != nil && store.lookupPost(tid, pid) != nil
 }
 
@@ -60,8 +60,9 @@ func newMemStore() Store {
 	return &memstore{data: &memstoredata{
 		users:   make(usermap),
 		boards:  make(boardmap),
-		threads: make(map[bid]threadmap),
-		posts:   make(map[tid]postmap),
+		threads: make(map[Bid]threadmap),
+		posts:   make(map[Tid]postmap),
+		replies: make(map[Pid][]Pid),
 	}}
 }
 
@@ -69,7 +70,7 @@ func (store *memstore) CurrentUser() User {
 	return store.user
 }
 
-func (store *memstore) GetBoard(bid bid) Board {
+func (store *memstore) GetBoard(bid Bid) Board {
 	board := store.lookupBoard(bid)
 	if board != nil {
 		board.currentUser = store.user
@@ -95,7 +96,7 @@ func (store *memstore) PersistBoard(board *board) error {
 	return nil
 }
 
-func (store *memstore) GetThread(bid bid, tid tid) Thread {
+func (store *memstore) GetThread(bid Bid, tid Tid) Thread {
 	t := store.lookupThread(bid, tid)
 	if t == nil {
 		// noooooooooo
@@ -104,7 +105,7 @@ func (store *memstore) GetThread(bid bid, tid tid) Thread {
 	return t
 }
 
-func (store *memstore) GetThreads(bid bid) []Thread {
+func (store *memstore) GetThreads(bid Bid) []Thread {
 	u := store.user
 	//b := store.GetBoard(bid)
 	data := store.data
@@ -127,7 +128,7 @@ func (store *memstore) PersistThread(t *thread) error {
 	return nil
 }
 
-func (store *memstore) GetPost(bid bid, tid tid, pid pid) Post {
+func (store *memstore) GetPost(bid Bid, tid Tid, pid Pid) Post {
 	if !store.threadExists(bid, tid) {
 		// thread not found
 	}
@@ -136,7 +137,7 @@ func (store *memstore) GetPost(bid bid, tid tid, pid pid) Post {
 	return post
 }
 
-func (store *memstore) GetReplies(bid bid, tid tid, pid pid) []Post {
+func (store *memstore) GetReplies(bid Bid, tid Tid, pid Pid) []Post {
 	//t := store.lookupThread(bid, tid)
 	// check for existence
 	// too expensive?
@@ -151,7 +152,7 @@ func (store *memstore) GetReplies(bid bid, tid tid, pid pid) []Post {
 	return replies
 }
 
-func (store *memstore) GetPosts(bid bid, tid tid) []Post {
+func (store *memstore) GetPosts(bid Bid, tid Tid) []Post {
 	if !store.threadExists(bid, tid) {
 		// thread not found, abort
 	}
@@ -194,7 +195,6 @@ func (store *memstore) PersistUser(u *user) error {
 	store.data.users[u.name] = u
 	return nil
 }
-
 
 
 
