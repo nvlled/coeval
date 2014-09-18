@@ -25,6 +25,10 @@ func (user *user) GetBoard(boardId Bid) Board {
 	return getBoard(user, boardId)
 }
 
+func (user *user) GetBoards() []Board {
+	return getBoards(user)
+}
+
 func (user *user) NewUser(name string, kind Kind) User {
 	return NewUser(name, kind)
 }

@@ -49,6 +49,10 @@ func getBoard(currentUser User, bid Bid) Board {
 	return userStore(currentUser).GetBoard(bid)
 }
 
+func getBoards(currentUser User) []Board {
+	return userStore(currentUser).GetBoards()
+}
+
 func BoardExists(bid Bid) bool {
 	return getBoard(Anonymous(), bid) != nil
 }

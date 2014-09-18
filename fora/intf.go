@@ -26,6 +26,7 @@ type User interface {
 	NewUser(name string, kind Kind) User
 	NewBoard(boardId Bid, desc string) (Board, error)
 	GetBoard(boardId Bid) Board
+	GetBoards() []Board
 }
 
 type UserContainer interface {
