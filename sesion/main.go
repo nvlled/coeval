@@ -4,6 +4,7 @@ package sesion
 import (
 	ht "net/http"
 	"nvlled/goeval/sesion/key"
+	"nvlled/goeval/rend"
 	"github.com/gorilla/sessions"
 	//"strings"
 )
@@ -23,8 +24,8 @@ func Username(r *ht.Request) string {
 	return ""
 }
 
-
-
-
-
+func Merge(r *ht.Request, data rend.Data) rend.Data {
+	data["username"] = Username(r)
+	return data
+}
 
