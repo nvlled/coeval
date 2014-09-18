@@ -34,9 +34,30 @@ func notAdmin(r *ht.Request) bool {
 var RequireAdmin = rut.Guard{
 	Reject: notAdmin,
 	Handler: func(w ht.ResponseWriter, r *ht.Request) {
-		rend.Render("error", fora.AdminError, w, r)
+		rend.Render("error", w, r, rend.Data{
+			"error" : fora.AdminError,
+		})
 	},
 }
+
+func CatchError(handler ht.Handler) ht.Handler {
+	return ht.HandlerFunc(func(w ht.ResponseWriter, r *ht.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				// Should probably handle only relevant errors
+				rend.Render("error", w, r, rend.Data{
+					"error" : err,
+				})
+				// should be able to infer what template
+				// to render based on the context
+			}
+		} ()
+		handler.ServeHTTP(w, r)
+	})
+}
+
+
+
 
 
 
