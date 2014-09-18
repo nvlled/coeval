@@ -7,7 +7,7 @@ import (
 	ht "net/http"
 )
 
-func RenderJson(_ string, data interface{}, w ht.ResponseWriter, r *ht.Request) {
+var RenderJson = func(name string, w ht.ResponseWriter, r *ht.Request, data Data) {
 
 }
 

@@ -6,17 +6,18 @@ import (
 	"github.com/gorilla/context"
 	"nvlled/goeval/sesion/key"
 	"nvlled/rut"
-	"html/template"
+	_"html/template"
 )
 
-type T func(string, interface{}, ht.ResponseWriter,  *ht.Request)
+type Data map[string]interface{}
+type T func(string, ht.ResponseWriter, *ht.Request, Data)
 
-var RenderDefault = RenderHtml
+var RenderDefault T = RenderHtml
 
 // rend.Render("home", data, w, r)
-func Render(name string, data interface{}, w ht.ResponseWriter, r *ht.Request) {
+func Render(name string, w ht.ResponseWriter, r *ht.Request, data Data) {
 	render := Get(r)
-	render(name, data, w, r)
+	render(name, w, r, data)
 }
 
 func Get(r *ht.Request) T {
@@ -27,21 +28,17 @@ func Get(r *ht.Request) T {
 	return RenderDefault
 }
 
-//func Set(r *ht.Request) {
-//	context.Set(r, key.Render, render)
-//}
-//
 func Hook(render T) rut.Hook {
 	return func(r *ht.Request) {
 		context.Set(r, key.Render, render)
 	}
 }
 
-var HookHtml rut.Hook = Hook(RenderHtml)
-var HookJson rut.Hook = Hook(RenderJson)
+var HookHtmlRender rut.Hook = Hook(RenderHtml)
+var HookJsonRender rut.Hook = Hook(RenderJson)
 
 func SetEnv(env map[string]interface{}) {
-	htmlTempl.Funcs(template.FuncMap(env))
+	loadTemplates(env)
 }
 
 func init() {
