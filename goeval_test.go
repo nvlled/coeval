@@ -21,11 +21,13 @@ func initMessageBoard() {
 
 func TestServer(t *testing.T) {
 	initMessageBoard()
-	//h := createHandler()
-	//server := httptest.NewServer(h)
-	//u := server.URL
-	//client := createClient()
+	h := createHandler()
+	server := httptest.NewServer(h)
+	u := server.URL
+	client := createClient()
 	//println(get(client, u+"/"))
+	println(get(client, u+"/"))
+	println(get(client, u+"/admin"))
 }
 
 func request(c *http.Client, method, path string, headers ...string) (*http.Response, string) {

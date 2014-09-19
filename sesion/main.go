@@ -30,3 +30,6 @@ func Merge(r *ht.Request, data rend.Data) rend.Data {
 	data["user"] = context.Get(r, key.User)
 	return data
 }
+
+
+

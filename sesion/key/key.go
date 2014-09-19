@@ -6,4 +6,5 @@ const (
 	Username string = "username"
 	User = "user"
 	Render = "render"
+	RouteName = "routename"
 )

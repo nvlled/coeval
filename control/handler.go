@@ -12,7 +12,7 @@ import (
 
 // sesion.Add adds to the renderer data the username, etc.
 func Home(w http.ResponseWriter, r *http.Request) {
-	rend.Render("home", w, r, sesion.Merge(r, rend.Data{
+	rend.Render(w, r, sesion.Merge(r, rend.Data{
 	}))
 }
 

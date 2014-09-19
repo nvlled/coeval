@@ -15,9 +15,18 @@ type T func(string, ht.ResponseWriter, *ht.Request, Data)
 var RenderDefault T = RenderHtml
 
 // rend.Render("home", data, w, r)
-func Render(name string, w ht.ResponseWriter, r *ht.Request, data Data) {
+func RenderRoute(routeName string, w ht.ResponseWriter, r *ht.Request, data Data) {
 	render := Get(r)
-	render(name, w, r, data)
+	render(routeName, w, r, data)
+}
+
+func Render(w ht.ResponseWriter, r *ht.Request, data Data) {
+	var routeName string
+	switch t := context.Get(r, key.RouteName).(type) {
+	case string: routeName = t
+	}
+	println("***routename", routeName)
+	RenderRoute(routeName, w, r, data)
 }
 
 func Get(r *ht.Request) T {
@@ -44,6 +53,8 @@ func SetEnv(env map[string]interface{}) {
 func init() {
 	//env = make(template.FuncMap)
 }
+
+
 
 
 

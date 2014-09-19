@@ -17,8 +17,9 @@ import (
 var htmlTempl *template.Template
 
 var RenderHtml = func(name string, w ht.ResponseWriter, r *ht.Request, data Data) {
-	err := htmlTempl.ExecuteTemplate(w, "home", data)
+	err := htmlTempl.ExecuteTemplate(w, name, data)
 	if err != nil {
+		// show a page containing the error
 		log.Println("failed to execute template", err.Error())
 	}
 }
@@ -35,8 +36,6 @@ func loadTemplates(env map[string]interface{}) {
 func init() {
 	htmlTempl = template.New("default")
 }
-
-
 
 
 
