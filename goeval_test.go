@@ -7,9 +7,20 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"nvlled/goeval/fora"
 )
 
+func initMessageBoard() {
+	user := fora.NewUser("nvlled", fora.Admin)
+	user.NewBoard("g", "animu hating plebs")
+	user.NewBoard("a", "saten-san a sl**")
+	//for _,b := range user.GetBoards() {
+	//	println(">", b.Id(), b.Desc())
+	//}
+}
+
 func TestServer(t *testing.T) {
+	initMessageBoard()
 	h := createHandler()
 	server := httptest.NewServer(h)
 	u := server.URL
@@ -50,6 +61,5 @@ func createClient() *http.Client {
 	c.Jar,_ = cookiejar.New(nil)
 	return c
 }
-
 
 
