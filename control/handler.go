@@ -4,8 +4,8 @@ package control
 import (
 	"net/http"
 	"fmt"
-	"github.com/gorilla/context"
-	"nvlled/goeval/sesion/key"
+	//"github.com/gorilla/context"
+	//"nvlled/goeval/sesion/key"
 	"nvlled/goeval/rend"
 	"nvlled/goeval/sesion"
 )

@@ -1,9 +1,18 @@
 {{define "home"}}
 
 {{template "header" .}}
-This is the home page
-{{url "1st-board-page" "bid" "g"}}
-{{url "1st-board-page" "bid"}}
+<h1>goeval</h1>
+<p>
+A message board for worthless lunatics who have
+nothing better to do.
+</p>
+
+<h2>Currently available boards</h2>
+{{range .user.GetBoards}}
+{{$id := .Id}}
+<li>/{{$id}}/ - {{.Desc}} {{print $id | url "1st-board-page" "bid"}}</li>
+{{end}}
+
 
 {{template "footer" .}}
 {{end}}

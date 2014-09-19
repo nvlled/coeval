@@ -6,6 +6,7 @@ import (
 	"nvlled/goeval/sesion/key"
 	"nvlled/goeval/rend"
 	"github.com/gorilla/sessions"
+	"github.com/gorilla/context"
 	//"strings"
 )
 
@@ -26,6 +27,6 @@ func Username(r *ht.Request) string {
 
 func Merge(r *ht.Request, data rend.Data) rend.Data {
 	data["username"] = Username(r)
+	data["user"] = context.Get(r, key.User)
 	return data
 }
-
