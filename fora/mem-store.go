@@ -22,7 +22,10 @@ type memstore struct {
 }
 
 func (store *memstore) lookupBoard(bid Bid) *board {
-	return store.data.boards[bid]
+	if b, ok := store.data.boards[bid]; ok {
+		return b
+	}
+	return nil
 }
 
 func (store *memstore) lookupThread(bid Bid, tid Tid) *thread {
@@ -72,11 +75,10 @@ func (store *memstore) CurrentUser() User {
 
 func (store *memstore) GetBoard(bid Bid) Board {
 	board := store.lookupBoard(bid)
-	if board != nil {
-		board.currentUser = store.user
-	} else {
-		// freak out
+	if board == nil {
+		return nil
 	}
+	board.currentUser = store.user
 	return board
 }
 
