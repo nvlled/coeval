@@ -58,10 +58,6 @@ func BoardExists(bid Bid) bool {
 }
 
 func newBoard(creator User, bid Bid, desc string) (Board, error) {
-	//if BoardExists(bid) {
-	//	return nil, nil
-	//}
-
 	if creator.Kind() != Admin {
 		return nil, AdminError
 	}
@@ -72,6 +68,11 @@ func newBoard(creator User, bid Bid, desc string) (Board, error) {
 		desc:        desc,
 		creator:     creator,
 	}
+
+	if err := verifyBoardCreate(b); err != nil {
+		return nil, err
+	}
+
 	userStore(creator).PersistBoard(b)
 	return b, nil
 }
