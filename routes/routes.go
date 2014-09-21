@@ -19,25 +19,20 @@ var routeDef = rut.Route(
 	"/", ct.Home, "home",
 	rut.Hooks(rend.HookHtmlRender, ct.AttachUser),
 	rut.Guards(),
+	rut.SRoute("/login", ct.Login, "login"),
 
 	rut.Route(
 		"/admin", ct.Admin, "admin",
 		rut.Hooks(ct.AttachUser),
 		rut.Guards(ct.RequireAdmin),
-
-		//	GET  /board/create		htmlform
-		//	POST /board/create		redirect to form or to created board
-
-		//	GET  /api/board/create jsonform?
-		//	POST /api/board/create json{board-id,error}
-
-		// Problem: Routing renderers
 		rut.SRoute("/board/create",
 		rut.Ts{
-			//group(GET, rut.H(ct.BoardCreate), rut.Render(rend.RenderHtml),
 			group(GET,	rut.H(ct.BoardCreate)),
 			group(POST, rut.H(ct.SubmitBoardCreate)),
 		}, "board-create"),
+		//rut.SRoute("/board/create", group(GET,	rut.H(ct.BoardCreate)),       "board-create"),
+		//rut.SRoute("/board/create", group(POST, rut.H(ct.SubmitBoardCreate)), "board-submit-create"),
+
 	),
 
 	rut.SRoute(
@@ -47,10 +42,6 @@ var routeDef = rut.Route(
 		rut.SRoute("/{catalog}",	ct.BoardCatalog, "board-catalog"),
 		rut.SRoute("/delete",		ct.BoardDelete,  "board-delete"),
 		rut.SRoute("/new-thread",	ct.ThreadCreate, "thread-create"),
-
-		//SRoute("/{action}",	ct.BoardAction,	"board-action"),
-		// Unfortunately, with this I have to do
-		// the matching against which action to take myself
 
 		rut.SRoute(
 			"/thread/{tid}",	 ct.ThreadView,	  "thread-view",
@@ -100,8 +91,6 @@ func init() {
 	root.StrictSlash(true)
 	routes = rut.BuildRouter(routeDef, root)
 }
-
-
 
 
 

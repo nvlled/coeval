@@ -5,10 +5,16 @@ import (
 	"net/http"
 	"fmt"
 	//"github.com/gorilla/context"
-	//"nvlled/goeval/sesion/key"
 	"nvlled/goeval/rend"
 	"nvlled/goeval/sesion"
+	"nvlled/goeval/fora"
 )
+
+func Login(w http.ResponseWriter, r *http.Request) {
+	username := "nvlled"
+	sesion.SetUsername(username, w, r)
+	fmt.Fprint(w, "logged in as ", username)
+}
 
 // sesion.Add adds to the renderer data the username, etc.
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +76,4 @@ func PostDelete(w http.ResponseWriter, r *http.Request) {
 func PostReply(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "post reply")
 }
-
-
 
