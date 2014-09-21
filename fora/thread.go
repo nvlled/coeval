@@ -63,6 +63,7 @@ func newThread(board Board, title string, body string) Thread {
 	}
 	op.thread = t
 	userStore(u).PersistThread(t)
+	userStore(u).PersistPost(op)
 	return t
 }
 

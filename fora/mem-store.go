@@ -21,6 +21,23 @@ type memstore struct {
 	data *memstoredata
 }
 
+func IdGen() func()int {
+	c := make(chan int, 10)
+	id := 0
+	go func() {
+		for {
+			c <- id
+			id++
+		}
+	}()
+	return func() int {
+		return <-c
+	}
+}
+
+var tidGen = IdGen()
+var pidGen = IdGen()
+
 func (store *memstore) lookupBoard(bid Bid) *board {
 	if b, ok := store.data.boards[bid]; ok {
 		return b
@@ -126,6 +143,7 @@ func (store *memstore) PersistThread(t *thread) error {
 	if _, ok := data.threads[bid]; !ok {
 		data.threads[bid] = make(threadmap)
 	}
+	t.id = Tid(tidGen())
 	data.threads[bid][t.id] = t
 	return nil
 }
@@ -184,6 +202,7 @@ func (store *memstore) PersistPost(p *post) error {
 	if _, ok := data.posts[tid]; !ok {
 		data.posts[tid] = make(postmap)
 	}
+	p.id = Pid(pidGen())
 	data.posts[tid][p.id] = p
 	store.persistReplies(p)
 	return nil
