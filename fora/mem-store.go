@@ -1,6 +1,10 @@
 
 package fora
 
+import (
+	"strconv"
+)
+
 type usermap   map[string]user
 type boardmap  map[Bid]board
 type threadmap map[Tid]thread
@@ -21,16 +25,16 @@ type memstore struct {
 	data *memstoredata
 }
 
-func IdGen() func()int {
-	c := make(chan int, 10)
+func IdGen() func() string {
+	c := make(chan string, 10)
 	id := 0
 	go func() {
 		for {
-			c <- id
+			c <- strconv.FormatInt(int64(id), 10)
 			id++
 		}
 	}()
-	return func() int {
+	return func() string {
 		return <-c
 	}
 }
@@ -105,8 +109,9 @@ func (store *memstore) GetBoards() []Board {
 	var boards []Board
 	data := store.data
 	for _, b := range data.boards {
-		b.currentUser = store.user
-		boards = append(boards, &b)
+		board := b
+		board.currentUser = store.user
+		boards = append(boards, &board)
 	}
 	return boards
 }
@@ -132,8 +137,9 @@ func (store *memstore) GetThreads(bid Bid) []Thread {
 	data := store.data
 	var threads []Thread
 	for _, t := range data.threads[bid] {
-		t.currentUser = u
-		threads = append(threads, &t)
+		thread := t
+		thread.currentUser = u
+		threads = append(threads, &thread)
 	}
 	return threads
 }
@@ -160,9 +166,6 @@ func (store *memstore) GetPost(bid Bid, tid Tid, pid Pid) Post {
 }
 
 func (store *memstore) GetReplies(bid Bid, tid Tid, pid Pid) []Post {
-	//t := store.lookupThread(bid, tid)
-	// check for existence
-	// too expensive?
 	data := store.data
 	var replies []Post
 	for _, rid := range data.replies[pid] {
@@ -181,8 +184,9 @@ func (store *memstore) GetPosts(bid Bid, tid Tid) []Post {
 	data := store.data
 	var posts []Post
 	for _, p := range data.posts[tid] {
-		p.currentUser = store.user
-		posts = append(posts, &p)
+		post := p
+		post.currentUser = store.user
+		posts = append(posts, &post)
 	}
 	return posts
 }
@@ -191,8 +195,8 @@ func (store *memstore) persistReplies(p *post) error {
 	data := store.data
 	if p.HasParent() {
 		id := p.Parent().Id()
-		r := data.replies[id]
-		data.replies[id] = append(r, p.id)
+		replies := data.replies[id]
+		data.replies[id] = append(replies, p.id)
 	}
 	return nil
 }
@@ -219,6 +223,7 @@ func (store *memstore) PersistUser(u *user) error {
 	store.data.users[u.name] = *u
 	return nil
 }
+
 
 
 
