@@ -1,10 +1,10 @@
 
 package fora
 
-type usermap   map[string]*user
-type boardmap  map[Bid]*board
-type threadmap map[Tid]*thread
-type postmap   map[Pid]*post
+type usermap   map[string]user
+type boardmap  map[Bid]board
+type threadmap map[Tid]thread
+type postmap   map[Pid]post
 
 type memstoredata struct {
 	users	usermap
@@ -40,7 +40,7 @@ var pidGen = IdGen()
 
 func (store *memstore) lookupBoard(bid Bid) *board {
 	if b, ok := store.data.boards[bid]; ok {
-		return b
+		return &b
 	}
 	return nil
 }
@@ -50,7 +50,8 @@ func (store *memstore) lookupThread(bid Bid, tid Tid) *thread {
 	if _, ok := data.threads[bid]; !ok {
 		data.threads[bid] = make(threadmap)
 	}
-	return data.threads[bid][tid]
+	t := data.threads[bid][tid]
+	return &t
 }
 
 func (store *memstore) lookupPost(tid Tid, pid Pid) *post {
@@ -58,7 +59,8 @@ func (store *memstore) lookupPost(tid Tid, pid Pid) *post {
 	if _, ok := data.posts[tid]; !ok {
 		data.posts[tid] = make(postmap)
 	}
-	return data.posts[tid][pid]
+	p := data.posts[tid][pid]
+	return &p
 }
 
 func (store *memstore) threadExists(bid Bid, tid Tid) bool {
@@ -104,14 +106,14 @@ func (store *memstore) GetBoards() []Board {
 	data := store.data
 	for _, b := range data.boards {
 		b.currentUser = store.user
-		boards = append(boards, b)
+		boards = append(boards, &b)
 	}
 	return boards
 }
 
 func (store *memstore) PersistBoard(board *board) error {
 	boards := store.data.boards
-	boards[board.id] = board
+	boards[board.id] = *board
 	return nil
 }
 
@@ -131,7 +133,7 @@ func (store *memstore) GetThreads(bid Bid) []Thread {
 	var threads []Thread
 	for _, t := range data.threads[bid] {
 		t.currentUser = u
-		threads = append(threads, t)
+		threads = append(threads, &t)
 	}
 	return threads
 }
@@ -144,7 +146,7 @@ func (store *memstore) PersistThread(t *thread) error {
 		data.threads[bid] = make(threadmap)
 	}
 	t.id = Tid(tidGen())
-	data.threads[bid][t.id] = t
+	data.threads[bid][t.id] = *t
 	return nil
 }
 
@@ -180,7 +182,7 @@ func (store *memstore) GetPosts(bid Bid, tid Tid) []Post {
 	var posts []Post
 	for _, p := range data.posts[tid] {
 		p.currentUser = store.user
-		posts = append(posts, p)
+		posts = append(posts, &p)
 	}
 	return posts
 }
@@ -203,19 +205,21 @@ func (store *memstore) PersistPost(p *post) error {
 		data.posts[tid] = make(postmap)
 	}
 	p.id = Pid(pidGen())
-	data.posts[tid][p.id] = p
+	data.posts[tid][p.id] = *p
 	store.persistReplies(p)
 	return nil
 }
 
 func (store *memstore) GetUser(name string) User {
-	return store.data.users[name]
+	u := store.data.users[name]
+	return &u
 }
 
 func (store *memstore) PersistUser(u *user) error {
-	store.data.users[u.name] = u
+	store.data.users[u.name] = *u
 	return nil
 }
+
 
 
 
