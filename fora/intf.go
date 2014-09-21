@@ -1,5 +1,8 @@
 package fora
 
+import (
+)
+
 type Kind int
 const (
 	Admin Kind = iota
@@ -58,7 +61,7 @@ type Thread interface {
 	GetOp() Post
 	GetPost(pid Pid) Post
 	Reply(title string, body string) Post
-	Replies() []Post
+	GetPosts() []Post
 }
 
 type Post interface {
@@ -76,6 +79,5 @@ type Post interface {
 //func GetBoard(bid bid) *Board{ }
 //func GetThread(tid tid) *Thread{ }
 //func GetPost(pid pid) *Post{ }
-
 
 

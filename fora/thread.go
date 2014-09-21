@@ -45,7 +45,7 @@ func (thread *thread) Reply(title string, body string) Post {
 	return newPost(thread, title, body)
 }
 
-func (thread *thread) Replies() []Post {
+func (thread *thread) GetPosts() []Post {
 	u := thread.CurrentUser()
 	b := thread.Board()
 	return userStore(u).GetPosts(b.Id(), thread.Id())
