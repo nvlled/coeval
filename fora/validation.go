@@ -29,8 +29,8 @@ func bidAvailable(b Board) rule.Error {
 func bidLenValid(b Board) rule.Error {
 	if len(b.Id()) > MAX_BID_LEN {
 		return rule.AnError("bid", "too long")
-	} else if len(b.Id()) < 1 {
-		return rule.AnError("bid", "too short")
+	} else if len(b.Id()) == 0 {
+		return rule.AnError("bid", "required")
 	}
 	return nil
 }
@@ -41,10 +41,10 @@ func descLenValid(b Board) rule.Error {
 		// too long
 		// not available
 		// ... instead
-		return rule.AnError("bid", "too long")
+		return rule.AnError("desc", "too long")
 	}
-	if len(b.Id()) < 1 {
-		return rule.AnError("bid", "too short")
+	if len(b.Id()) == 0 {
+		return rule.AnError("desc", "required")
 	}
 	return nil
 }
