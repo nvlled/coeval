@@ -1,0 +1,11 @@
+{{template "header" .}}
+
+<form action='POST'>
+</form>
+
+{{template "thread-op" .}}
+{{range .board.Replies}}
+	{{template "post" .}}
+{{end}}
+
+{{template "footer" .}}

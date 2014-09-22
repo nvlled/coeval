@@ -1,0 +1,18 @@
+
+{{template "header" .}}
+
+<form method="GET" action='{{url "board-create"}}'>
+	{{with .error.__msg}}<div class='error'>{{.}}</div>{{end}}
+	<p>Board id: <input name='bid' />
+	{{with .error.bid}}<div class='error'>{{.}}</div>{{end}}
+	</p>
+	<p>Board desc: <input name='desc' />
+	{{with .error.desc}}<div class='error'>{{.}}</div>{{end}}
+	</p>
+	<input type="submit" />
+</form>
+
+
+{{template "footer" .}}
+
+

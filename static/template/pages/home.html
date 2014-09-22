@@ -1,5 +1,3 @@
-{{define "home"}}
-
 {{template "header" .}}
 <h1>goeval</h1>
 <p>
@@ -10,10 +8,9 @@ nothing better to do.
 <h2>Currently available boards</h2>
 {{range .user.GetBoards}}
 {{$id := .Id}}
-<li>/{{$id}}/ - {{.Desc}} {{print $id | url "1st-board-page" "bid"}}</li>
+{{$boardlink := print $id | url "1st-board-page" "bid"}}
+<li><a href='{{$boardlink}}'>/{{$id}}/ - {{.Desc}} </a></li>
 {{end}}
 
 
 {{template "footer" .}}
-{{end}}
-

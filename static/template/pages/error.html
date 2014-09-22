@@ -1,0 +1,7 @@
+{{template "header" .}}
+<h1>goeval</h1>
+
+{{/*.*/}}
+Error: {{with .error}}{{.__msg}}{{else}}Something happened{{end}}
+
+{{template "footer" .}}
