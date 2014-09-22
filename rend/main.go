@@ -20,10 +20,14 @@ func RenderRoute(routeName string, w ht.ResponseWriter, r *ht.Request, data Data
 	render(routeName, w, r, data)
 }
 
+func RenderError(w ht.ResponseWriter, r *ht.Request, data Data) {
+	RenderRoute("error", w, r, data)
+}
+
 func Render(w ht.ResponseWriter, r *ht.Request, data Data) {
 	var routeName string
 	switch t := context.Get(r, key.RouteName).(type) {
-	case string: routeName = t
+		case string: routeName = t
 	}
 	println("***routename", routeName)
 	RenderRoute(routeName, w, r, data)
@@ -53,8 +57,4 @@ func SetEnv(env map[string]interface{}) {
 func init() {
 	//env = make(template.FuncMap)
 }
-
-
-
-
 

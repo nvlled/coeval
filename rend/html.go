@@ -5,14 +5,10 @@ import (
 	"html/template"
 	ht "net/http"
 	"log"
+	"path/filepath"
+	"io/ioutil"
+	"strings"
 )
-
-// moved to env
-//var funcMap = template.FuncMap{
-//	url: func(name string) string{
-//		return routes.URL(name)
-//	},
-//}
 
 var htmlTempl *template.Template
 
@@ -26,11 +22,43 @@ var RenderHtml = func(name string, w ht.ResponseWriter, r *ht.Request, data Data
 
 func loadTemplates(env map[string]interface{}) {
 	funcs := template.FuncMap(env)
-	templ, err := template.New("goeval").Funcs(funcs).ParseGlob("static/template/*.html")
+	templ, err := template.New("goeval").Funcs(funcs).ParseGlob("static/template/includes/*.html")
 	if err != nil {
 		panic(err)
 	}
 	htmlTempl = templ
+	files,err := filepath.Glob("static/template/pages/*.html")
+	if err != nil {
+		panic(err)
+	}
+
+	for _,filename := range files {
+		ext := filepath.Ext(filename)
+		templName := strings.TrimSuffix(filepath.Base(filename), ext)
+		println(">>", templName)
+		htmlTempl.New(templName+".html").ParseFiles(filename)
+		_, err = parseFiles(htmlTempl, templName, filename)
+		if err != nil {
+			panic(err)
+		}
+	}
+	for _, t := range htmlTempl.Templates() {
+		println("template: ", t.Name())
+	}
+}
+
+func parseFiles(t *template.Template, name string, filename string) (*template.Template, error) {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	s := string(b)
+
+	_, err = t.New(name).Parse(s)
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
 }
 
 func init() {
