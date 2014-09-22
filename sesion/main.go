@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/context"
 	//"strings"
 	"nvlled/goeval/fora"
+	"nvlled/rule"
 )
 
 const (
@@ -58,6 +59,16 @@ func User(r *ht.Request) fora.User {
 func Merge(r *ht.Request, data rend.Data) rend.Data {
 	data["username"] = Username(r)
 	data["user"] = context.Get(r, key.User)
+	if data["error"] == nil {
+		data["error"] = rule.Error{}
+	}
 	return data
 }
+
+
+
+
+
+
+
 
