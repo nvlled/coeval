@@ -21,7 +21,7 @@ func (user *user) NewBoard(boardId Bid, desc string) (Board, error) {
 	return newBoard(user, boardId, desc)
 }
 
-func (user *user) GetBoard(boardId Bid) Board {
+func (user *user) GetBoard(boardId Bid) (Board, error) {
 	return getBoard(user, boardId)
 }
 

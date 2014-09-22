@@ -28,7 +28,7 @@ type User interface {
 	Kind() Kind
 	NewUser(name string, kind Kind) User
 	NewBoard(boardId Bid, desc string) (Board, error)
-	GetBoard(boardId Bid) Board
+	GetBoard(boardId Bid) (Board, error)
 	GetBoards() []Board
 }
 
@@ -79,5 +79,7 @@ type Post interface {
 //func GetBoard(bid bid) *Board{ }
 //func GetThread(tid tid) *Thread{ }
 //func GetPost(pid pid) *Post{ }
+
+
 
 

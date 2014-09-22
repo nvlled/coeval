@@ -9,6 +9,7 @@ type Store interface {
 	GetBoard(bid Bid) Board
 	GetBoards() []Board
 	PersistBoard(*board) error
+	GetBoardPage(bid Bid, pageno int, pagesize int) []Thread
 
 	GetThread(bid Bid, tid Tid) Thread
 	GetThreads(bid Bid) []Thread

@@ -144,6 +144,24 @@ func (store *memstore) GetThreads(bid Bid) []Thread {
 	return threads
 }
 
+func (store *memstore) GetBoardPage(bid Bid, pageno int, pagesize int) []Thread {
+	start := pageno * pagesize
+	end := start + pagesize
+
+	var page []Thread
+	i := 0
+	for _, t := range store.data.threads[bid] {
+		if i < start { continue }
+		if i > end	 { break    }
+		i++
+
+		thread := t
+		thread.currentUser = store.user
+		page = append(page, &thread)
+	}
+	return page
+}
+
 func (store *memstore) PersistThread(t *thread) error {
 	data := store.data
 	bid := t.Board().Id()
@@ -223,8 +241,5 @@ func (store *memstore) PersistUser(u *user) error {
 	store.data.users[u.name] = *u
 	return nil
 }
-
-
-
 
 

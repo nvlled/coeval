@@ -8,6 +8,10 @@ type board struct {
 	//threads map[string]*Thread
 }
 
+const (
+	PAGE_SIZE int = 10
+)
+
 func (board *board) CurrentUser() User {
 	return board.currentUser
 }
@@ -39,14 +43,18 @@ func (board *board) GetThreads() []Thread {
 }
 
 func (board *board) GetPage(pageno int) []Thread {
-	// stub, just return all threads for the mean time
+	// if !BoardExists { return err }
 	store := userStore(board.CurrentUser())
-	//var threads []Thread
-	return store.GetThreads(board.Id())
+	return store.GetBoardPage(board.Id(), pageno, PAGE_SIZE)
 }
 
-func getBoard(currentUser User, bid Bid) Board {
-	return userStore(currentUser).GetBoard(bid)
+func getBoard(currentUser User, bid Bid) (Board, error) {
+	var err error
+	b := userStore(currentUser).GetBoard(bid)
+	if b == nil {
+		err = BoardNotFound(bid)
+	}
+	return b, err
 }
 
 func getBoards(currentUser User) []Board {
@@ -54,7 +62,8 @@ func getBoards(currentUser User) []Board {
 }
 
 func BoardExists(bid Bid) bool {
-	return getBoard(Anonymous(), bid) != nil
+	b,_ := getBoard(Anonymous(), bid)
+	return b != nil
 }
 
 func newBoard(creator User, bid Bid, desc string) (Board, error) {
@@ -76,5 +85,6 @@ func newBoard(creator User, bid Bid, desc string) (Board, error) {
 	userStore(creator).PersistBoard(b)
 	return b, nil
 }
+
 
 
