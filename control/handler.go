@@ -4,10 +4,11 @@ package control
 import (
 	"net/http"
 	"fmt"
-	//"github.com/gorilla/context"
+	"github.com/gorilla/mux"
 	"nvlled/goeval/rend"
 	"nvlled/goeval/sesion"
 	"nvlled/goeval/fora"
+	"strconv"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -17,8 +18,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	rend.Render(w, r, sesion.Merge(r, rend.Data{
-	}))
+	rend.Render(w, r, sesion.Merge(r, rend.Data{}))
 }
 
 func Admin(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +30,6 @@ func BoardList(w http.ResponseWriter, r *http.Request) {
 }
 
 func BoardPage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "board page")
 }
 
 func BoardCatalog(w http.ResponseWriter, r *http.Request) {
@@ -87,6 +86,24 @@ func PostDelete(w http.ResponseWriter, r *http.Request) {
 
 func PostReply(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "post reply")
+}
+
+func setData(r *http.Request, data rend.Data) rend.Data {
+	return sesion.Merge(r, data)
+}
+
+func flunk(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func readInt(n string, defVal int) int {
+	x, err := strconv.Atoi(n)
+	if err != nil {
+		return defVal
+	}
+	return x
 }
 
 
