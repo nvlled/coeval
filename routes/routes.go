@@ -36,10 +36,10 @@ var routeDef = rut.Route(
 	),
 
 	rut.SRoute(
-		"/board/{bid}", ct.BoardList, "1st-board-page",
+		"/board/{bid}", ct.BoardPage, "1st-board-page",
 
 		rut.SRoute("/page/{page}",	ct.BoardPage,	 "board-page"),
-		rut.SRoute("/{catalog}",	ct.BoardCatalog, "board-catalog"),
+		rut.SRoute("/catalog",	ct.BoardCatalog, "board-catalog"),
 		rut.SRoute("/delete",		ct.BoardDelete,  "board-delete"),
 		rut.SRoute("/new-thread",	ct.ThreadCreate, "thread-create"),
 
@@ -91,6 +91,10 @@ func init() {
 	root.StrictSlash(true)
 	routes = rut.BuildRouter(routeDef, root)
 }
+
+
+
+
 
 
 
