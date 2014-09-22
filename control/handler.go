@@ -30,6 +30,14 @@ func BoardList(w http.ResponseWriter, r *http.Request) {
 }
 
 func BoardPage(w http.ResponseWriter, r *http.Request) {
+	u := sesion.User(r)
+	pageno := mux.Vars(r)["page"]
+	bid := fora.Bid(mux.Vars(r)["bid"])
+	board,err := u.GetBoard(bid)
+	flunk(err)
+	rend.RenderRoute("board-page", w, r, setData(r, rend.Data{
+		"threads" : board.GetPage(readInt(pageno, 0)),
+	}))
 }
 
 func BoardCatalog(w http.ResponseWriter, r *http.Request) {
