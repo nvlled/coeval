@@ -122,12 +122,19 @@ func (store *memstore) PersistBoard(board *board) error {
 	return nil
 }
 
+func setCurrentUser(t *thread, u User) {
+	t.currentUser = u
+	switch p := t.op.(type) {
+	case *post: p.currentUser = t.currentUser
+	}
+}
+
 func (store *memstore) GetThread(bid Bid, tid Tid) Thread {
 	t := store.lookupThread(bid, tid)
 	if t == nil {
 		// noooooooooo
 	}
-	t.currentUser = store.user
+	setCurrentUser(t, store.user)
 	return t
 }
 
@@ -138,7 +145,7 @@ func (store *memstore) GetThreads(bid Bid) []Thread {
 	var threads []Thread
 	for _, t := range data.threads[bid] {
 		thread := t
-		thread.currentUser = u
+		setCurrentUser(&thread, u)
 		threads = append(threads, &thread)
 	}
 	return threads
@@ -156,7 +163,7 @@ func (store *memstore) GetBoardPage(bid Bid, pageno int, pagesize int) []Thread 
 		i++
 
 		thread := t
-		thread.currentUser = store.user
+		setCurrentUser(&thread, store.user)
 		page = append(page, &thread)
 	}
 	return page
@@ -241,5 +248,8 @@ func (store *memstore) PersistUser(u *user) error {
 	store.data.users[u.name] = *u
 	return nil
 }
+
+
+
 
 
