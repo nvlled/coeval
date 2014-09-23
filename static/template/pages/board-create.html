@@ -1,5 +1,4 @@
-
-{{template "header" .}}
+{{template "sub/header" .}}
 
 <form method="GET" action='{{url "board-create"}}'>
 	{{with .error.__msg}}<div class='error'>{{.}}</div>{{end}}
@@ -13,6 +12,4 @@
 </form>
 
 
-{{template "footer" .}}
-
-
+{{template "sub/footer" .}}
