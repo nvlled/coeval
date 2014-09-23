@@ -1,6 +1,10 @@
 
 package fora
 
+import (
+	"strconv"
+)
+
 type post struct {
 	creator User
 	currentUser User
@@ -46,6 +50,7 @@ func (post *post) Parent() Post {
 func (p *post) Reply(title string, body string) Post {
 	user := p.CurrentUser()
 	replypost := &post{
+		creator: user,
 		title: title,
 		body: body,
 		thread: p.Thread(),
@@ -64,6 +69,7 @@ func (p *post) Replies() []Post {
 
 func createPost(creator User, title string, body string) *post {
 	return &post{
+		currentUser: creator,
 		creator: creator,
 		title: title,
 		body: body,
@@ -80,6 +86,4 @@ func getPost(t Thread, pid Pid) Post {
 	bid := t.Board().Id()
 	return userStore(u).GetPost(bid, t.Id(), pid)
 }
-
-
 
