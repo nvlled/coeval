@@ -61,6 +61,7 @@ func (thread *thread) RecentPosts() []Post {
 	b := thread.Board()
 	posts := userStore(u).GetPosts(b.Id(), thread.Id())
 	sort.Sort(PostById(posts))
+	posts = posts[1:] // excluding Op
 	n := len(posts)
 	return posts[int(math.Max(0, float64(n-5))):n]
 }
