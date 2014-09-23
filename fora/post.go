@@ -87,3 +87,20 @@ func getPost(t Thread, pid Pid) Post {
 	return userStore(u).GetPost(bid, t.Id(), pid)
 }
 
+
+// implement sort interface
+type PostById []Post
+
+func (posts PostById) Len() int {
+	return len(posts)
+}
+
+func (posts PostById) Swap(i, j int) {
+	posts[i], posts[j] = posts[j], posts[i]
+}
+
+func (posts PostById) Less(i, j int) bool {
+	x,_ := strconv.Atoi(string(posts[i].Id()))
+	y,_ := strconv.Atoi(string(posts[j].Id()))
+	return x < y
+}
