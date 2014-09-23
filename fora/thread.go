@@ -53,7 +53,10 @@ func (thread *thread) Reply(title string, body string) Post {
 func (thread *thread) GetPosts() []Post {
 	u := thread.CurrentUser()
 	b := thread.Board()
-	return userStore(u).GetPosts(b.Id(), thread.Id())
+	posts := userStore(u).GetPosts(b.Id(), thread.Id())
+	posts = posts[1:] // excluding Op
+	sort.Sort(PostById(posts))
+	return posts
 }
 
 func (thread *thread) RecentPosts() []Post {
