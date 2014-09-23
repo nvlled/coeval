@@ -3,12 +3,15 @@ package routes
 
 import (
 	"net/http"
+	"net/url"
 	"nvlled/rut"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/context"
 	"nvlled/goeval/rend"
 	"nvlled/goeval/sesion/key"
 	ct "nvlled/goeval/control"
+	"fmt"
+	"log"
 )
 
 var GET = rut.GET
@@ -61,13 +64,14 @@ var routes *mux.Router
 func URL(name string, params ...string) string {
 	r := routes.Get(name)
 	if r != nil {
-		url, err := r.URL(params...)
+		urlpath, err := r.URL(params...)
 		if err != nil {
-			return "URL("+err.Error()+")"
+			log.Println(err.Error())
+			return url.QueryEscape(fmt.Sprint("(%s)", err.Error()))
 		}
-		return url.String()
+		return urlpath.String()
 	}
-	return "URL(not found)"
+	return url.QueryEscape(fmt.Sprint("(invalid route name)"))
 }
 
 func Handler() http.Handler {
