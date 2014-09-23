@@ -1,12 +1,17 @@
 
 package fora
 
+import (
+	"math"
+	"sort"
+	"strconv"
+)
+
 type thread struct {
 	currentUser User
 	id Tid
 	op Post
 	board Board
-	//posts map[string]*Thread
 }
 
 func (thread *thread) CurrentUser() User {
@@ -51,6 +56,15 @@ func (thread *thread) GetPosts() []Post {
 	return userStore(u).GetPosts(b.Id(), thread.Id())
 }
 
+func (thread *thread) RecentPosts() []Post {
+	u := thread.CurrentUser()
+	b := thread.Board()
+	posts := userStore(u).GetPosts(b.Id(), thread.Id())
+	sort.Sort(PostById(posts))
+	n := len(posts)
+	return posts[int(math.Max(0, float64(n-5))):n]
+}
+
 func newThread(board Board, title string, body string) Thread {
 	var op *post
 	var t *thread
@@ -77,5 +91,20 @@ func getThreads(board Board) []Thread {
 	return userStore(u).GetThreads(board.Id())
 }
 
+type ThreadById []Thread
+
+func (threads ThreadById) Len() int {
+	return len(threads)
+}
+
+func (threads ThreadById) Swap(i, j int) {
+	threads[i], threads[j] = threads[j], threads[i]
+}
+
+func (threads ThreadById) Less(i, j int) bool {
+	x,_ := strconv.Atoi(string(threads[i].Id()))
+	y,_ := strconv.Atoi(string(threads[j].Id()))
+	return x < y
+}
 
 

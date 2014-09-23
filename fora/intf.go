@@ -33,6 +33,7 @@ type User interface {
 }
 
 type UserContainer interface {
+	// current should never return nil
 	CurrentUser() User
 }
 
@@ -62,6 +63,7 @@ type Thread interface {
 	GetPost(pid Pid) Post
 	Reply(title string, body string) Post
 	GetPosts() []Post
+	RecentPosts() []Post
 }
 
 type Post interface {
