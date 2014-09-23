@@ -35,15 +35,11 @@ func loadTemplates(env map[string]interface{}) {
 	for _,filename := range files {
 		ext := filepath.Ext(filename)
 		templName := strings.TrimSuffix(filepath.Base(filename), ext)
-		println(">>", templName)
-		htmlTempl.New(templName+".html").ParseFiles(filename)
+		//println(">>", templName)
 		_, err = parseFiles(htmlTempl, templName, filename)
 		if err != nil {
 			panic(err)
 		}
-	}
-	for _, t := range htmlTempl.Templates() {
-		println("template: ", t.Name())
 	}
 }
 
