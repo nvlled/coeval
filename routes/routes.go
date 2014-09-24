@@ -4,7 +4,7 @@ package routes
 import (
 	"net/http"
 	"net/url"
-	"nvlled/rut"
+	def "github.com/nvlled/roudetef"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/context"
 	"nvlled/goeval/rend"
@@ -14,46 +14,46 @@ import (
 	"log"
 )
 
-var GET = rut.GET
-var POST = rut.POST
-var group = rut.Group
+var GET = def.GET
+var POST = def.POST
+var group = def.Group
 
-var routeDef = rut.Route(
+var routeDef = def.Route(
 	"/", ct.Home, "home",
-	rut.Hooks(rend.HookHtmlRender, ct.AttachUser),
-	rut.Guards(),
-	rut.SRoute("/login", ct.Login, "login"),
+	def.Hooks(rend.HookHtmlRender, ct.AttachUser),
+	def.Guards(),
+	def.SRoute("/login", ct.Login, "login"),
 
-	rut.Route(
+	def.Route(
 		"/admin", ct.Admin, "admin",
-		rut.Hooks(ct.AttachUser),
-		rut.Guards(ct.RequireAdmin),
-		rut.SRoute("/board/create",
-		rut.Ts{
-			group(GET,	rut.H(ct.BoardCreate)),
-			group(POST, rut.H(ct.SubmitBoardCreate)),
+		def.Hooks(ct.AttachUser),
+		def.Guards(ct.RequireAdmin),
+		def.SRoute("/board/create",
+		def.Ts{
+			group(GET,	def.H(ct.BoardCreate)),
+			group(POST, def.H(ct.SubmitBoardCreate)),
 		}, "board-create"),
-		//rut.SRoute("/board/create", group(GET,	rut.H(ct.BoardCreate)),       "board-create"),
-		//rut.SRoute("/board/create", group(POST, rut.H(ct.SubmitBoardCreate)), "board-submit-create"),
+		//def.SRoute("/board/create", group(GET,	def.H(ct.BoardCreate)),       "board-create"),
+		//def.SRoute("/board/create", group(POST, def.H(ct.SubmitBoardCreate)), "board-submit-create"),
 
 	),
 
-	rut.SRoute(
+	def.SRoute(
 		"/board/{bid}", ct.BoardPage, "1st-board-page",
 
-		rut.SRoute("/page/{page}",	ct.BoardPage,	 "board-page"),
-		rut.SRoute("/catalog",	ct.BoardCatalog, "board-catalog"),
-		rut.SRoute("/delete",		ct.BoardDelete,  "board-delete"),
-		rut.SRoute("/new-thread",	ct.ThreadCreate, "thread-create"),
+		def.SRoute("/page/{page}",	ct.BoardPage,	 "board-page"),
+		def.SRoute("/catalog",	ct.BoardCatalog, "board-catalog"),
+		def.SRoute("/delete",		ct.BoardDelete,  "board-delete"),
+		def.SRoute("/new-thread",	ct.ThreadCreate, "thread-create"),
 
-		rut.SRoute(
+		def.SRoute(
 			"/thread/{tid}",	 ct.ThreadView,	  "thread-view",
-			rut.SRoute("delete", ct.ThreadDelete, "thread-delete"),
-			rut.SRoute("reply",  ct.ThreadReply,  "thread-reply"),
-			rut.SRoute(
+			def.SRoute("delete", ct.ThreadDelete, "thread-delete"),
+			def.SRoute("reply",  ct.ThreadReply,  "thread-reply"),
+			def.SRoute(
 				"/post/{pid}",		  ct.PostView,	 "post-view",
-				rut.SRoute("/delete", ct.PostDelete, "post-delete"),
-				rut.SRoute("/reply",  ct.PostReply,	 "post-reply"),
+				def.SRoute("/delete", ct.PostDelete, "post-delete"),
+				def.SRoute("/reply",  ct.PostReply,	 "post-reply"),
 			),
 		),
 	),
@@ -80,10 +80,10 @@ func Handler() http.Handler {
 
 func init() {
 	// inject route name on the context
-	routeDef.MapRoute(func(def *rut.RouteDef) {
-		def.AddTransformer(rut.TransformerFunc(func(r *mux.Route) {
-			rut.Attach(r, func(req *http.Request) {
-				context.Set(req, key.RouteName, def.Name())
+	routeDef.MapRoute(func(d *def.RouteDef) {
+		d.AddTransformer(def.TransformerFunc(func(r *mux.Route) {
+			def.Attach(r, func(req *http.Request) {
+				context.Set(req, key.RouteName, d.Name())
 			})
 		}))
 	})
@@ -93,7 +93,7 @@ func init() {
 	println()
 	root := mux.NewRouter()
 	root.StrictSlash(true)
-	routes = rut.BuildRouter(routeDef, root)
+	routes = def.BuildRouter(routeDef, root)
 }
 
 

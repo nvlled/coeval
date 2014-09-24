@@ -4,8 +4,8 @@ package rend
 import (
 	ht "net/http"
 	"github.com/gorilla/context"
+	def "github.com/nvlled/roudetef"
 	"nvlled/goeval/sesion/key"
-	"nvlled/rut"
 	_"html/template"
 )
 
@@ -41,14 +41,14 @@ func Get(r *ht.Request) T {
 	return RenderDefault
 }
 
-func Hook(render T) rut.Hook {
+func Hook(render T) def.Hook {
 	return func(r *ht.Request) {
 		context.Set(r, key.Render, render)
 	}
 }
 
-var HookHtmlRender rut.Hook = Hook(RenderHtml)
-var HookJsonRender rut.Hook = Hook(RenderJson)
+var HookHtmlRender def.Hook = Hook(RenderHtml)
+var HookJsonRender def.Hook = Hook(RenderJson)
 
 func SetEnv(env map[string]interface{}) {
 	loadTemplates(env)

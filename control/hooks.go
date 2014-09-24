@@ -4,11 +4,11 @@ package control
 import (
 	ht "net/http"
 	"github.com/gorilla/context"
+	def "github.com/nvlled/roudetef"
 	"nvlled/goeval/fora"
 	"nvlled/goeval/rend"
 	"nvlled/goeval/sesion"
 	"nvlled/goeval/sesion/key"
-	"nvlled/rut"
 	"nvlled/rule"
 	"log"
 )
@@ -29,7 +29,7 @@ func notAdmin(r *ht.Request) bool {
 	return user.Kind() != fora.Admin
 }
 
-var RequireAdmin = rut.Guard{
+var RequireAdmin = def.Guard{
 	Reject: notAdmin,
 	Handler: func(w ht.ResponseWriter, r *ht.Request) {
 		rend.RenderRoute("error", w, r, rend.Data{
