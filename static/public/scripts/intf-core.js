@@ -9,10 +9,6 @@
 
 	var PAGE_SIZE = 3;
 
-	// variables having the same name
-	// as these protos are assumed
-	// to have the same format
-
 	//post {
 	//	id int
 	//	node HtmlNode
@@ -89,33 +85,6 @@
 		return posts;
 	}
 
-	//function newPostBuilder(opts) {
-	//	var newNode = opts.newNode;
-	//	var getPost = opts.getPost;
-	//	var createLinkHandler = function(postlink) {
-	//		return function() {
-	//			console.dir(postlink);
-	//			var postmap = mapPostId(postlink, getPost)
-	//			visitLink(postmap);
-	//			return false;
-	//		}
-	//	}
-
-	//	return function(data) {
-	//		console.assert(newNode, "need a node creator");
-	//		return {
-	//			id:		  data.id,
-	//			node:	  newNode(data, createLinkHandler),
-	//			norder:   {next:  null, prev: null},
-	//			sibling:  {next:  null, prev: null},
-	//			page:	  {start: null, end:  null},
-	//			nextpost: null,
-	//			prevpost:  null,
-	//			indented: false,
-	//		}
-	//	}
-	//}
-
 	function mapPostId(postlink, getPost) {
 		return {
 			type:		postlink.type,
@@ -143,7 +112,6 @@
 	root.insertAfter = insertAfter;
 	root.insertBefore = insertBefore;;
 
-	// insertAfter and insertBefore are broke
 	function insertAfter(insertedNode, node) {
 		var parentNode = node.parentNode;
 		parentNode.insertBefore(insertedNode, node.nextSibling)
@@ -153,7 +121,6 @@
 		var parentNode = node.parentNode;
 		parentNode.insertBefore(insertedNode, node);
 	}
-	//
 
 	function appendChild(parent, node) {
 		parent.appendChild(node);
@@ -171,7 +138,6 @@
 		else
 			attachSubthread(parent, post);
 
-
 		// Parents are always undented
 		undent(parent);
 	}
@@ -181,10 +147,8 @@
 		var post2 = post;
 		console.log("**attaching subthread", post1.id, "->", post2.id);
 
-		// Fix: cycles
 		while (post2) {
 			insertAfter(post2.node, post1.node);
-			//post1.nextpost = post2;
 			setNextPost(post1, post2);
 			post2.prevpost = post1;
 			post1 = post2;
@@ -317,12 +281,10 @@
 			restoreNorder(post);
 			post = prev;
 		}
-		console.log("lastpost", prev);
 		if (prev) {
 			console.log("suppost", prev.id, "->", nextpost.id);
 			prev.nextpost = nextpost;
 		}
-		//console.log("last post", lastpost.prevpost);
 	}
 
 	function setNextPost(post, next) {
@@ -360,11 +322,7 @@
 	}
 
 	// Issues:
-	// - Rename parentId to pid
-	// - restoring subthreads -> restore the bottommost subpost
-	// - showing pages
-	// - attach thread is broken
-	// - build sibling link
+	// - showing of pages
 	// - make pages cyclic
 
 })(this)

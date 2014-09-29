@@ -142,18 +142,8 @@ function newPostNode(data) {
 
 	var parentIds = parsePostBody(data, bodyNode);
 
-	//parentIds.forEach(function(parentId) {
-	//	var parentNode = document.getElementById("p"+parentId);
-	//	var postlink = intf.childlink(data.id, parentId);
-	//	if (parentNode) {
-	//		addChildlink(parentNode, postlink);
-	//	}
-	//});
-
 	return { node: postNode, parentIds: parentIds };
 }
-
-// newPost(data, newPostNode)
 
 function createPostLinkNode(id, type, handler) {
 	var a = document.createElement("a");
@@ -247,73 +237,4 @@ function parsePostBody(postData, node) {
 	});
 	return parentIds;
 }
-
-
-//function addToPostBodyNode(tokens, bodyNode) {
-//	var node = bodyNode;
-//	tokens.forEach(function(t) {
-//		switch (t.tag) {
-//			case "text": node.appendChild(textNode(t.value)); break;
-//			case "id": {
-//				var postlinkNode = createPostLinkNode(t.value, PlinkType.PARENT);
-//				node.appendChild(postlinkNode);
-//				break;
-//			}
-//			case "br": {
-//				bodyNode.appendChild(node);
-//				node = bodyNode;
-//				node.appendChild(br());
-//			}
-//			case ">>": {
-//				node = meyemey();
-//			}
-//		}
-//	});
-//}
-
-//function parsePostBody(text) {
-//	var tokens = [];
-//	var parentIds = [];
-//	var lines = text.split("\n");
-//
-//	return lines.map(function(line) {
-//		var ts = [];
-//		var matched = false;
-//		var pat = /(.*)(>>\d+)(.*)/g;
-//		while(true) {
-//			var m = pat.exec(line);
-//			if (m == null)
-//				break;
-//			matched = true;
-//
-//			var id = m[2].substr(2);
-//			ts.push(_text(m[1]));
-//			ts.push(_id(id));
-//			ts.push(_text(m[2]));
-//
-//			parentIds.push(id);
-//		}
-//		if (!matched)
-//			ts.push(_text(line))
-//
-//		if (line[0] == '>' && line[1] != '>') {
-//			tokens.push(_style(ts));
-//		} else {
-//			tokens.concat(ts);
-//		}
-//
-//		tokens.push(br());
-//	});
-//
-//	function _text(v) { return {tag: "text", value: v}; }
-//	function _id(v)	  { return {tag: "id",	 value: v}; }
-//	function _br()	  { return {tag: "br",	 value: nil}; }
-//	function _style(childs) { return {tag: ">>",   value: childs}; }
-//
-//	return { tokens: tokens, parentIds: parentIds };
-//}
-
-
-
-
 
