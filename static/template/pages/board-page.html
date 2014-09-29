@@ -1,13 +1,16 @@
 {{template "sub/header" .}}
+<p>Page {{.pageno}}</p>
 {{range .threads}}
-<div>
-	{{template "sub/thread" .}}
-	{{range .RecentPosts}}
-		{{template "sub/post" .}}
-	{{end}}
-	{{/*
-	*/}}
-</div>
+	<div>
+		{{template "sub/thread" .}}
+		{{range .RecentPosts}}
+			{{template "sub/post" .}}
+		{{end}}
+		{{/*
+		*/}}
+	</div>
+	<hr />
+{{else}}
+<h2>(No threads)</h2>
 {{end}}
 {{template "sub/footer"}}
-

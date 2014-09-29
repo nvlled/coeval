@@ -1,0 +1,8 @@
+{{template "sub/header" .}}
+<div>
+	{{template "sub/thread" .thread}}
+	{{range .thread.GetPosts}}
+		{{template "sub/post" .}}
+	{{end}}
+</div>
+{{template "sub/footer"}}
