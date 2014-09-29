@@ -4,7 +4,7 @@ var postTempl;
 this.addEventListener("load", init)
 
 // change format to map
-var posts = [
+var samplePosts = [
 	{ id: "100", body: "whatereyouworkinongg/" },
 	{ id: "101", body: ">>100 Re-kernelling my gentoo in haskell" },
 	{ id: "102", body: ">>100\n>Not using animu pic\n>twenty-14"  },
@@ -29,30 +29,25 @@ var lib = intf.create({
 
 function getPost(id) { return postdb[id] }
 
-var compat = /<a .*>&gt;&gt;(.*)<\/a>/g;
-var brpat = /<br>/g;
-var quotepat = /<span class="quote">&gt;(.*)<\/span>/g
-function fromChan(data) {
-	var body = data.com.replace(compat, function(_, id) { return ">>"+id; });
-	body = body.replace(brpat, "\n");
-	body = body.replace(quotepat, function(_, quote) { return ">"+quote });
-	return {
-		id: data.no,
-		body: decodeHTML(body),
-	}
-}
-
 function init() {
 	initPostTempl();
 
-	var posts = dpt.posts.map(fromChan);
+	buildThread(samplePosts, document.querySelector("#sample-posts"));
+
+	var dptPosts = dpt.posts.map(fromChan);
+	buildThread(dptPosts, document.querySelector("#chan-posts"));
+}
+
+function buildThread(posts, container) {
+	if (!container)
+		container = document.body;
 
 	var postIds = [];
 	posts.forEach(function(postData) {
 		var post = lib.newPost(postData);
 		postdb[post.id] = post;
 		postIds.push(post.id);
-		document.body.appendChild(post.node);
+		container.appendChild(post.node);
 	});
 
 	var prevSib = {};
@@ -66,7 +61,6 @@ function init() {
 
 		linkToParentNodes(post)
 		linkSiblings(prevSib, post);
-
 	}
 }
 
@@ -187,20 +181,6 @@ function spanNode(t) {
 	return span
 }
 
-var decodeHTML = (function() {
-	var node = document.createElement("div");
-	return function(s) {
-		node.innerHTML = s;
-		//console.assert(node.childNodes.length <= 1);
-		if (node.childNodes.length > 0) {
-			var v = node.childNodes[0].nodeValue;
-			if (v)
-				return v;
-		}
-		return s;
-	}
-})();
-
 function parsePostBody(postData, node) {
 	var parentIds = [];
 	var lines = postData.body.split("\n");
@@ -237,4 +217,36 @@ function parsePostBody(postData, node) {
 	});
 	return parentIds;
 }
+
+var fromChan = (function() {
+	var compat = /<a .*>&gt;&gt;(.*)<\/a>/g;
+	var brpat = /<br>/g;
+	var quotepat = /<span class="quote">&gt;(.*)<\/span>/g
+
+	var decodeHTML = (function() {
+		var node = document.createElement("div");
+		return function(s) {
+			node.innerHTML = s;
+			//console.assert(node.childNodes.length <= 1);
+			if (node.childNodes.length > 0) {
+				var v = node.childNodes[0].nodeValue;
+				if (v)
+					return v;
+			}
+			return s;
+		}
+	})();
+
+	return function (data) {
+		var body = data.com.replace(compat, function(_, id) { return ">>"+id; });
+		body = body.replace(brpat, "\n");
+		body = body.replace(quotepat, function(_, quote) { return ">"+quote });
+		return {
+			id: data.no,
+			body: decodeHTML(body),
+		}
+	}
+
+})();
+
 
