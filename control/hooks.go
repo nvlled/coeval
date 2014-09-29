@@ -9,7 +9,7 @@ import (
 	"nvlled/goeval/rend"
 	"nvlled/goeval/sesion"
 	"nvlled/goeval/sesion/key"
-	"nvlled/rule"
+	"github.com/nvlled/rule"
 	"log"
 )
 

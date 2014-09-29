@@ -36,6 +36,7 @@ func BoardPage(w http.ResponseWriter, r *http.Request) {
 	board,err := u.GetBoard(bid)
 	flunk(err)
 	rend.RenderRoute("board-page", w, r, setData(r, rend.Data{
+		"pageno" : pageno,
 		"threads" : board.GetPage(readInt(pageno, 0)),
 	}))
 }
@@ -73,7 +74,17 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func ThreadView(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "thread view")
+	bid := fora.Bid(mux.Vars(r)["bid"])
+	tid := fora.Tid(mux.Vars(r)["tid"])
+	user := sesion.User(r)
+
+	board,err := user.GetBoard(bid)
+	flunk(err)
+	thread := board.GetThread(tid)
+
+	rend.Render(w, r, setData(r, rend.Data{
+		"thread" : thread,
+	}))
 }
 
 func ThreadDelete(w http.ResponseWriter, r *http.Request) {
