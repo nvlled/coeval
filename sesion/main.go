@@ -3,17 +3,17 @@ package sesion
 
 import (
 	ht "net/http"
-	"nvlled/goeval/sesion/key"
-	"nvlled/goeval/rend"
+	"nvlled/coeval/sesion/key"
+	"nvlled/coeval/rend"
 	"github.com/gorilla/sessions"
 	"github.com/gorilla/context"
 	//"strings"
-	"nvlled/goeval/fora"
+	"nvlled/coeval/fora"
 	"github.com/nvlled/rule"
 )
 
 const (
-	Name = "goeval-session"
+	Name = "coeval-session"
 )
 
 var store = sessions.NewCookieStore([]byte("supersecretpassword"))

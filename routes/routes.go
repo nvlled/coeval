@@ -7,9 +7,9 @@ import (
 	def "github.com/nvlled/roudetef"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/context"
-	"nvlled/goeval/rend"
-	"nvlled/goeval/sesion/key"
-	ct "nvlled/goeval/control"
+	"nvlled/coeval/rend"
+	"nvlled/coeval/sesion/key"
+	ct "nvlled/coeval/control"
 	"fmt"
 	"log"
 )

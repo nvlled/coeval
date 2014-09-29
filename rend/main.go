@@ -5,7 +5,7 @@ import (
 	ht "net/http"
 	"github.com/gorilla/context"
 	def "github.com/nvlled/roudetef"
-	"nvlled/goeval/sesion/key"
+	"nvlled/coeval/sesion/key"
 	_"html/template"
 )
 

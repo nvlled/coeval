@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/gorilla/mux"
-	"nvlled/goeval/rend"
-	"nvlled/goeval/sesion"
-	"nvlled/goeval/fora"
+	"nvlled/coeval/rend"
+	"nvlled/coeval/sesion"
+	"nvlled/coeval/fora"
 	"strconv"
 )
 

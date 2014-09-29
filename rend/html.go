@@ -22,7 +22,7 @@ var RenderHtml = func(name string, w ht.ResponseWriter, r *ht.Request, data Data
 
 func loadTemplates(env map[string]interface{}) {
 	funcs := template.FuncMap(env)
-	templ, err := template.New("goeval").Funcs(funcs).ParseGlob("static/template/includes/*.html")
+	templ, err := template.New("coeval").Funcs(funcs).ParseGlob("static/template/includes/*.html")
 	if err != nil {
 		panic(err)
 	}
