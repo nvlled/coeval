@@ -2,7 +2,7 @@
 package fora
 
 import (
-	"nvlled/rule"
+	"github.com/nvlled/rule"
 	"fmt"
 )
 

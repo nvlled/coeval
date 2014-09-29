@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/context"
 	//"strings"
 	"nvlled/goeval/fora"
-	"nvlled/rule"
+	"github.com/nvlled/rule"
 )
 
 const (
