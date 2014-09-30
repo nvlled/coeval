@@ -7,17 +7,11 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
-	"nvlled/goeval/fora"
+	"strings"
+	"io"
+	//"net/url"
+	//"fmt"
 )
-
-func initMessageBoard() {
-	user := fora.NewUser("nvlled", fora.Admin)
-	user.NewBoard("g", "animu hating plebs")
-	user.NewBoard("a", "saten-san a sl**")
-	//for _,b := range user.GetBoards() {
-	//	println(">", b.Id(), b.Desc())
-	//}
-}
 
 func TestServer(t *testing.T) {
 	initMessageBoard()
@@ -25,9 +19,12 @@ func TestServer(t *testing.T) {
 	server := httptest.NewServer(h)
 	u := server.URL
 	client := createClient()
-	//println(get(client, u+"/"))
-	println(get(client, u+"/"))
-	println(get(client, u+"/admin"))
+
+	println(get(client, u+"/login"))
+	println(get(client, u+"/board/g/thread/0"))
+
+	//_,body := post(client, "bid=g&desc=someshit", u+"/admin/board/create/?bid=h&desc=someshit")
+	//println(body)
 }
 
 func request(c *http.Client, method, path string, headers ...string) (*http.Response, string) {
@@ -40,20 +37,47 @@ func request(c *http.Client, method, path string, headers ...string) (*http.Resp
 		i += 2
 	}
 	resp,_ := c.Do(request)
-	return resp, body(resp)
+	return resp, getBody(resp)
+}
+
+func post(c *http.Client, body , path string, headers ...string) (*http.Response, string) {
+	request,_ := http.NewRequest("POST", path, stringReadCloser(body))
+	i := 0
+	for i < len(headers) - 1 {
+		key := headers[i]
+		val := headers[i+1]
+		request.Header[key] = []string{val}
+		i += 2
+	}
+	resp,err := c.Do(request)
+	if err != nil {
+		println("error: ", err.Error())
+		return nil, ""
+	}
+	return resp, getBody(resp)
+}
+
+type StringRC struct {
+	body io.Reader
+}
+
+func (s StringRC) Read(p []byte) (int, error) {
+	return s.body.Read(p)
+}
+func (s StringRC) Close() error {
+	return nil
+}
+
+func stringReadCloser(s string) io.ReadCloser {
+	return StringRC{strings.NewReader(s)}
 }
 
 func get(c *http.Client, path string) string {
 	resp, _ := c.Get(path)
-	return body(resp)
+	return getBody(resp)
 }
 
-func post(c *http.Client, path string) string {
-	resp, _ := c.Post(path, "", nil)
-	return body(resp)
-}
-
-func body(resp *http.Response) string {
+func getBody(resp *http.Response) string {
 	s,_ := ioutil.ReadAll(resp.Body)
 	return string(s)
 }
@@ -63,5 +87,4 @@ func createClient() *http.Client {
 	c.Jar,_ = cookiejar.New(nil)
 	return c
 }
-
 
