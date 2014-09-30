@@ -129,14 +129,16 @@
 		parent.appendChild(node);
 	}
 
-	function attachPosts(parent, post) {
-		if (parent.nextpost == post)
+	function attachPosts(linktype, parent, post) {
+		if (parent.nextpost == post && linktype == "parent")
 			return;
 
 		restoreSupthread(parent);
 		restoreSubthread(parent);
 
-		if (isIndented(post) || inNorder(post))
+		if (!isIndented(post) && parent.nextpost == post)
+			attachSiblings(parent, post);
+		else if (isIndented(post) || inNorder(post))
 			attachSiblings(parent, post);
 		else
 			attachSubthread(parent, post);
@@ -187,14 +189,14 @@
 		console.log("**visiting parent", postlink)
 		var parent = postlink.targetPost;
 		var post = postlink.sourcePost;
-		attachPosts(parent, post);
+		attachPosts("parent", parent, post);
 	}
 
 	function visitChild(postlink) {
 		console.log("**visiting child", postlink);
 		var child = postlink.targetPost;
 		var post = postlink.sourcePost;
-		attachPosts(post, child);
+		attachPosts("child", post, child);
 	}
 
 	// Connects the post (or subthread)
