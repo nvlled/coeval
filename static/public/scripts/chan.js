@@ -38,11 +38,12 @@
 			fetchResource(url, function(text) {
 				try {
 					var t = JSON.parse(text);
-					loadThread(t);
-					info.textContent = "";
 				} catch(e) {
 					fetchFailed("not a json");
+					return;
 				}
+				loadThread(t);
+				info.textContent = "";
 			}, fetchFailed);
 		}
 
@@ -53,8 +54,9 @@
 	}
 
 	function loadThread(threadData) {
-		var container = document.querySelector("#chan-posts");
+		var container = document.querySelector("#thread-container");
 		var dptPosts = threadData.posts.map(fromChan);
+		container.innerHTML = "";
 		intfmain.buildThread(dptPosts, container);
 	}
 
