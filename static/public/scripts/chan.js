@@ -23,11 +23,14 @@ function initForm() {
 	button.onclick = function() {
 		bid.value = bid.value.trim();
 		tid.value = tid.value.trim();
+
+		var url
 		if (!bid.value || !tid.value) {
-			alert("Missing form values, you suck");
-			return false;
+			console.log("*** fetching testdata");
+			url = "/4chan/testdata";
+		} else {
+			url = "/4chan/"+bid.value+"/"+tid.value;
 		}
-		var url = "/4chan/"+bid.value+"/"+tid.value;
 		fetchResource(url, function(text) {
 			loadThread(JSON.parse(text));
 		}, fetchFailed);

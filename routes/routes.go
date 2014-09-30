@@ -61,7 +61,11 @@ var routeDef = def.Route(
 	),
 
 	def.SRoute("/public", ct.ServeStatic, "serve-static"),
-	def.SRoute("/4chan/{bid}/{tid}", ct.ChanThread, "chan-thread"),
+	def.SRoute(
+		"/4chan", ct.ChanThread, "chan-index",
+		def.SRoute("/testdata",    ct.ChanThread, "chan-thread"),
+		def.SRoute("/{bid}/{tid}", ct.ChanThread, "chan-thread"),
+	),
 )
 
 var routes *mux.Router
