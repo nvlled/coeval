@@ -18,7 +18,7 @@ func ChanThread(w http.ResponseWriter, r *http.Request) {
 	url := fmt.Sprintf(threadURL, bid, tid)
 	resp, err := http.Get(url)
 	flunk(err)
-	n, err := io.Copy(w, resp.Body)
+	_, err = io.Copy(w, resp.Body)
 	flunk(err)
 }
 
