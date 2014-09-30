@@ -47,7 +47,7 @@ func CatchError(handler ht.Handler) ht.Handler {
 						"error" : err,
 					})
 				}
-
+				w.WriteHeader(401);
 				switch t := err.(type) {
 				case rule.Error : render(t)
 				case map[string]interface{}: render(t)

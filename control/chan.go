@@ -32,6 +32,9 @@ func ChanThread(w http.ResponseWriter, r *http.Request) {
 	} else {
 		url := fmt.Sprintf(threadURL, bid, tid)
 		resp, err := http.Get(url)
+		if err != nil {
+			w.WriteHeader(401);
+		}
 		reader = resp.Body
 		flunk(err)
 	}
@@ -39,6 +42,8 @@ func ChanThread(w http.ResponseWriter, r *http.Request) {
 	_, err := io.Copy(w, reader)
 	flunk(err)
 }
+
+
 
 
 

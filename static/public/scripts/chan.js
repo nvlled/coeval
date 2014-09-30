@@ -17,8 +17,10 @@ this.sel = sel;
 
 function initForm() {
 	var form = sel("#board-form");
+	var info = sel("#info");
 	var bid = sel("#bid");
 	var tid = sel("#tid");
+
 	var button = sel("button", form);
 	button.onclick = function() {
 		bid.value = bid.value.trim();
@@ -26,18 +28,27 @@ function initForm() {
 
 		var url
 		if (!bid.value || !tid.value) {
-			console.log("*** fetching testdata");
 			url = "/4chan/testdata";
+			info.textContent = "Loading from testdata...";
 		} else {
 			url = "/4chan/"+bid.value+"/"+tid.value;
+			info.textContent = "Loading";
 		}
+
 		fetchResource(url, function(text) {
-			loadThread(JSON.parse(text));
+			try {
+				var t = JSON.parse(text);
+				loadThread(t);
+				info.textContent = "";
+			} catch(e) {
+				fetchFailed("not a json");
+			}
 		}, fetchFailed);
 	}
 
 	function fetchFailed(e) {
-		console.log("failed to fetch resource", e);
+		info.textContent = "Thread not found";
+		console.log("failed to fetch resource ", e);
 	}
 }
 
@@ -57,7 +68,7 @@ function fetchResource(url, succfn, errorfn) {
 	req.onload = function() {
 		succfn(req.responseText);
 	}
-	req.onerror = errorfn;
+	req.addEventListener("error", errorfn);
 	req.send();
 }
 
