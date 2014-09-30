@@ -1,5 +1,6 @@
 (function(root) {
 
+	// exports
 	root.intf = {
 		childlink:	childlink,
 		parentlink: parentlink,

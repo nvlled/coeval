@@ -1,42 +1,27 @@
-(function() {
-var postTempl;
+(function(root) {
 
-this.addEventListener("load", init)
-
-// change format to map
-var samplePosts = [
-	{ id: "100", body: "whatereyouworkinongg/" },
-	{ id: "101", body: ">>100 Re-kernelling my gentoo in haskell" },
-	{ id: "102", body: ">>100\n>Not using animu pic\n>twenty-14"  },
-	{ id: "103", body: ">>102\nweaboo scum git out\n"  },
-	{ id: "104", body: ">>102\nweaboo scum git out\n"  },
-	{ id: "105", body: ">>102\nweaboo scum git out\n"  },
-	{ id: "107", body: ">>102\nweaboo scum git out\n"  },
-];
+// exports
+root.intfmain = {
+	buildThread: buildThread,
+	init: function() {
+		initPostTempl();
+	},
+}
 
 var postdb = {};
+function getPost(id) { return postdb[id] }
 
 var lib = intf.create({
 	newNode: newPostNode,
 	getPost: getPost,
 	postvisit: function(postmap) {
+		// TODO: Replace super magical string literals
 		if (postmap.type == "parent") {
 			var post = postmap.targetPost;
 			post.node.scrollIntoView();
 		}
 	}
 });
-
-function getPost(id) { return postdb[id] }
-
-function init() {
-	initPostTempl();
-
-	buildThread(samplePosts, document.querySelector("#sample-posts"));
-
-	var dptPosts = dpt.posts.map(fromChan);
-	buildThread(dptPosts, document.querySelector("#chan-posts"));
-}
 
 function buildThread(posts, container) {
 	if (!container)
@@ -64,31 +49,31 @@ function buildThread(posts, container) {
 	}
 }
 
-function init2() {
-	initPostTempl();
-
-	var postIds = [];
-	posts.forEach(function(postData) {
-		var post = lib.newPost(postData);
-		postdb[post.id] = post;
-		postIds.push(post.id);
-		document.body.appendChild(post.node);
-	});
-
-	var prevSib = {};
-	for (var i = 0; i < postIds.length; i++) {
-		var prev = getPost(postIds[i-1]);
-		var post = getPost(postIds[i]);
-		var next = getPost(postIds[i+1]);
-
-		post.norder.prev = prev;
-		post.norder.next = next;
-
-		linkToParentNodes(post)
-		linkSiblings(prevSib, post);
-
-	}
-}
+//function init2() {
+//	initPostTempl();
+//
+//	var postIds = [];
+//	posts.forEach(function(postData) {
+//		var post = lib.newPost(postData);
+//		postdb[post.id] = post;
+//		postIds.push(post.id);
+//		document.body.appendChild(post.node);
+//	});
+//
+//	var prevSib = {};
+//	for (var i = 0; i < postIds.length; i++) {
+//		var prev = getPost(postIds[i-1]);
+//		var post = getPost(postIds[i]);
+//		var next = getPost(postIds[i+1]);
+//
+//		post.norder.prev = prev;
+//		post.norder.next = next;
+//
+//		linkToParentNodes(post)
+//		linkSiblings(prevSib, post);
+//
+//	}
+//}
 
 function linkToParentNodes(post) {
 	post.parentIds.forEach(function(parentId) {
@@ -114,6 +99,7 @@ function linkSiblings(prevSib, post) {
 	});
 }
 
+var postTempl;
 function initPostTempl() {
 	postTempl = document.querySelector(".template .post");
 	postTempl.querySelector(".post-body").innerHTML = "";
@@ -218,36 +204,7 @@ function parsePostBody(postData, node) {
 	return parentIds;
 }
 
-var fromChan = (function() {
-	var compat = /<a .*>&gt;&gt;(.*)<\/a>/g;
-	var brpat = /<br>/g;
-	var quotepat = /<span class="quote">&gt;(.*)<\/span>/g
+})(this);
 
-	var decodeHTML = (function() {
-		var node = document.createElement("div");
-		return function(s) {
-			node.innerHTML = s;
-			//console.assert(node.childNodes.length <= 1);
-			if (node.childNodes.length > 0) {
-				var v = node.childNodes[0].nodeValue;
-				if (v)
-					return v;
-			}
-			return s;
-		}
-	})();
-
-	return function (data) {
-		var body = data.com.replace(compat, function(_, id) { return ">>"+id; });
-		body = body.replace(brpat, "\n");
-		body = body.replace(quotepat, function(_, quote) { return ">"+quote });
-		return {
-			id: data.no,
-			body: decodeHTML(body),
-		}
-	}
-})();
-
-})();
 
 
