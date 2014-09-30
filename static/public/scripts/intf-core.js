@@ -321,9 +321,10 @@
 		}
 	}
 
-	// Issues:
+	// TODO::
 	// - showing of pages
 	// - make pages cyclic
+	// - highlight target of childlink
 
 })(this)
 

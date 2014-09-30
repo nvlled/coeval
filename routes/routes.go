@@ -28,11 +28,13 @@ var routeDef = def.Route(
 		"/admin", ct.Admin, "admin",
 		def.Hooks(ct.AttachUser),
 		def.Guards(ct.RequireAdmin),
+
 		def.SRoute("/board/create",
 		def.Ts{
 			group(GET,	def.H(ct.BoardCreate)),
 			group(POST, def.H(ct.SubmitBoardCreate)),
 		}, "board-create"),
+
 		//def.SRoute("/board/create", group(GET,	def.H(ct.BoardCreate)),       "board-create"),
 		//def.SRoute("/board/create", group(POST, def.H(ct.SubmitBoardCreate)), "board-submit-create"),
 
@@ -57,6 +59,9 @@ var routeDef = def.Route(
 			),
 		),
 	),
+
+	def.SRoute("/public", ct.ServeStatic, "serve-static"),
+	def.SRoute("/4chan/{bid}/{tid}", ct.ChanThread, "chan-thread"),
 )
 
 var routes *mux.Router

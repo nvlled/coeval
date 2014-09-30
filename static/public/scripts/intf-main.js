@@ -1,4 +1,4 @@
-
+(function() {
 var postTempl;
 
 this.addEventListener("load", init)
@@ -246,6 +246,7 @@ var fromChan = (function() {
 			body: decodeHTML(body),
 		}
 	}
+})();
 
 })();
 

@@ -107,6 +107,11 @@ func PostReply(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "post reply")
 }
 
+var fileServer = http.StripPrefix("/public", http.FileServer(http.Dir("static/public")))
+func ServeStatic(w http.ResponseWriter, r *http.Request) {
+	fileServer.ServeHTTP(w, r)
+}
+
 func setData(r *http.Request, data rend.Data) rend.Data {
 	return sesion.Merge(r, data)
 }
@@ -124,6 +129,9 @@ func readInt(n string, defVal int) int {
 	}
 	return x
 }
+
+
+
 
 
 
