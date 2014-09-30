@@ -60,6 +60,8 @@
 					parentIds: t.parentIds,
 					prevSib:   {},
 					nextSib:   {},
+					firstchild: null,
+					lastchild:  null,
 					// I relied too much on linked lists
 					// Fix: Add some structure
 				}
@@ -160,6 +162,7 @@
 	function attachSiblings(parent, post) {
 		var post1 = parent;
 		var post2 = post;
+		var start = post2;
 		console.log("**attaching siblings", post1.id, "->", post2.id);
 
 		var i = 0;
@@ -171,10 +174,10 @@
 			setNextPost(post1, post2);
 			post2.prevpost = post1;
 			post1 = post2;
-			if (!post2.nextSib[parent.id])
-				break;
 			post2 = post2.nextSib[parent.id];
 			i++;
+			if (start == post2)
+				break;
 		}
 		parent.page.start = post;
 		parent.page.end = post2;

@@ -10,6 +10,7 @@
 
 	var postdb = {};
 	function getPost(id) { return postdb[id] }
+	root.getPost = getPost;
 
 	var lib = intf.create({
 		newNode: newPostNode,
@@ -88,14 +89,20 @@
 	function linkSiblings(prevSib, post) {
 		var pids = post.parentIds;
 		pids.forEach(function(pid) {
+			var parent = getPost(pid) || {};
 			var post1 = prevSib[pid];
 			var post2 = post;
-			post.parentIds.forEach(function(pid) {
-				if (post1)
-					post1.nextSib[pid] = post2;
-				post2.prevSib[pid] = post1;
-				prevSib[pid] = post2;
-			});
+
+			if (post1)
+				post1.nextSib[pid] = post2;
+			else
+				parent.firstchild = post2;
+
+			post2.prevSib[pid] = post1;
+			post2.nextSib[pid] = parent.firstchild; // create circular list
+
+			prevSib[pid] = post2;
+			parent.lastchild = post2;
 		});
 	}
 
