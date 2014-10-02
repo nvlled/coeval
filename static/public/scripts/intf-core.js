@@ -112,9 +112,6 @@
 		}
 	}
 
-	root.insertAfter = insertAfter;
-	root.insertBefore = insertBefore;;
-
 	function insertAfter(insertedNode, node) {
 		var parentNode = node.parentNode;
 		parentNode.insertBefore(insertedNode, node.nextSibling)
@@ -134,7 +131,7 @@
 			return;
 
 		restoreSupthread(parent);
-		restoreSubthread(parent);
+		clearSubthread(parent);
 
 		if (!isIndented(post) && parent.nextpost == post)
 			attachSiblings(parent, post);
@@ -237,7 +234,6 @@
 		}
 	}
 
-	root.restoreNorder = restoreNorder;
 	function restoreNorder(post) {
 		console.log("**restoring norder", post);
 		var prev = post.norder.prev;
@@ -265,8 +261,7 @@
 		post.prevpost = null;
 	}
 
-	root.restoreSubthread = restoreSubthread;
-	function restoreSubthread(post) {
+	function clearSubthread(post) {
 		post = post.nextpost;
 		// restore subthreads to normal order
 		while(post) {
