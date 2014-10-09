@@ -15,7 +15,6 @@
 		opts = opts || {};
 
 		this.newNode = opts.newNode;
-		this.postvisit = opts.postvisit;
 
 		if (typeof opts.getPost === "function")
 			this.getPost = opts.getPost;
@@ -87,8 +86,6 @@
 		return function() {
 			var postmap = this.mapPostId(postlink);
 			this.visitLink(postmap);
-			if (postvisit)
-				postvisit(postmap);
 			return false;
 		}
 	}
@@ -206,6 +203,7 @@
 			case "parent" : this.visitParent(postlink); break;
 			case "child"  : this.visitChild(postlink); break;
 		}
+		this.hook("visitLink", postlink);
 	}
 
 	M.nextPage = function(post) {
