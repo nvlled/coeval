@@ -23,7 +23,7 @@
 		if (opts.parsePostIds )
 			this.parsePostIds = opts.parsePostIds;
 
-		this.events = [];
+		this.hooks = [];
 		this.lastCreatedPost = null;
 		this.prevChildId = {};
 	}
@@ -141,15 +141,22 @@
 		this.undent(parent);
 	}
 
+	M.relocateAfter = function(post, dest) {
+		this.setNextPost(dest, post);
+		this.setPrevPost(post, dest);
+		this.hooks.relocateAfter(post2, post1);
+	}
+
 	M.attachSubthread = function(parent, post) {
 		var post1 = parent;
 		var post2 = post;
 		console.log("**attaching subthread", post1.id, "->", post2.id);
 
 		while (post2) {
-			this.insertAfter(post2.node, post1.node);
-			this.setNextPost(post1, post2);
-			post2.prevpost = post1;
+			//this.insertAfter(post2.node, post1.node);
+			//this.setNextPost(post1, post2);
+			//post2.prevpost = post1;
+			this.relocateAfter(post2, post1);
 			post1 = post2;
 			post2 = post2.nextpost;
 		}
@@ -165,10 +172,12 @@
 		while (i < PAGE_SIZE) {
 			// Post in pages are always indented
 			this.indent(post2);
-			this.insertAfter(post2.node, post1.node);
 
-			this.setNextPost(post1, post2);
-			post2.prevpost = post1;
+			this.relocateAfter(post2, post1);
+			//this.insertAfter(post2.node, post1.node);
+			//this.setNextPost(post1, post2);
+			//post2.prevpost = post1;
+
 			post1 = post2;
 			post2 = post2.nextSib[parent.id];
 			i++;
@@ -233,27 +242,30 @@
 
 	M.restoreNorder = function(post) {
 		console.log("**restoring norder", post);
-		var prev = post.norder.prev;
-		var next = post.norder.next;
-		while(true) {
-			if (prev) {
-				if (this.inNorder(prev)) {
-					this.insertAfter(post.node, prev.node);
-					break;
-				}
-				prev = prev.norder.prev;
-			} else if (next) {
-				next = next.norder.next;
-				if (this.inNorder(next)) {
-					this.insertBefore(post.node, next.node);
-					break;
-				}
-			} else {
-				var node = post.node;
-				this.appendChild(node.parentNode, node);
-				break;
-			}
-		}
+
+		 this.hooks.restoreNorder(post);
+		 //var prev = post.norder.prev;
+		 //var next = post.norder.next;
+		//while(true) {
+		//	if (prev) {
+		//		if (this.inNorder(prev)) {
+		//			this.insertAfter(post.node, prev.node);
+		//			break;
+		//		}
+		//		prev = prev.norder.prev;
+		//	} else if (next) {
+		//		next = next.norder.next;
+		//		if (this.inNorder(next)) {
+		//			this.insertBefore(post.node, next.node);
+		//			break;
+		//		}
+		//	} else {
+		//		var node = post.node;
+		//		this.appendChild(node.parentNode, node);
+		//		break;
+		//	}
+		//}
+
 		this.setNextPost(post, null);
 		post.prevpost = null;
 	}
@@ -287,11 +299,17 @@
 
 	M.setNextPost = function(post, next) {
 		post.nextpost = next;
-		if (next != null) {
-			post.node.classList.add("subthread");
-		} else {
-			post.node.classList.remove("subthread");
-		}
+		this.hooks.setNextPost(post, next);
+		//if (next != null) {
+		//	post.node.classList.add("subthread");
+		//} else {
+		//	post.node.classList.remove("subthread");
+		//}
+	}
+
+	M.setPrevPost = function(post, prev) {
+		post.prevpost = prev;
+		this.hooks.setPrevPost(post, prev);
 	}
 
 	M.inNorder = function(post) /*bool*/ {
@@ -303,13 +321,15 @@
 	}
 
 	M.undent = function(post) {
-		post.node.classList.remove("indented");
 		post.indented = false;
+		//post.node.classList.remove("indented");
+		this.hooks.undent(post);
 	}
 
 	M.indent = function(post) {
-		post.node.classList.add("indented");
 		post.indented = true;
+		//post.node.classList.add("indented");
+		this.hooks.indent(post);
 	}
 
 	root.printSubthread = function(post) {
@@ -325,6 +345,8 @@
 	// - highlight target of childlink
 
 })(this)
+
+
 
 
 
