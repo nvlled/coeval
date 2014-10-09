@@ -23,7 +23,7 @@
 		if (opts.parsePostIds )
 			this.parsePostIds = opts.parsePostIds;
 
-		this.hooks = [];
+		this.hooks = opts.hooks;
 		this.lastCreatedPost = null;
 		this.prevChildId = {};
 	}
@@ -32,6 +32,13 @@
 
 	M.newModule = function(opts) {
 		return new Module(opts);
+	}
+
+	M.hook = function(name /*, args... */) {
+		var args = Array.prototype.slice.call(arguments, 1);
+		var fn = this.hooks[name];
+		if (typeof fn === "function")
+			fn.apply(null, args);
 	}
 
 	M.newPost = function(data) {
@@ -144,7 +151,7 @@
 	M.relocateAfter = function(post, dest) {
 		this.setNextPost(dest, post);
 		this.setPrevPost(post, dest);
-		this.hooks.relocateAfter(post2, post1);
+		this.hook("relocateAfter", post2, post1);
 	}
 
 	M.attachSubthread = function(parent, post) {
@@ -243,7 +250,7 @@
 	M.restoreNorder = function(post) {
 		console.log("**restoring norder", post);
 
-		 this.hooks.restoreNorder(post);
+		 this.hook("restoreNorder", post);
 		 //var prev = post.norder.prev;
 		 //var next = post.norder.next;
 		//while(true) {
@@ -299,7 +306,7 @@
 
 	M.setNextPost = function(post, next) {
 		post.nextpost = next;
-		this.hooks.setNextPost(post, next);
+		this.hook("setNextPost", post, next);
 		//if (next != null) {
 		//	post.node.classList.add("subthread");
 		//} else {
@@ -309,7 +316,7 @@
 
 	M.setPrevPost = function(post, prev) {
 		post.prevpost = prev;
-		this.hooks.setPrevPost(post, prev);
+		this.hook("setPrevPost", post, prev);
 	}
 
 	M.inNorder = function(post) /*bool*/ {
@@ -323,13 +330,13 @@
 	M.undent = function(post) {
 		post.indented = false;
 		//post.node.classList.remove("indented");
-		this.hooks.undent(post);
+		this.hook("undent", post);
 	}
 
 	M.indent = function(post) {
 		post.indented = true;
 		//post.node.classList.add("indented");
-		this.hooks.indent(post);
+		this.hook("indent", post);
 	}
 
 	root.printSubthread = function(post) {
