@@ -19,9 +19,11 @@
 
 		this.newNode = opts.newNode;
 		this.postvisit = opts.postvisit;
-		this.parsePostIds = opts.parsePostIds;
-		this.events = [];
 
+		if (opts.parsePostIds )
+			this.parsePostIds = opts.parsePostIds;
+
+		this.events = [];
 		this.lastCreatedPost = null;
 		this.prevChildId = {};
 	}
@@ -45,7 +47,7 @@
 			nextpost:  null,
 			prevpost:  null,
 			indented:  false,
-			parentIds: t.parentIds,
+			parentIds: this.parsePostIds(data.body),
 			prevSib:   {},
 			nextSib:   {},
 			firstchild: null,
@@ -54,6 +56,15 @@
 			// Fix: Add some structure
 		}
 	}
+
+	M.parsePostIds = (function() {
+		var pat = />>\d+/g;
+		return function (text) {
+			text.match(pat).map(function(s) {
+				return s.slice(2);
+			});
+		}
+	})();
 
 	M.createLinkHandler = function(postlink) {
 		return function() {
@@ -314,7 +325,6 @@
 	// - highlight target of childlink
 
 })(this)
-
 
 
 
