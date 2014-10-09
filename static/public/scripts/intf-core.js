@@ -14,13 +14,15 @@
 	function Module(opts) {
 		opts = opts || {};
 
-		// default to using own's modules postdb
-		this.getPost = opts.getPost;
-
 		this.newNode = opts.newNode;
 		this.postvisit = opts.postvisit;
 
-		if (opts.parsePostIds )
+		if (typeof opts.getPost === "function")
+			this.getPost = opts.getPost;
+		else
+			this._defaultDB = {};
+
+		if (typeof opts.parsePostIds === "function")
 			this.parsePostIds = opts.parsePostIds;
 
 		this.hooks = opts.hooks;
@@ -29,6 +31,10 @@
 	}
 
 	var M = Module.prototype;
+
+	M.getPost = function(id) {
+		return this._defaultDB[id];
+	}
 
 	M.newModule = function(opts) {
 		return new Module(opts);
@@ -45,7 +51,7 @@
 		// TODO: rename newNode
 		var t = this.newNode(data);
 		console.assert(newNode, "need a node creator");
-		return {
+		var post = {
 			id:		   data.id,
 			node:	   t.node,
 			norder:    {next:  null, prev: null},
@@ -62,6 +68,10 @@
 			// I relied too much on linked lists
 			// Fix: Add some structure
 		}
+		if (this._defaultDB)
+			this._defaultDB[post.id] = post;
+
+		return post;
 	}
 
 	M.parsePostIds = (function() {
