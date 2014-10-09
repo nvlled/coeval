@@ -12,17 +12,58 @@
 	function getPost(id) { return postdb[id] }
 	root.getPost = getPost;
 
-	var lib = intf.create({
+	intf = intf.newModule({
 		newNode: newPostNode,
 		getPost: getPost,
-		postvisit: function(postmap) {
-			// TODO: Replace super magical string literals
-			if (postmap.type == "parent") {
-				var post = postmap.targetPost;
+		hooks: intfHooks,
+	});
+
+	var intfHooks = {
+		visitLink: function(postlink) {
+			if (postlink.type == "parent") {
+				var post = postlink.targetPost;
 				post.node.scrollIntoView();
 			}
-		}
-	});
+		},
+
+		undent: function() {
+			post.node.classList.remove("indented");
+		},
+
+		indent: function() {
+			post.node.classList.add("indented");
+		},
+
+		relocateAfter: function(post, dest) {
+			insertAfter(post.node, dest.node);
+			post.node.classList.add("subthread");
+		},
+
+		restoreNorder: function(post) {
+			var prev = post.norder.prev;
+			var next = post.norder.next;
+			while(true) {
+				if (prev) {
+					if (this.inNorder(prev)) {
+						insertAfter(post.node, prev.node);
+						break;
+					}
+					prev = prev.norder.prev;
+				} else if (next) {
+					next = next.norder.next;
+					if (this.inNorder(next)) {
+						insertBefore(post.node, next.node);
+						break;
+					}
+				} else {
+					var node = post.node;
+					appendChild(node.parentNode, node);
+					break;
+				}
+			}
+			post.node.classList.remove("subthread");
+		},
+	}
 
 	function buildThread(posts, container) {
 		if (!container)
@@ -30,7 +71,7 @@
 
 		var postIds = [];
 		posts.forEach(function(postData) {
-			var post = lib.newPost(postData);
+			var post = intf.newPost(postData);
 			postdb[post.id] = post;
 			postIds.push(post.id);
 			container.appendChild(post.node);
@@ -89,7 +130,7 @@
 
 	function addChildlink(postNode, postlink) {
 		var node = createPostLinkNode(postlink.targetId, PlinkType.CHILD);
-		node.onclick = lib.createLinkHandler(postlink);
+		node.onclick = intf.createLinkHandler(postlink);
 		var replies = postNode.querySelector(".post-replies");
 		replies.appendChild(node);
 	}
@@ -169,7 +210,7 @@
 				var postlinkNode = createPostLinkNode(parentId, PlinkType.PARENT);
 
 				var postlink = intf.parentlink(parentId, postData.id);
-				postlinkNode.onclick = lib.createLinkHandler(postlink);
+				postlinkNode.onclick = intf.createLinkHandler(postlink);
 
 				parentIds.push(parentId)
 
@@ -185,5 +226,20 @@
 		return parentIds;
 	}
 
+	function insertAfter(insertedNode, node) {
+		var parentNode = node.parentNode;
+		parentNode.insertBefore(insertedNode, node.nextSibling)
+	}
+
+	function insertBefore(insertedNode, node) {
+		var parentNode = node.parentNode;
+		parentNode.insertBefore(insertedNode, node);
+	}
+
+	function appendChild(parent, node) {
+		parent.appendChild(node);
+	}
+
 })(this);
+
 
