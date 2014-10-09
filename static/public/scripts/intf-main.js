@@ -50,32 +50,6 @@
 		}
 	}
 
-	//function init2() {
-	//	initPostTempl();
-	//
-	//	var postIds = [];
-	//	posts.forEach(function(postData) {
-	//		var post = lib.newPost(postData);
-	//		postdb[post.id] = post;
-	//		postIds.push(post.id);
-	//		document.body.appendChild(post.node);
-	//	});
-	//
-	//	var prevSib = {};
-	//	for (var i = 0; i < postIds.length; i++) {
-	//		var prev = getPost(postIds[i-1]);
-	//		var post = getPost(postIds[i]);
-	//		var next = getPost(postIds[i+1]);
-	//
-	//		post.norder.prev = prev;
-	//		post.norder.next = next;
-	//
-	//		linkToParentNodes(post)
-	//		linkSiblings(prevSib, post);
-	//
-	//	}
-	//}
-
 	function linkToParentNodes(post) {
 		post.parentIds.forEach(function(parentId) {
 			var parentNode = document.getElementById("p"+parentId);
@@ -212,6 +186,4 @@
 	}
 
 })(this);
-
-
 
