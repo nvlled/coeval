@@ -72,6 +72,8 @@
 		var postIds = [];
 		posts.forEach(function(postData) {
 			var post = intf.newPost(postData);
+			post.node = newPostNode;
+
 			postdb[post.id] = post;
 			postIds.push(post.id);
 			container.appendChild(post.node);

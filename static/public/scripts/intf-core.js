@@ -14,8 +14,6 @@
 	function Module(opts) {
 		opts = opts || {};
 
-		this.newNode = opts.newNode;
-
 		if (typeof opts.getPost === "function")
 			this.getPost = opts.getPost;
 		else
@@ -47,12 +45,8 @@
 	}
 
 	M.newPost = function(data) {
-		// TODO: rename newNode
-		var t = this.newNode(data);
-		console.assert(newNode, "need a node creator");
 		var post = {
 			id:		   data.id,
-			node:	   t.node,
 			norder:    {next:  null, prev: null},
 			sibling:   {next:  null, prev: null},
 			page:	   {start: null, end:  null},
