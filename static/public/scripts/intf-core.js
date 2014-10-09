@@ -54,17 +54,47 @@
 			prevpost:  null,
 			indented:  false,
 			parentIds: this.parsePostIds(data.body),
-			prevSib:   {},
-			nextSib:   {},
+			prevSib:   {/* parentId -> post (i.e. sibling) */},
+			nextSib:   {/* (same as prevSib) */},
 			firstchild: null,
 			lastchild:  null,
 			// I relied too much on linked lists
 			// Fix: Add some structure
 		}
+
+		post.norder.prevpost = prevpost;
+		prevpost.norder.next = post;
+		this.lastCreatedPost = post;
+		this.linksToPosts(post);
+
 		if (this._defaultDB)
 			this._defaultDB[post.id] = post;
 
 		return post;
+	}
+
+	M.linksToPosts = function(post) {
+		var pids = post.parentIds;
+		pids.forEach(function(pid) {
+			// Just assign a blank object
+			// to avoid checking for nulls
+			var parent = this.getPost(pid) || {};
+
+			var post1 = this.getPost(this.prevChildId[pid]);
+			var post2 = post;
+
+			if (post1)
+				post1.nextSib[pid] = post2;
+			else
+				parent.firstchild = post2;
+
+			post2.prevSib[pid] = post1;
+			post2.nextSib[pid] = parent.firstchild; // create circular list
+
+			this.prevChildId[pid] = post2.id;
+			parent.lastchild = post2;
+			parent.numReplies++;
+		}.bind(this));
 	}
 
 	M.parsePostIds = (function() {
