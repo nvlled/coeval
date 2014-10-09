@@ -38,7 +38,7 @@
 		var args = Array.prototype.slice.call(arguments, 1);
 		var fn = this.hooks[name];
 		if (typeof fn === "function")
-			fn.apply(null, args);
+			fn.apply(this, args);
 	}
 
 	M.newPost = function(data) {
@@ -116,20 +116,6 @@
 		}
 	}
 
-	M.insertAfter = function(insertedNode, node) {
-		var parentNode = node.parentNode;
-		parentNode.insertBefore(insertedNode, node.nextSibling)
-	}
-
-	M.insertBefore = function(insertedNode, node) {
-		var parentNode = node.parentNode;
-		parentNode.insertBefore(insertedNode, node);
-	}
-
-	M.appendChild = function(parent, node) {
-		parent.appendChild(node);
-	}
-
 	M.attachPosts = function(linktype, parent, post) {
 		if (parent.nextpost == post && linktype == "parent")
 			return;
@@ -160,9 +146,6 @@
 		console.log("**attaching subthread", post1.id, "->", post2.id);
 
 		while (post2) {
-			//this.insertAfter(post2.node, post1.node);
-			//this.setNextPost(post1, post2);
-			//post2.prevpost = post1;
 			this.relocateAfter(post2, post1);
 			post1 = post2;
 			post2 = post2.nextpost;
@@ -179,11 +162,7 @@
 		while (i < PAGE_SIZE) {
 			// Post in pages are always indented
 			this.indent(post2);
-
 			this.relocateAfter(post2, post1);
-			//this.insertAfter(post2.node, post1.node);
-			//this.setNextPost(post1, post2);
-			//post2.prevpost = post1;
 
 			post1 = post2;
 			post2 = post2.nextSib[parent.id];
@@ -251,28 +230,6 @@
 		console.log("**restoring norder", post);
 
 		 this.hook("restoreNorder", post);
-		 //var prev = post.norder.prev;
-		 //var next = post.norder.next;
-		//while(true) {
-		//	if (prev) {
-		//		if (this.inNorder(prev)) {
-		//			this.insertAfter(post.node, prev.node);
-		//			break;
-		//		}
-		//		prev = prev.norder.prev;
-		//	} else if (next) {
-		//		next = next.norder.next;
-		//		if (this.inNorder(next)) {
-		//			this.insertBefore(post.node, next.node);
-		//			break;
-		//		}
-		//	} else {
-		//		var node = post.node;
-		//		this.appendChild(node.parentNode, node);
-		//		break;
-		//	}
-		//}
-
 		this.setNextPost(post, null);
 		post.prevpost = null;
 	}
@@ -307,11 +264,6 @@
 	M.setNextPost = function(post, next) {
 		post.nextpost = next;
 		this.hook("setNextPost", post, next);
-		//if (next != null) {
-		//	post.node.classList.add("subthread");
-		//} else {
-		//	post.node.classList.remove("subthread");
-		//}
 	}
 
 	M.setPrevPost = function(post, prev) {
@@ -329,13 +281,11 @@
 
 	M.undent = function(post) {
 		post.indented = false;
-		//post.node.classList.remove("indented");
 		this.hook("undent", post);
 	}
 
 	M.indent = function(post) {
 		post.indented = true;
-		//post.node.classList.add("indented");
 		this.hook("indent", post);
 	}
 
@@ -352,6 +302,7 @@
 	// - highlight target of childlink
 
 })(this)
+
 
 
 
