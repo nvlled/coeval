@@ -69,28 +69,17 @@
 		if (!container)
 			container = document.body;
 
-		var postIds = [];
 		posts.forEach(function(postData) {
 			var post = intf.newPost(postData);
-			post.node = newPostNode;
+			post.node = newPostNode(data);
 
 			postdb[post.id] = post;
-			postIds.push(post.id);
 			container.appendChild(post.node);
-		});
 
-		var prevSib = {};
-		for (var i = 0; i < postIds.length; i++) {
-			var prev = getPost(postIds[i-1]);
-			var post = getPost(postIds[i]);
-			var next = getPost(postIds[i+1]);
-
-			post.norder.prev = prev;
-			post.norder.next = next;
-
+			// Assumes posts are created in order
+			// E.g. all parents are already created before this one
 			linkToParentNodes(post)
-			linkSiblings(prevSib, post);
-		}
+		});
 	}
 
 	function linkToParentNodes(post) {
@@ -100,26 +89,6 @@
 			if (parentNode) {
 				addChildlink(parentNode, postlink);
 			}
-		});
-	}
-
-	function linkSiblings(prevSib, post) {
-		var pids = post.parentIds;
-		pids.forEach(function(pid) {
-			var parent = getPost(pid) || {};
-			var post1 = prevSib[pid];
-			var post2 = post;
-
-			if (post1)
-				post1.nextSib[pid] = post2;
-			else
-				parent.firstchild = post2;
-
-			post2.prevSib[pid] = post1;
-			post2.nextSib[pid] = parent.firstchild; // create circular list
-
-			prevSib[pid] = post2;
-			parent.lastchild = post2;
 		});
 	}
 
@@ -243,5 +212,4 @@
 	}
 
 })(this);
-
 
