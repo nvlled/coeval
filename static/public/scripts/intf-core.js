@@ -80,26 +80,26 @@
 		pids.forEach(function(pid) {
 			// Just assign a blank object
 			// to avoid checking for nulls
-			var parent = this.getPost(pid) || {
-				firstchild: {},
-			};
+			var parent = this.getPost(pid);
+			console.assert(parent);
 
 			var post1 = this.getPost(this.prevChildId[pid]);
 			var post2 = post;
 
-			if (post1)
+			if (post1) {
 				this.setNextSib(post1, pid, post2);
-			else
+				this.setPrevSib(post2, pid, post1);
+			} else if (parent) {
 				parent.firstchild = post2;
+				parent.lastchild = post2;
+				parent.numReplies++;
+			}
+			console.assert(parent.firstchild);
 
 			this.setNextSib(post2, pid, parent.firstchild);
-
-			if (post1)
-				this.setPrevSib(post2, pid, post1);
+			this.setPrevSib(parent.firstchild, pid, post2);
 
 			this.prevChildId[pid] = post2.id;
-			parent.lastchild = post2;
-			parent.numReplies++;
 		}.bind(this));
 	}
 
