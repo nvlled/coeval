@@ -49,13 +49,11 @@
 			id:        data.id,
 			body:	   data.body,
 			norder:    {nextId:  null, prevId: null},
-			page:	   {start: null, end:  null},
+			sib:       {nextId:  {},   prevId: {}},
 			nextpostId:  null,
 			prevpostId:  null,
 			indented:  false,
 			parentIds: this.parsePostIds(data.body),
-			prevSib:   {/* parentId -> post (i.e. sibling) */},
-			nextSib:   {/* (same as prevSib) */},
 			firstchild: null,
 			lastchild:  null,
 			// I relied too much on linked lists
@@ -64,8 +62,6 @@
 
 		var prevpost = this.lastCreatedPost;
 		if (prevpost) {
-			//post.norder.prevpost = prevpost;
-			//prevpost.norder.next = post;
 			this.setPrevNorder(post, prevpost);
 			this.setNextNorder(prevpost, post);
 		}
@@ -84,18 +80,22 @@
 		pids.forEach(function(pid) {
 			// Just assign a blank object
 			// to avoid checking for nulls
-			var parent = this.getPost(pid) || {};
+			var parent = this.getPost(pid) || {
+				firstchild: {},
+			};
 
 			var post1 = this.getPost(this.prevChildId[pid]);
 			var post2 = post;
 
 			if (post1)
-				post1.nextSib[pid] = post2;
+				this.setNextSib(post1, pid, post2);
 			else
 				parent.firstchild = post2;
 
-			post2.prevSib[pid] = post1;
-			post2.nextSib[pid] = parent.firstchild; // create circular list
+			this.setNextSib(post2, pid, parent.firstchild);
+
+			if (post1)
+				this.setPrevSib(post2, pid, post1);
 
 			this.prevChildId[pid] = post2.id;
 			parent.lastchild = post2;
@@ -127,7 +127,7 @@
 		var posts = [];
 		while(post) {
 			posts.push(post);
-			post = post.nextSib[pid];
+			post = this.nextsib(post, pid);
 		}
 		return posts;
 	}
@@ -205,7 +205,7 @@
 			this.relocateAfter(post2, post1);
 
 			post1 = post2;
-			post2 = post2.nextSib[parent.id];
+			post2 = this.nextsib(post2, parent.id);
 			i++;
 			if (start == post2)
 				break;
@@ -318,6 +318,14 @@
 		return this.getPost(post.norder.prevId);
 	}
 
+	M.nextsib = function(post, pid) {
+		return this.getPost(post.sib.nextId[pid]);
+	}
+
+	M.prevsib = function(post, pid) {
+		return this.getPost(post.sib.prevId[pid]);
+	}
+
 	M.setNextPost = function(post, next) {
 		post.nextpostId = next.id;
 		this.hook("setNextPost", post, next);
@@ -336,6 +344,14 @@
 	M.setPrevNorder = function(post, prev) {
 		post.norder.prevId = prev.id;
 		this.hook("setPrevNorder", post, prev);
+	}
+
+	M.setNextSib = function(post, pid, next) {
+		post.sib.nextId[pid] = next.id;
+	}
+
+	M.setPrevSib = function(post, pid, prev) {
+		post.sib.prevId[pid] = prev.id;
 	}
 
 	M.inNorder = function(post) /*bool*/ {
@@ -369,4 +385,10 @@
 	// - highlight target of childlink
 
 })(this)
+
+
+
+
+
+
 
