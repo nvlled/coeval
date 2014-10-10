@@ -14,10 +14,14 @@
 	function Module(opts) {
 		opts = opts || {};
 
-		if (typeof opts.getPost === "function")
-			this.getPost = opts.getPost;
-		else
-			this._defaultDB = {};
+		var postdb = opts.db;
+		if (postdb) {
+			console.assert(typeof postdb.get==="function", "postdb interface");
+			console.assert(typeof postdb.set==="function", "postdb interface");
+			this.postdb = postdb;
+		} else {
+			this.postdb = new PostDB();
+		}
 
 		if (typeof opts.parsePostIds === "function")
 			this.parsePostIds = opts.parsePostIds;
@@ -30,7 +34,7 @@
 	var M = Module.prototype;
 
 	M.getPost = function(id) {
-		return this._defaultDB[id];
+		return this.postdb.get(id);
 	}
 
 	M.newModule = function(opts) {
@@ -68,9 +72,7 @@
 
 		this.lastCreatedPost = post;
 		this.linksToPosts(post);
-
-		if (this._defaultDB)
-			this._defaultDB[post.id] = post;
+		this.postdb.set(post.id, post);
 
 		return post;
 	}
@@ -378,6 +380,17 @@
 			post = post.nextpost();
 		}
 	}
+
+	function PostDB() {
+		this._db = {};
+	}
+	PostDB.prototype.get = function(id) {
+		return this._db[id];
+	}
+	PostDB.prototype.set = function(id, post) {
+		this._db[id] = post;
+	}
+
 
 	// TODO::
 	// - showing of pages
