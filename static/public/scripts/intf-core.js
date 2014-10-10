@@ -22,7 +22,7 @@
 		if (typeof opts.parsePostIds === "function")
 			this.parsePostIds = opts.parsePostIds;
 
-		this.hooks = opts.hooks;
+		this.hooks = opts.hooks || {};
 		this.lastCreatedPost = null;
 		this.prevChildId = {};
 	}
@@ -49,7 +49,6 @@
 			id:        data.id,
 			body:	   data.body,
 			norder:    {nextId:  null, prevId: null},
-			sibling:   {next:  null, prev: null},
 			page:	   {start: null, end:  null},
 			nextpostId:  null,
 			prevpostId:  null,
@@ -133,7 +132,7 @@
 		return posts;
 	}
 
-	M.mapPostId = function(postlink, getPost) {
+	M.mapPostId = function(postlink) {
 		return {
 			type:		postlink.type,
 			targetPost: getPost(postlink.targetId),
