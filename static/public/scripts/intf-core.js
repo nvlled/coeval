@@ -20,7 +20,7 @@
 			console.assert(typeof postdb.set==="function", "postdb interface");
 			this.postdb = postdb;
 		} else {
-			this.postdb = new PostDB();
+			this.postdb = new PostDB(this);
 		}
 
 		if (typeof opts.parsePostIds === "function")
@@ -383,11 +383,15 @@
 	}
 
 	M.inNorder = function(post) /*bool*/ {
-		return post.nextpost() == null;
+		return this.nextpost(post) == null;
 	}
 
 	M.isIndented = function(post) /*bool*/ {
 		return post.indented;
+	}
+
+	M.isSubthreadRoot = function(post) /*bool*/ {
+		return !this.inNorder(post) && !this.prevpost(post);
 	}
 
 	M.undent = function(post) {
@@ -407,7 +411,8 @@
 		}
 	}
 
-	function PostDB() {
+	function PostDB(mod) {
+		this.mod = mod;
 		this._db = {};
 	}
 	PostDB.prototype.get = function(id) {
@@ -416,18 +421,30 @@
 	PostDB.prototype.set = function(id, post) {
 		this._db[id] = post;
 	}
+	PostDB.prototype.print = function(id, post) {
+		var posts = [];
+		for (var k in this._db)
+			posts.push(this._db[k]);
+		posts.sort(function(p1, p2) {
+			return parseInt(p1.id) > parseInt(p2.id);
+		});
 
+		var intf = this.mod;
+		for (var i in posts) {
+			var post = posts[i];
+			if (intf.inNorder(post))
+				console.log("-", post.id);
+			else if (intf.isSubthreadRoot(post)) {
+				console.log("|", post.id);
+			}
+		}
+	}
 
 	// TODO::
 	// - showing of pages
 	// - make pages cyclic
+	//
 	// - highlight target of childlink
 
 })(this)
-
-
-
-
-
-
 
