@@ -40,17 +40,17 @@
 		},
 
 		restoreNorder: function(post) {
-			var prev = post.norder.prev;
-			var next = post.norder.next;
+			var prev = post.nextnorder();
+			var next = post.prevnorder();
 			while(true) {
 				if (prev) {
 					if (this.inNorder(prev)) {
 						insertAfter(post.node, prev.node);
 						break;
 					}
-					prev = prev.norder.prev;
+					prev = prev.prevnorder();
 				} else if (next) {
-					next = next.norder.next;
+					next = next.nextnorder();
 					if (this.inNorder(next)) {
 						insertBefore(post.node, next.node);
 						break;

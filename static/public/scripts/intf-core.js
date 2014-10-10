@@ -48,11 +48,11 @@
 		var post = {
 			id:        data.id,
 			body:	   data.body,
-			norder:    {next:  null, prev: null},
+			norder:    {nextId:  null, prevId: null},
 			sibling:   {next:  null, prev: null},
 			page:	   {start: null, end:  null},
-			nextpost:  null,
-			prevpost:  null,
+			nextpostId:  null,
+			prevpostId:  null,
 			indented:  false,
 			parentIds: this.parsePostIds(data.body),
 			prevSib:   {/* parentId -> post (i.e. sibling) */},
@@ -65,8 +65,10 @@
 
 		var prevpost = this.lastCreatedPost;
 		if (prevpost) {
-			post.norder.prevpost = prevpost;
-			prevpost.norder.next = post;
+			//post.norder.prevpost = prevpost;
+			//prevpost.norder.next = post;
+			this.setPrevNorder(post, prevpost);
+			this.setNextNorder(prevpost, post);
 		}
 
 		this.lastCreatedPost = post;
@@ -156,13 +158,13 @@
 	}
 
 	M.attachPosts = function(linktype, parent, post) {
-		if (parent.nextpost == post && linktype == "parent")
+		if (parent.nextpost() == post && linktype == "parent")
 			return;
 
 		this.restoreSupthread(parent);
 		this.clearSubthread(parent);
 
-		if (!this.isIndented(post) && parent.nextpost == post)
+		if (!this.isIndented(post) && parent.nextpost() == post)
 			this.attachSiblings(parent, post);
 		else if (this.isIndented(post) || inNorder(post))
 			this.attachSiblings(parent, post);
@@ -187,7 +189,7 @@
 		while (post2) {
 			this.relocateAfter(post2, post1);
 			post1 = post2;
-			post2 = post2.nextpost;
+			post2 = post2.nextpost();
 		}
 	}
 
@@ -269,16 +271,16 @@
 	M.restoreNorder = function(post) {
 		console.log("**restoring norder", post);
 
-		 this.hook("restoreNorder", post);
+		this.hook("restoreNorder", post);
 		this.setNextPost(post, null);
-		post.prevpost = null;
+		this.setPrevPost(post, null);
 	}
 
 	M.clearSubthread = function(post) {
-		post = post.nextpost;
+		post = post.nextpost();
 		// restore subthreads to normal order
 		while(post) {
-			var next = post.nextpost;
+			var next = post.nextpost();
 			this.undent(post);
 			this.restoreNorder(post);
 			post = next;
@@ -288,31 +290,57 @@
 	M.restoreSupthread = function(post) {
 		var nextpost = post;
 		var prev;
-		post = post.prevpost;
+		post = post.prevpost();
 		while(post && this.isIndented(post)) {
-			prev = post.prevpost;
+			prev = post.prevpost();
 			this.undent(post);
 			this.restoreNorder(post);
 			post = prev;
 		}
 		if (prev) {
 			console.log("suppost", prev.id, "->", nextpost.id);
-			prev.nextpost = nextpost;
+			this.setNextPost(prev, nextpost);
 		}
 	}
 
+	M.nextpost = function(post) {
+		return this.getPost(post.nextpostId);
+	}
+
+	M.prevpost = function(post) {
+		return this.getPost(post.prevpostId);
+	}
+
+	M.nextnorder = function(post) {
+		return this.getPost(post.norder.nextId);
+	}
+
+	M.prevnorder = function(post) {
+		return this.getPost(post.norder.prevId);
+	}
+
 	M.setNextPost = function(post, next) {
-		post.nextpost = next;
+		post.nextpostId = next.id;
 		this.hook("setNextPost", post, next);
 	}
 
 	M.setPrevPost = function(post, prev) {
-		post.prevpost = prev;
+		post.postpostId = post.id;
 		this.hook("setPrevPost", post, prev);
 	}
 
+	M.setNextNorder = function(post, next) {
+		post.norder.nextId = next.id;
+		this.hook("setNextNorder", post, next);
+	}
+
+	M.setPrevNorder = function(post, prev) {
+		post.norder.prevId = prev.id;
+		this.hook("setPrevNorder", post, prev);
+	}
+
 	M.inNorder = function(post) /*bool*/ {
-		return post.nextpost == null;
+		return post.nextpost() == null;
 	}
 
 	M.isIndented = function(post) /*bool*/ {
@@ -332,7 +360,7 @@
 	root.printSubthread = function(post) {
 		while(post) {
 			console.log("subt>", post.id);
-			post = post.nextpost;
+			post = post.nextpost();
 		}
 	}
 
@@ -342,9 +370,4 @@
 	// - highlight target of childlink
 
 })(this)
-
-
-
-
-
 
