@@ -46,7 +46,8 @@
 
 	M.newPost = function(data) {
 		var post = {
-			id:		   data.id,
+			id:        data.id,
+			body:	   data.body,
 			norder:    {next:  null, prev: null},
 			sibling:   {next:  null, prev: null},
 			page:	   {start: null, end:  null},
@@ -62,8 +63,12 @@
 			// Fix: Add some structure
 		}
 
-		post.norder.prevpost = prevpost;
-		prevpost.norder.next = post;
+		var prevpost = this.lastCreatedPost;
+		if (prevpost) {
+			post.norder.prevpost = prevpost;
+			prevpost.norder.next = post;
+		}
+
 		this.lastCreatedPost = post;
 		this.linksToPosts(post);
 
@@ -100,8 +105,11 @@
 	M.parsePostIds = (function() {
 		var pat = />>\d+/g;
 		return function (text) {
-			text.match(pat).map(function(s) {
-				return s.slice(2);
+			var matches = text.match(pat);
+			if (!matches)
+				return [];
+			return matches.map(function(s) {
+				return s.slice(2); // remove trailing >>
 			});
 		}
 	})();
