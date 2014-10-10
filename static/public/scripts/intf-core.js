@@ -37,6 +37,30 @@
 		return this.postdb.get(id);
 	}
 
+	M.firstchild = function(post) {
+		return this.getPost(post.firstchildId);
+	}
+
+	M.children = function(post) {
+		var childs = [];
+		var child = this.firstchild(post);
+		var firstchild = child;
+		while (child) {
+			childs.push(child);
+			child = this.nextsib(child, post.id);
+			if (firstchild == child)
+				break;
+		}
+		return childs;
+	}
+
+	M.childrenIds = function(post) {
+		return this.children(post)
+			.map(function(post) {
+				return post.id;
+			})
+	}
+
 	M.newModule = function(opts) {
 		return new Module(opts);
 	}
@@ -58,8 +82,9 @@
 			prevpostId:  null,
 			indented:  false,
 			parentIds: this.parsePostIds(data.body),
-			firstchild: null,
-			lastchild:  null,
+			firstchildId: null,
+			lastchildId:  null,
+			numReplies: 0,
 			// I relied too much on linked lists
 			// Fix: Add some structure
 		}
@@ -71,8 +96,8 @@
 		}
 
 		this.lastCreatedPost = post;
-		this.linksToPosts(post);
 		this.postdb.set(post.id, post);
+		this.linksToPosts(post);
 
 		return post;
 	}
@@ -92,14 +117,15 @@
 				this.setNextSib(post1, pid, post2);
 				this.setPrevSib(post2, pid, post1);
 			} else if (parent) {
-				parent.firstchild = post2;
-				parent.lastchild = post2;
-				parent.numReplies++;
+				parent.firstchildId = post2.id;
+				parent.lastchildId = post2.id;
 			}
-			console.assert(parent.firstchild);
+			parent.numReplies++;
+			console.assert(parent.firstchildId);
 
-			this.setNextSib(post2, pid, parent.firstchild);
-			this.setPrevSib(parent.firstchild, pid, post2);
+			var firstchild = this.firstchild(parent);
+			this.setNextSib(post2, pid, firstchild);
+			this.setPrevSib(firstchild, pid, post2);
 
 			this.prevChildId[pid] = post2.id;
 		}.bind(this));
