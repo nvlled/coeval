@@ -78,6 +78,7 @@
 			body:	   data.body,
 			norder:    {nextId:  null, prevId: null},
 			sib:       {nextId:  {},   prevId: {}},
+			page:	   {start: null, end: null},
 			nextpostId:  null,
 			prevpostId:  null,
 			indented:  false,
@@ -193,7 +194,7 @@
 
 		if (!this.isIndented(post) && parent.nextpost() == post)
 			this.attachSiblings(parent, post);
-		else if (this.isIndented(post) || inNorder(post))
+		else if (this.isIndented(post) || this.inNorder(post))
 			this.attachSiblings(parent, post);
 		else
 			this.attachSubthread(parent, post);
@@ -205,7 +206,7 @@
 	M.relocateAfter = function(post, dest) {
 		this.setNextPost(dest, post);
 		this.setPrevPost(post, dest);
-		this.hook("relocateAfter", post2, post1);
+		this.hook("relocateAfter", post, dest);
 	}
 
 	M.attachSubthread = function(parent, post) {
@@ -246,7 +247,7 @@
 		console.log("**visiting parent", postlink)
 		var parent = postlink.targetPost;
 		var post = postlink.sourcePost;
-		this.attachPosts("parent", parent, post);
+		this.attachToParent("parent", post, parent);
 	}
 
 	M.visitChild = function(postlink) {
@@ -360,7 +361,7 @@
 	}
 
 	M.setPrevPost = function(post, prev) {
-		post.postpostId = post.id;
+		post.prevpostId = post.id;
 		this.hook("setPrevPost", post, prev);
 	}
 
