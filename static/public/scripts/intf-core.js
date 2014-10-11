@@ -433,11 +433,29 @@
 		for (var i in posts) {
 			var post = posts[i];
 			if (intf.inNorder(post))
-				console.log("-", post.id);
+				printPost("-", post);
 			else if (intf.isSubthreadRoot(post)) {
-				console.log("|", post.id);
+				var beg = "|";
+				if (intf.isIndented(post))
+					beg = "  " + beg;
+
+				printPost(beg, post);
 			}
 		}
+
+		function printPost(prefix, post) {
+			var len = (post.id+prefix).length;
+			console.log(prefix, post.id,
+						len > 5 ? "\t" : "\t\t",
+						"ind="+bin(intf.isIndented(post)),
+						"inn="+bin(intf.inNorder(post)),
+						"   ",
+						"prv="+post.prevpostId,
+						"nxt="+post.nextpostId
+					   );
+		}
+
+		function bin(bool) { return bool ? 1 : 0; }
 	}
 
 	// TODO::
@@ -447,4 +465,6 @@
 	// - highlight target of childlink
 
 })(this)
+
+
 
