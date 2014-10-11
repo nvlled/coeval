@@ -86,6 +86,7 @@
 			firstchildId: null,
 			lastchildId:  null,
 			numReplies: 0,
+			inNorder:   true,
 			// I relied too much on linked lists
 			// Fix: Add some structure
 		}
@@ -194,7 +195,7 @@
 
 		if (!this.isIndented(post) && parent.nextpost() == post)
 			this.attachSiblings(parent, post);
-		else if (this.isIndented(post) || this.inNorder(post))
+		else if (this.isIndented(post) || this.isInNorder(post))
 			this.attachSiblings(parent, post);
 		else
 			this.attachSubthread(parent, post);
@@ -207,6 +208,7 @@
 		this.setNextPost(dest, post);
 		this.setPrevPost(post, dest);
 		this.hook("relocateAfter", post, dest);
+		post.inNorder = false;
 	}
 
 	M.attachSubthread = function(parent, post) {
@@ -241,6 +243,13 @@
 		}
 		parent.page.start = post;
 		parent.page.end = post2;
+	}
+
+	M.attachToParent = function(post, parent) {
+		if (this.isInNorder(post)) {
+			this.attachSiblings(parent, post);
+		}
+		parent.inNorder = false;
 	}
 
 	M.visitParent = function(postlink) {
@@ -302,6 +311,7 @@
 		this.hook("restoreNorder", post);
 		this.setNextPost(post, null);
 		this.setPrevPost(post, null);
+		post.inNorder = true;
 	}
 
 	M.clearSubthread = function(post) {
@@ -383,8 +393,8 @@
 		post.sib.prevId[pid] = prev.id;
 	}
 
-	M.inNorder = function(post) /*bool*/ {
-		return this.nextpost(post) == null;
+	M.isInNorder = function(post) /*bool*/ {
+		return post.inNorder;
 	}
 
 	M.isIndented = function(post) /*bool*/ {
@@ -392,7 +402,7 @@
 	}
 
 	M.isSubthreadRoot = function(post) /*bool*/ {
-		return !this.inNorder(post) && !this.prevpost(post);
+		return !this.isInNorder(post) && !this.prevpost(post);
 	}
 
 	M.undent = function(post) {
@@ -433,7 +443,7 @@
 		var intf = this.mod;
 		for (var i in posts) {
 			var post = posts[i];
-			if (intf.inNorder(post))
+			if (intf.isInNorder(post))
 				printPost("-", post);
 			else if (intf.isSubthreadRoot(post)) {
 				var beg = "|";
@@ -449,7 +459,7 @@
 			console.log(prefix, post.id,
 						len > 5 ? "\t" : "\t\t",
 						"ind="+bin(intf.isIndented(post)),
-						"inn="+bin(intf.inNorder(post)),
+						"inn="+bin(intf.isInNorder(post)),
 						"   ",
 						"prv="+post.prevpostId,
 						"nxt="+post.nextpostId
