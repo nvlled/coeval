@@ -74,7 +74,7 @@
 
 	M.newPost = function(data) {
 		var post = {
-			id:        data.id,
+			id:        data.id.toString(),
 			body:	   data.body,
 			norder:    {nextId:  null, prevId: null},
 			sib:       {nextId:  {},   prevId: {}},
@@ -325,6 +325,20 @@
 		}
 	}
 
+	M.getSubthread = function(post) {
+		var subt = [];
+		while (post) {
+			subt.push(post);
+			post = this.nextpost(post);
+		}
+		return subt;
+	}
+
+	M.getSubthreadIds = function(post) {
+		return this.getSubthread(post)
+			.map(function(post) { return post.id });
+	}
+
 	M.restoreSupthread = function(post) {
 		var nextpost = post;
 		var prev;
@@ -403,6 +417,10 @@
 
 	M.isSubthreadRoot = function(post) /*bool*/ {
 		return !this.isInNorder(post) && !this.prevpost(post);
+	}
+
+	M.isChildOf = function(post, parent) /*bool*/ {
+		return post.parentIds.indexOf(parent.id) >= 0;
 	}
 
 	M.undent = function(post) {
