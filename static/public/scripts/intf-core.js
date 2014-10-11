@@ -246,6 +246,8 @@
 	}
 
 	M.attachToParent = function(post, parent) {
+		console.assert(this.isChildOf(post, parent),
+			"must attach");
 		if (this.isInNorder(post)) {
 			this.attachSiblings(parent, post);
 		}
@@ -464,11 +466,11 @@
 			if (intf.isInNorder(post))
 				printPost("-", post);
 			else if (intf.isSubthreadRoot(post)) {
-				var beg = "|";
-				if (intf.isIndented(post))
-					beg = "  " + beg;
-
-				printPost(beg, post);
+				printPost("|", post);
+				var subt = intf.getSubthread(post);
+				subt.slice(1).forEach(function(post) {
+					printPost("  |", post);
+				})
 			}
 		}
 
