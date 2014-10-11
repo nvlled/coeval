@@ -1,15 +1,6 @@
 var intf = require("../scripts/intf-core.js");
 var assert = require("assert");
 
-// TODO tests:
-// post subthreading
-
-//
-// if in order
-//	print id
-// else if post.prevpost != null
-//	printsubthread of post
-
 function newDb() {
 	var db = {};
 	return function(id) {
@@ -69,86 +60,116 @@ test.linking = function() {
 	intf = intf.newModule({
 		getPost: newDb(),
 	});
+	var post = createSampleThread1(intf);
 
-	var post1 = intf.newPost({
+	assert.equal(intf.nextsib(post[2], 1001), post[4]);
+	assert.equal(intf.nextsib(post[4], 1001), post[5]);
+	assert.equal(intf.nextsib(post[5], 1001), post[6]);
+	assert.equal(intf.nextsib(post[6], 1001), post[2]);
+
+	assert.equal(intf.prevsib(post[6], 1001), post[5]);
+	assert.equal(intf.prevsib(post[5], 1001), post[4]);
+	assert.equal(intf.prevsib(post[4], 1001), post[2]);
+	assert.equal(intf.prevsib(post[2], 1001), post[6]);
+
+	assert.equal(intf.nextsib(post[3], 1002), post[5]);
+	assert.equal(intf.nextsib(post[5], 1002), post[3]);
+	assert.equal(intf.prevsib(post[5], 1002), post[3]);
+	assert.equal(intf.prevsib(post[3], 1002), post[5]);
+
+	assert.equal(intf.nextsib(post[6], 1004), post[7]);
+	assert.equal(intf.nextsib(post[7], 1004), post[6]);
+	assert.equal(intf.prevsib(post[7], 1004), post[6]);
+	assert.equal(intf.prevsib(post[6], 1004), post[7]);
+
+	assert.equal(intf.nextsib(post[8], 1005), post[8]);
+	assert.equal(intf.prevsib(post[8], 1005), post[8]);
+
+	assert.deepEqual(intf.childrenIds(post[1]), [1002, 1004, 1005, 1006]);
+	assert.deepEqual(intf.childrenIds(post[2]), [1003, 1005]);
+	assert.deepEqual(intf.childrenIds(post[3]), []);
+	assert.deepEqual(intf.childrenIds(post[4]), [1006, 1007]);
+	assert.deepEqual(intf.childrenIds(post[5]), [1008]);
+	assert.deepEqual(intf.childrenIds(post[6]), []);
+	assert.deepEqual(intf.childrenIds(post[7]), []);
+	assert.deepEqual(intf.childrenIds(post[8]), [1009]);
+	assert.deepEqual(intf.childrenIds(post[9]), []);
+
+	assert.equal(post[1].numReplies, 4);
+	assert.equal(post[2].numReplies, 2);
+	assert.equal(post[3].numReplies, 0);
+	assert.equal(post[4].numReplies, 2);
+	assert.equal(post[5].numReplies, 1);
+	assert.equal(post[6].numReplies, 0);
+	assert.equal(post[7].numReplies, 0);
+	assert.equal(post[8].numReplies, 1);
+	assert.equal(post[9].numReplies, 0);
+}
+
+test.attachment = function() {
+	intf = intf.newModule({
+		getPost: newDb(),
+	});
+	var post = createSampleThread1(intf);
+
+	intf.postdb.print();
+	console.log("-----");
+
+	intf.attachToParent(post[2], post[1]);
+	intf.postdb.print();
+	console.log("-----");
+
+	intf.attachToParent(post[9], post[8]);
+	intf.postdb.print();
+}
+
+function createSampleThread1(intf) {
+	var post = {};
+	post[1] = intf.newPost({
 		id: 1001,
 		body: "'sup"
 	});
-	var post2 = intf.newPost({
+	post[2] = intf.newPost({
 		id: 1002,
 		body: ">>1001 stfu"
 	});
-	var post3 = intf.newPost({
+	post[3] = intf.newPost({
 		id: 1003,
 		body: ">>1002 no u"
 	});
-	var post4 = intf.newPost({
+	post[4] = intf.newPost({
 		id: 1004,
 		body: ">>1001 no"
 	});
-	var post5 = intf.newPost({
+	post[5] = intf.newPost({
 		id: 1005,
 		body: ">>1001 >>1002 no u"
 	});
-	var post6 = intf.newPost({
+	post[6] = intf.newPost({
 		id: 1006,
 		body: ">>1001 >>1004 yes",
 	});
-	var post7 = intf.newPost({
+	post[7] = intf.newPost({
 		id: 1007,
 		body: ">>1004 no what",
 	});
-	var post8 = intf.newPost({
+	post[8] = intf.newPost({
 		id: 1008,
 		body: ">>1005 yes u",
 	});
-
-	assert.equal(intf.nextsib(post2, 1001), post4);
-	assert.equal(intf.nextsib(post4, 1001), post5);
-	assert.equal(intf.nextsib(post5, 1001), post6);
-	assert.equal(intf.nextsib(post6, 1001), post2);
-
-	assert.equal(intf.prevsib(post6, 1001), post5);
-	assert.equal(intf.prevsib(post5, 1001), post4);
-	assert.equal(intf.prevsib(post4, 1001), post2);
-	assert.equal(intf.prevsib(post2, 1001), post6);
-
-	assert.equal(intf.nextsib(post3, 1002), post5);
-	assert.equal(intf.nextsib(post5, 1002), post3);
-	assert.equal(intf.prevsib(post5, 1002), post3);
-	assert.equal(intf.prevsib(post3, 1002), post5);
-
-	assert.equal(intf.nextsib(post6, 1004), post7);
-	assert.equal(intf.nextsib(post7, 1004), post6);
-	assert.equal(intf.prevsib(post7, 1004), post6);
-	assert.equal(intf.prevsib(post6, 1004), post7);
-
-	assert.equal(intf.nextsib(post8, 1005), post8);
-	assert.equal(intf.prevsib(post8, 1005), post8);
-
-	assert.deepEqual(intf.childrenIds(post1), [1002, 1004, 1005, 1006]);
-	assert.deepEqual(intf.childrenIds(post2), [1003, 1005]);
-	assert.deepEqual(intf.childrenIds(post3), []);
-	assert.deepEqual(intf.childrenIds(post4), [1006, 1007]);
-	assert.deepEqual(intf.childrenIds(post5), [1008]);
-	assert.deepEqual(intf.childrenIds(post6), []);
-	assert.deepEqual(intf.childrenIds(post7), []);
-	assert.deepEqual(intf.childrenIds(post8), []);
-
-	assert.equal(post1.numReplies, 4);
-	assert.equal(post2.numReplies, 2);
-	assert.equal(post3.numReplies, 0);
-	assert.equal(post4.numReplies, 2);
-	assert.equal(post5.numReplies, 1);
-	assert.equal(post6.numReplies, 0);
-	assert.equal(post7.numReplies, 0);
-	assert.equal(post8.numReplies, 0);
+	post[9] = intf.newPost({
+		id: 1009,
+		body: ">>1008 no u fok u",
+	});
+	return post;
 }
+
 
 for (var name in test) {
 	console.log("*** Testing", name);
 	test[name]();
 }
+
 
 
 
