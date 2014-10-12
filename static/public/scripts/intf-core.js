@@ -282,6 +282,45 @@
 		return curParent(parent1) == curParent(parent2);
 	}
 
+	M.detachPost = function(post) {
+		var parent = this.currentParent(post);
+		var childset = {};
+		childset[post.id] = post;
+		this.detachChildren(parent, childset);
+	}
+
+	var maxiter = 50;
+	M.detachChildren = function(parent, childset, n) {
+		if (!parent || this.isInNorder(parent) || this.isIndented(parent))
+			return;
+
+		this.clearSubthread(parent);
+
+		var i = 0;
+		n = n || 0;
+
+		var size = 0;
+		var post = this.nextpost(parent);
+		var start = post;
+		while (size < PAGE_SIZE && n < maxiter) {
+			if (!childset[post.id] && this.isInNorder(post)) {
+				size++;
+				this.relocateAfter(post, parent);
+			}
+			post = this.nextsib(post, parent.id);
+			if (post == start)
+				break;
+			n++;
+		}
+
+		if (n >= maxiter) {
+			clearSupthread(parent);
+		} else if (size == 0) {
+			parent = this.prevpost(parent);
+			this.detachChildren(parent, childset, n);
+		}
+	}
+
 	M.attachToParent = function(post, parent) {
 		console.assert(this.isChildOf(post, parent),
 			"must attach");
