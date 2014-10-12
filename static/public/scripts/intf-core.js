@@ -382,21 +382,25 @@
 	}
 
 	M.setNextPost = function(post, next) {
+		console.assert(post != next);
 		post.nextpostId = next.id;
 		this.hook("setNextPost", post, next);
 	}
 
 	M.setPrevPost = function(post, prev) {
+		console.assert(post != prev);
 		post.prevpostId = prev.id;
 		this.hook("setPrevPost", post, prev);
 	}
 
 	M.setNextNorder = function(post, next) {
+		console.assert(post != next);
 		post.norder.nextId = next.id;
 		this.hook("setNextNorder", post, next);
 	}
 
 	M.setPrevNorder = function(post, prev) {
+		console.assert(post != prev);
 		post.norder.prevId = prev.id;
 		this.hook("setPrevNorder", post, prev);
 	}
