@@ -229,17 +229,27 @@
 		var start = post2;
 		console.log("**attaching siblings", post1.id, "->", post2.id);
 
+		var childset = {};
+		var posts = [post1];
 		var i = 0;
 		while (i < PAGE_SIZE) {
-			// Post in pages are always indented
-			this.indent(post2);
-			this.relocateAfter(post2, post1);
+			childset[post2.id] = post2;
+			posts.push(post2);
 
 			post1 = post2;
 			post2 = this.nextsib(post2, parent.id);
 			i++;
 			if (start == post2)
 				break;
+		}
+
+		for (i = 1; i < posts.length; i++) {
+			post1 = posts[i-1];
+			post2 = posts[i];
+
+			this.detachChildren(this.currentParent(post2), childset);
+			this.indent(post2);
+			this.relocateAfter(post2, post1);
 		}
 		parent.page.start = post;
 		parent.page.end = post2;
