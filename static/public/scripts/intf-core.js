@@ -340,6 +340,56 @@
 		parent.inNorder = false;
 	}
 
+	function handleInNorder(post, parent) {
+		if (!this.isInNorder(parent)) {
+			this.undent(parent);
+			this.clearSubthread(parent);
+		}
+
+		if (!this.isInNorder(post)) {
+			if (this.isUndented(post)) {
+				this.clearSupthread(post);
+				this.attachSubthread(parent, post);
+			} else {
+				this.detachPost(post);
+				this.attachSiblings(parent, post);
+			}
+		} else {
+			this.attachSiblings(parent, post);
+		}
+	}
+
+	function handleSiblings(post, parent) {
+		console.log("*** attachToParent[isSiblings]");
+		var oldParent = currentParent(post);
+		this.clearSubthread(oldParent)
+		this.relocateAfter(parent, oldParent);
+		this.undent(parent);
+		this.attachSiblings(parent, post);
+	}
+
+	function handleAncestor(post, parent) {
+		this.clearSupthread(post, parent);
+		if (this.isIndented(post)) {
+			this.clearSubthread(post);
+			this.attachSiblings(parent, post);
+		} else {
+			this.attachSubthread(parent, post);
+		}
+	}
+
+	function handleDescendant(post, parent) {
+		console.log("*** attachToParent[isDescendant]");
+		if (isIndented(parent))
+			undentChild(currentParent(parent), parent);
+		this.clearSupthread(post);
+		this.clearSubthread(parent)
+		this.attachSiblings(parent, post);
+	}
+
+	function handleGeneralCase(post, parent) {
+	}
+
 	M.visitParent = function(postlink) {
 		console.log("**visiting parent", postlink)
 		var parent = postlink.targetPost;
