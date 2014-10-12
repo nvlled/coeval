@@ -317,10 +317,10 @@
 	}
 
 	M.clearSubthread = function(post) {
-		post = post.nextpost();
+		post = this.nextpost(post);
 		// restore subthreads to normal order
 		while(post) {
-			var next = post.nextpost();
+			var next = this.nextpost(post);
 			this.undent(post);
 			this.restoreNorder(post);
 			post = next;
@@ -387,7 +387,7 @@
 	}
 
 	M.setPrevPost = function(post, prev) {
-		post.prevpostId = post.id;
+		post.prevpostId = prev.id;
 		this.hook("setPrevPost", post, prev);
 	}
 
@@ -438,7 +438,7 @@
 	root.printSubthread = function(post) {
 		while(post) {
 			console.log("subt>", post.id);
-			post = post.nextpost();
+			post = this.nextpost(post);
 		}
 	}
 
@@ -469,12 +469,14 @@
 				printPost("|", post);
 				var subt = intf.getSubthread(post);
 				subt.slice(1).forEach(function(post) {
-					printPost("  |", post);
+					printPost("|", post);
 				})
 			}
 		}
 
 		function printPost(prefix, post) {
+			if (intf.isIndented(post))
+				prefix = "  " + prefix;
 			var len = (post.id+prefix).length;
 			console.log(prefix, post.id,
 						len > 5 ? "\t" : "\t\t",
