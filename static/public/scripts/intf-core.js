@@ -245,6 +245,43 @@
 		parent.page.end = post2;
 	}
 
+	M.currentParent = function(post) {
+		post = this.prevpost(post);
+		while(post && this.isIndented(post)) {
+			post = this.prevpost(post);
+		}
+		return post;
+	}
+
+	M.isAncestor = function(post, precedingPost) {
+		post = this.prevpost(post);
+		while(post) {
+			if (post == precedingPost)
+				return true;
+			post = this.prevpost(post);
+		}
+		return false;
+	}
+
+	M.isDescendant = function(post, succeedingPost) {
+		post = this.prevpost(post);
+		while(post) {
+			if (post == succeedingPost)
+				return true;
+			post = this.prevpost(post);
+		}
+		return false;
+	}
+
+	M.isSiblings = function(post1, post2) {
+		var curParent = this.currentParent.bind(this);
+		var parent1 = curParent(post1);
+		var parent2 = curParent(post2);
+		if (!parent1 || !parent2)
+			return false;
+		return curParent(parent1) == curParent(parent2);
+	}
+
 	M.attachToParent = function(post, parent) {
 		console.assert(this.isChildOf(post, parent),
 			"must attach");
