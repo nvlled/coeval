@@ -315,14 +315,24 @@
 		post.inNorder = true;
 	}
 
-	M.clearSubthread = function(post) {
+	M.clearSubthread = function(post, downto) {
 		post = this.nextpost(post);
 		// restore subthreads to normal order
-		while(post) {
+		while(post && post != downto) {
 			var next = this.nextpost(post);
 			this.undent(post);
 			this.restoreNorder(post);
 			post = next;
+		}
+	}
+
+	M.clearSupthread = function(post, upto) {
+		console.assert(post);
+		post = this.prevpost(post);
+		while(post && post != upto) {
+			var prev = this.prevpost(post);
+			restoreNorder(post);
+			post = prev;
 		}
 	}
 
