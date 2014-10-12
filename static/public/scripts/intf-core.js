@@ -308,11 +308,10 @@
 	}
 
 	M.restoreNorder = function(post) {
-		console.log("**restoring norder", post);
-
+		console.log("**restoring norder", post.id);
 		this.hook("restoreNorder", post);
-		this.setNextPost(post, null);
-		this.setPrevPost(post, null);
+		this.clearNextPost(post);
+		this.clearPrevPost(post);
 		post.inNorder = true;
 	}
 
@@ -379,6 +378,14 @@
 
 	M.prevsib = function(post, pid) {
 		return this.getPost(post.sib.prevId[pid]);
+	}
+
+	M.clearNextPost = function(post) {
+		post.nextpostId = null;
+	}
+
+	M.clearPrevPost = function(post) {
+		post.prevpostId = null;
 	}
 
 	M.setNextPost = function(post, next) {
