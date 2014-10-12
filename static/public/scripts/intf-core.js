@@ -332,12 +332,26 @@
 	}
 
 	M.attachToParent = function(post, parent) {
-		console.assert(this.isChildOf(post, parent),
-			"must attach");
-		if (this.isInNorder(post)) {
-			this.attachSiblings(parent, post);
+		console.assert(this.isChildOf(post, parent), "must attach to actual parent");
+
+		var handler = function() { console.warn("no matching case") };
+
+		if (this.isInNorder(post) || this.isInNorder(parent)) {
+			handler = handleInNorder;
+		} else if (this.isSiblings(post, parent)) {
+			handler = handleSiblings;
+		} else if (this.isAncestor(post, parent)) {
+			handler = handleAncestor;
+		} else if (this.isDescendant(post, parent)) {
+			handler = handleDescendant;
+		} else {
+			handler = handleGeneralCase;
 		}
+
+		handler.call(this, post, parent);
+
 		parent.inNorder = false;
+		post.inNorder = false;
 	}
 
 	function handleInNorder(post, parent) {
