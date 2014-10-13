@@ -688,18 +688,23 @@
 		});
 
 		var intf = this.mod;
+		var n = 0;
 		for (var i in posts) {
 			var post = posts[i];
-			if (intf.isInNorder(post))
+			if (intf.isInNorder(post)) {
 				printPost("-", post);
-			else if (intf.isSubthreadRoot(post)) {
+				n += 1;
+			} else if (intf.isSubthreadRoot(post)) {
 				printPost("|", post);
 				var subt = intf.getSubthread(post);
 				subt.slice(1).forEach(function(post) {
 					printPost("|", post);
 				});
+				n += subt.length;
 			}
 		}
+		console.log("posts rendered: ", n);
+		console.assert(n === mapLength(this._db), "rendered all posts");
 
 		function printPost(prefix, post) {
 			if (intf.isIndented(post))
@@ -716,6 +721,12 @@
 		}
 
 		function bin(bool) { return bool ? 1 : 0; }
+		function mapLength(m) {
+			var n = 0;
+			for (var _ in m)
+				n++;
+			return n;
+		}
 	}
 
 	// TODO::
