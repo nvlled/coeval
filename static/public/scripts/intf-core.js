@@ -217,9 +217,10 @@
 		console.log("**attaching subthread", post1.id, "->", post2.id);
 
 		while (post2) {
+			this.undent(post);
 			this.relocateAfter(post2, post1);
 			post1 = post2;
-			post2 = post2.nextpost();
+			post2 = this.nextpost(post2);
 		}
 	}
 
@@ -246,6 +247,9 @@
 		for (i = 1; i < posts.length; i++) {
 			post1 = posts[i-1];
 			post2 = posts[i];
+
+			if (this.isUndented(post2))
+				this.clearSubthread(post2, null, true);
 
 			this.detachChildren(this.currentParent(post2), childset);
 			this.indent(post2);
@@ -306,7 +310,6 @@
 
 		this.clearSubthread(parent);
 
-		var i = 0;
 		n = n || 0;
 
 		var size = 0;
@@ -315,6 +318,7 @@
 		while (size < PAGE_SIZE && n < maxiter) {
 			if (!childset[post.id] && this.isInNorder(post)) {
 				size++;
+				this.indent(post);
 				this.relocateAfter(post, parent);
 			}
 			post = this.nextsib(post, parent.id);
@@ -323,11 +327,12 @@
 			n++;
 		}
 
-		if (n >= maxiter) {
-			clearSupthread(parent);
+		var gramps = this.prevpost(parent);
+		if (n >= maxiter || (!gramps && size == 0)) {
+			this.clearSupthread(parent);
+			this.clearSubthread(parent, null, true);
 		} else if (size == 0) {
-			parent = this.prevpost(parent);
-			this.detachChildren(parent, childset, n);
+			this.detachChildren(gramps, childset, n);
 		}
 	}
 
@@ -385,7 +390,7 @@
 
 	function handleSiblings(post, parent) {
 		console.log("*** attachToParent[isSiblings]");
-		var oldParent = currentParent(post);
+		var oldParent = this.currentParent(post);
 		this.clearSubthread(oldParent)
 		this.relocateAfter(parent, oldParent);
 		this.undent(parent);
@@ -472,15 +477,16 @@
 		this.hook("restoreNorder", post);
 		this.clearNextPost(post);
 		this.clearPrevPost(post);
+		this.undent(post);
 		post.inNorder = true;
 	}
 
-	M.clearSubthread = function(post, downto) {
-		post = this.nextpost(post);
+	M.clearSubthread = function(post, downto, inclusive) {
+		if (!inclusive)
+			post = this.nextpost(post);
 		// restore subthreads to normal order
 		while(post && post != downto) {
 			var next = this.nextpost(post);
-			this.undent(post);
 			this.restoreNorder(post);
 			post = next;
 		}
@@ -491,7 +497,7 @@
 		post = this.prevpost(post);
 		while(post && post != upto) {
 			var prev = this.prevpost(post);
-			restoreNorder(post);
+			this.restoreNorder(post);
 			post = prev;
 		}
 	}
@@ -530,7 +536,6 @@
 		post = post.prevpost();
 		while(post && this.isIndented(post)) {
 			prev = post.prevpost();
-			this.undent(post);
 			this.restoreNorder(post);
 			post = prev;
 		}
@@ -707,6 +712,3 @@
 	// - highlight target of childlink
 
 })(this)
-
-
-
