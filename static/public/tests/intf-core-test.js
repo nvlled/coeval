@@ -129,10 +129,10 @@ test.testInNorderCase = function() {
 				mod.newPost({id: 1011, body: ">>1004 >>1003"});
 					// 1015
 				mod.newPost({id: 1012, body: ">>1004"});
-					mod.newPost({id: 1014, body: ">>1012 >>1006"});
+					mod.newPost({id: 1014, body: ">>1012 >>1006 >>1004"});
 				mod.newPost({id: 1013, body: ">>1004"});
 			mod.newPost({id: 1007, body: ">>1001 >>1002 >> 1003"});
-			mod.newPost({id: 1008, body: ">>1001 >>1003"});
+			mod.newPost({id: 1008, body: ">>1001 >>1003 >>1014"});
 			mod.newPost({id: 1015, body: ">>1008 >>1011"});
 				mod.newPost({id: 1016, body: ">>1008"});
 
@@ -168,7 +168,7 @@ test.testInNorderCase = function() {
 	}
 	var validateState = function(id, expected) {
 		if (!intf.isSubthreadRoot(al.p(id))) {
-			console.warn("** validating a non-root post, skipping...");
+			console.warn("** validating a non-root post", id, "skipping...");
 			return;
 		}
 
@@ -191,7 +191,6 @@ test.testInNorderCase = function() {
 	//assertEndPostIndented(1001);
 	validateState(1001, ["1001", "1002", "1003", "1004"]);
 	validateInn();
-
 
 	intf.attachToParent(al.p(1014), al.p(1012));
 	intf.postdb.print();
@@ -236,7 +235,6 @@ test.testInNorderCase = function() {
 	validateState(1001, ["1001", "1002", "1003", "1004"]);
 	validateState(1012, ["1012", "1014"]);
 	validateState(1008, ["1008", "1016"]);
-	validateState(1011, ["1011"]);
 	assert.ok(intf.isInNorder(al.p(1011)));
 	assert.ok(intf.isInNorder(al.p(1015)));
 	validateInn();
@@ -246,43 +244,55 @@ test.testInNorderCase = function() {
 	validateState(1001, ["1001", "1002", "1003", "1004"]);
 	validateState(1006, ["1006", "1014"]);
 	validateState(1008, ["1008", "1016"]);
-	validateState(1011, ["1011"]);
 	validateInn();
 
 	// siblings
 	intf.attachToParent(al.p(1004), al.p(1002));
 	intf.postdb.print();
-	assert.deepEqual(al.subtIds(1001), ["1001", "1002", "1004", "1007", "1005"]);
-	assert.deepEqual(al.subtIds(1006), ["1006", "1014"]);
-	assert.deepEqual(al.subtIds(1008), ["1008", "1016"]);
-	assert.deepEqual(al.subtIds(1011), ["1011"]);
-	assertEndPostIndented(1001);
+	validateState(1001, ["1001", "1002", "1004", "1007", "1005"]);
+	validateState(1006, ["1006", "1014"]);
+	validateState(1008, ["1008", "1016"]);
+	validateInn();
 
 	intf.attachToParent(al.p(1004), al.p(1005));
 	intf.postdb.print();
-	assert.deepEqual(al.subtIds(1001), ["1001", "1002", "1005", "1004"]);
-	assert.deepEqual(al.subtIds(1006), ["1006", "1014"]);
-	assert.deepEqual(al.subtIds(1008), ["1008", "1016"]);
-	assertEndPostIndented(1001);
+	validateState(1001, ["1001", "1002", "1005", "1004"]);
+	validateState(1006, ["1006", "1014"]);
+	validateState(1008, ["1008", "1016"]);
+	validateInn();
 
 	// ancestor
 	intf.attachToParent(al.p(1014), al.p(1006));
 	intf.postdb.print();
-	assert.deepEqual(al.subtIds(1001), ["1001", "1002", "1005", "1004"]);
-	assert.deepEqual(al.subtIds(1006), ["1006", "1014"]);
-	assert.deepEqual(al.subtIds(1008), ["1008", "1016"]);
+	validateState(1001, ["1001", "1002", "1005", "1004"]);
+	validateState(1006, ["1006", "1014"]);
+	validateState(1008, ["1008", "1016"]);
 
 	intf.attachToParent(al.p(1002), al.p(1001));
 	intf.postdb.print();
-	assert.deepEqual(al.subtIds(1001), ["1001", "1002", "1005", "1004"]);
-	assert.deepEqual(al.subtIds(1006), ["1006", "1014"]);
-	assert.deepEqual(al.subtIds(1008), ["1008", "1016"]);
+	validateState(1001, ["1001", "1002", "1005", "1004"]);
+	validateState(1006, ["1006", "1014"]);
+	validateState(1008, ["1008", "1016"]);
+	validateInn();
 
 	intf.attachToParent(al.p(1004), al.p(1001));
 	intf.postdb.print();
-	assert.deepEqual(al.subtIds(1001), ["1001", "1004", "1007", "1008"]);
-	assert.deepEqual(al.subtIds(1006), ["1006", "1014"]);
+	//validateState(1001, ["1001", "1004", "1007", "1008"]);
+	validateState(1001, ["1001", "1004", "1007"]);
+	validateState(1006, ["1006", "1014"]);
+	validateState(1008, ["1008", "1016"]);
+	validateInn();
 
+	intf.attachToParent(al.p(1014), al.p(1004));
+	intf.postdb.print();
+	validateState(1001, ["1001", "1004", "1014", "1013", "1010"]);
+	validateState(1008, ["1008", "1016"]);
+	validateInn();
+
+	intf.attachToParent(al.p(1008), al.p(1014));
+	intf.postdb.print();
+	validateState(1001, ["1001", "1004", "1014", "1008", "1016"]);
+	validateInn();
 }
 
 function assertAll(list, p) {
@@ -360,6 +370,7 @@ for (var name in test) {
 	console.log("*** Testing", name);
 		test[name]();
 }
+
 
 
 
