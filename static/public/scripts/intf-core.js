@@ -430,6 +430,14 @@
 	}
 
 	function handleGeneralCase(post, parent) {
+		this.undent(parent);
+		this.clearSubthread(parent);
+		if (this.isUndented(post)) {
+			this.attachSubthread(parent, post);
+		} else {
+			this.detachPost(post);
+			this.attachSiblings(parent, post);
+		}
 	}
 
 	M.visitParent = function(postlink) {
