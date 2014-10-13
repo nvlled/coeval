@@ -233,9 +233,16 @@
 		var childset = {};
 		var posts = [post1];
 		var i = 0;
+
+		childset[parent.id] = parent;
 		while (i < PAGE_SIZE) {
-			childset[post2.id] = post2;
-			posts.push(post2);
+			// Disregard undented posts
+			// Note: result may be unexpected
+			// when given an undented starting post.
+			if (this.isIndented(post2) || this.isInNorder(post2)) {
+				childset[post2.id] = post2;
+				posts.push(post2);
+			}
 
 			post1 = post2;
 			post2 = this.nextsib(post2, parent.id);
@@ -248,10 +255,12 @@
 			post1 = posts[i-1];
 			post2 = posts[i];
 
-			if (this.isUndented(post2))
+			var curparent = this.currentParent(post2);
+			if (!curparent && !this.isInNorder(post2) && this.isUndented(post2)) {
 				this.clearSubthread(post2, null, true);
+			}
 
-			this.detachChildren(this.currentParent(post2), childset);
+			this.detachChildren(post2, childset);
 			this.indent(post2);
 			this.relocateAfter(post2, post1);
 		}
@@ -293,18 +302,20 @@
 		var parent2 = curParent(post2);
 		if (!parent1 || !parent2)
 			return false;
-		return curParent(parent1) == curParent(parent2);
+		return parent1 == parent2;
 	}
 
 	M.detachPost = function(post) {
-		var parent = this.currentParent(post);
 		var childset = {};
 		childset[post.id] = post;
-		this.detachChildren(parent, childset);
+		this.detachChildren(post, childset);
 	}
 
+	// TODO: Rename detachChildren
 	var maxiter = 50;
-	M.detachChildren = function(parent, childset, n) {
+	M.detachChildren = function(post, childset, n) {
+		var parent = this.currentParent(post);
+
 		if (!parent || this.isInNorder(parent) || this.isIndented(parent))
 			return;
 
@@ -313,13 +324,15 @@
 		n = n || 0;
 
 		var size = 0;
-		var post = this.nextpost(parent);
+
+		var lastpost = parent;
 		var start = post;
 		while (size < PAGE_SIZE && n < maxiter) {
 			if (!childset[post.id] && this.isInNorder(post)) {
 				size++;
 				this.indent(post);
-				this.relocateAfter(post, parent);
+				this.relocateAfter(post, lastpost);
+				lastpost = post;
 			}
 			post = this.nextsib(post, parent.id);
 			if (post == start)
@@ -332,7 +345,7 @@
 			this.clearSupthread(parent);
 			this.clearSubthread(parent, null, true);
 		} else if (size == 0) {
-			this.detachChildren(gramps, childset, n);
+			this.detachChildren(parent, childset, n);
 		}
 	}
 
@@ -684,7 +697,7 @@
 				var subt = intf.getSubthread(post);
 				subt.slice(1).forEach(function(post) {
 					printPost("|", post);
-				})
+				});
 			}
 		}
 
