@@ -333,18 +333,28 @@
 
 	M.attachToParent = function(post, parent) {
 		console.assert(this.isChildOf(post, parent), "must attach to actual parent");
+		console.log("** attach ", post.id, "to", parent.id);
 
 		var handler = function() { console.warn("no matching case") };
 
 		if (this.isInNorder(post) || this.isInNorder(parent)) {
+			console.log("** case: handleInNorder");
 			handler = handleInNorder;
 		} else if (this.isSiblings(post, parent)) {
+			console.log("** case: handleSiblings");
 			handler = handleSiblings;
 		} else if (this.isAncestor(post, parent)) {
+			console.log("** case: handleAncestor");
 			handler = handleAncestor;
 		} else if (this.isDescendant(post, parent)) {
-			handler = handleDescendant;
+			// I haven't found a case where this would happen.
+			// And I don't think it will since a post
+			// cannot be older and younger than a post
+			// at the same time.
+			//handler = handleDescendant;
+			throw "I stand corrected.";
 		} else {
+			console.log("** case: handleGeneralCase");
 			handler = handleGeneralCase;
 		}
 
