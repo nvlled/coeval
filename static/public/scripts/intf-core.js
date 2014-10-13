@@ -495,8 +495,22 @@
 		return subt;
 	}
 
+	M.getSupthread = function(post) {
+		var supt = [];
+		while (post) {
+			supt.push(post);
+			post = this.prevpost(post);
+		}
+		return supt;
+	}
+
 	M.getSubthreadIds = function(post) {
 		return this.getSubthread(post)
+			.map(function(post) { return post.id });
+	}
+
+	M.getSupthreadIds = function(post) {
+		return this.getSupthread(post)
 			.map(function(post) { return post.id });
 	}
 
@@ -587,6 +601,9 @@
 	M.isIndented = function(post) /*bool*/ {
 		return post.indented;
 	}
+	M.isUndented = function(post) /*bool*/ {
+		return !this.isIndented(post);
+	}
 
 	M.isSubthreadRoot = function(post) /*bool*/ {
 		return !this.isInNorder(post) && !this.prevpost(post);
@@ -622,6 +639,17 @@
 	}
 	PostDB.prototype.set = function(id, post) {
 		this._db[id] = post;
+	}
+	PostDB.prototype.inNorderPosts = function() {
+		var intf = this.mod;
+		var posts = [];
+		for (var k in this._db) {
+			var post = this._db[k];
+			if (!intf.isInNorder(post))
+				continue;
+			posts.push(post);
+		}
+		return posts;
 	}
 	PostDB.prototype.print = function(id, post) {
 		var posts = [];
