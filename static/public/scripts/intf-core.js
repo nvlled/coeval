@@ -1,3 +1,5 @@
+"use strict";
+
 (function(root) {
 
 	var PAGE_SIZE = 3;
@@ -29,6 +31,7 @@
 		this.hooks = opts.hooks || {};
 		this.lastCreatedPost = null;
 		this.prevChildId = {};
+		this.history = [];
 	}
 
 	var M = Module.prototype;
@@ -110,6 +113,10 @@
 			// Just assign a blank object
 			// to avoid checking for nulls
 			var parent = this.getPost(pid);
+			if (!parent) {
+				console.warn("parent ", pid, " of ", post.id, " not found ");
+				return;
+			}
 			console.assert(parent);
 
 			var post1 = this.getPost(this.prevChildId[pid]);
@@ -396,6 +403,8 @@
 
 		parent.inNorder = false;
 		post.inNorder = false;
+		this.hook("attachToParent", post, parent);
+		this.history.push([post.id, parent.id]);
 	}
 
 	function handleInNorder(post, parent) {
@@ -773,9 +782,9 @@
 	}
 
 	// TODO::
-	// - showing of pages
-	// - make pages cyclic
-	//
+	// - avoid destroying subthreads if possible
 	// - highlight target of childlink
 
 })(this)
+
+
