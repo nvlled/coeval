@@ -125,22 +125,27 @@
 				return;
 			}
 			var matched = false;
-			var pat = /(.*)(>>\d+)(.*)/g;
+			var pat = /(>>\d+)/g;
+			var lastIndex = 0;
 			while(true) {
 				var m = pat.exec(line);
 				if (m == null)
 					break;
 				matched = true;
-				var parentId = m[2].substr(2);
+				var parentId = m[1].substr(2);
 				var postlinkNode = createPostLinkNode(parentId, PlinkType.PARENT);
 
 				var postlink = intf.parentlink(parentId, postData.id);
 				postlinkNode.onclick = intf.createLinkHandler(postlink);
 
-				node.appendChild(textNode(m[1]));
+				var pretext = line.slice(lastIndex, pat.lastIndex - m[1].length);
+				node.appendChild(textNode(pretext));
 				node.appendChild(postlinkNode);
-				node.appendChild(textNode(m[3]));
+				lastIndex = pat.lastIndex;
 			}
+			var pretext = line.slice(lastIndex);
+			node.appendChild(textNode(pretext));
+
 			if (!matched)
 				node.appendChild(textNode(line));
 
