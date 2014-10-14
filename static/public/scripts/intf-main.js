@@ -15,55 +15,8 @@
 	intf = intf.newModule({
 		newNode: newPostNode,
 		getPost: getPost,
-		hooks: intfHooks,
+		hooks: createHooks(),
 	});
-
-	var intfHooks = {
-		visitLink: function(postlink) {
-			if (postlink.type == "parent") {
-				var post = postlink.targetPost;
-				post.node.scrollIntoView();
-			}
-		},
-
-		undent: function() {
-			post.node.classList.remove("indented");
-		},
-
-		indent: function() {
-			post.node.classList.add("indented");
-		},
-
-		relocateAfter: function(post, dest) {
-			insertAfter(post.node, dest.node);
-			post.node.classList.add("subthread");
-		},
-
-		restoreNorder: function(post) {
-			var prev = post.nextnorder();
-			var next = post.prevnorder();
-			while(true) {
-				if (prev) {
-					if (this.inNorder(prev)) {
-						insertAfter(post.node, prev.node);
-						break;
-					}
-					prev = prev.prevnorder();
-				} else if (next) {
-					next = next.nextnorder();
-					if (this.inNorder(next)) {
-						insertBefore(post.node, next.node);
-						break;
-					}
-				} else {
-					var node = post.node;
-					appendChild(node.parentNode, node);
-					break;
-				}
-			}
-			post.node.classList.remove("subthread");
-		},
-	}
 
 	function buildThread(posts, container) {
 		if (!container)
@@ -209,6 +162,61 @@
 
 	function appendChild(parent, node) {
 		parent.appendChild(node);
+	}
+
+	function createHooks() {
+		return {
+			visitLink: function(postlink) {
+				if (postlink.type == "parent") {
+					var post = postlink.targetPost;
+					post.node.scrollIntoView();
+				}
+			},
+
+			attachToParent: function(post, parent) {
+				parent.node.classList.add("subthread");
+			},
+
+			undent: function(post) {
+				post.node.classList.remove("indented");
+			},
+
+			indent: function(post) {
+				post.node.classList.add("indented");
+			},
+
+			relocateAfter: function(post, dest) {
+				insertAfter(post.node, dest.node);
+				post.node.classList.add("subthread");
+			},
+
+			restoreNorder: function(post) {
+				var next = this.nextnorder(post);
+				var prev = this.prevnorder(post);
+				while(true) {
+					if (prev) {
+						console.log("prev:", prev.id);
+						if (this.isInNorder(prev)) {
+							insertAfter(post.node, prev.node);
+							break;
+						}
+						prev = this.prevnorder(prev);
+					} else if (next) {
+						console.log("next:", next.id);
+						if (this.isInNorder(next)) {
+							insertBefore(post.node, next.node);
+							break;
+						}
+						next = this.nextnorder(next);
+					} else {
+						var node = post.node;
+						appendChild(node.parentNode, node);
+						break;
+					}
+				}
+				post.node.classList.remove("subthread");
+			},
+		}
 	}
 
 })(this);
