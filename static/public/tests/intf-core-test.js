@@ -107,38 +107,6 @@ test.testLinking = function() {
 }
 
 test.testInNorderCase = function() {
-	function createThread() {
-		var mod = intf.newModule({
-			getPost: newDb(),
-		});
-		mod.newPost({id: 1001, body:""});
-			mod.newPost({id: 1002, body: ">>1001"});
-				mod.newPost({id: 1005, body: ">>1002"});
-					//1004
-				mod.newPost({id: 1006, body: ">>1002"});
-					//1014
-				// 1007
-				// 1004
-			mod.newPost({id: 1003, body: ">>1001"});
-				// 1007
-				mod.newPost({id: 1009, body: ">>1003"});
-				// 1011
-				// 1008
-			mod.newPost({id: 1004, body: ">>1001 >>1002 >>1005"});
-				mod.newPost({id: 1010, body: ">>1004"});
-				mod.newPost({id: 1011, body: ">>1004 >>1003"});
-					// 1015
-				mod.newPost({id: 1012, body: ">>1004"});
-					mod.newPost({id: 1014, body: ">>1012 >>1006 >>1004"});
-				mod.newPost({id: 1013, body: ">>1004"});
-			mod.newPost({id: 1007, body: ">>1001 >>1002 >> 1003"});
-			mod.newPost({id: 1008, body: ">>1001 >>1003 >>1014"});
-			mod.newPost({id: 1015, body: ">>1008 >>1011"});
-				mod.newPost({id: 1016, body: ">>1008"});
-
-		return mod;
-	}
-
 	function aliases(intf) {
 		var al = {};
 		al.p = intf.getPost.bind(intf);
@@ -149,7 +117,7 @@ test.testInNorderCase = function() {
 		return al;
 	}
 
-	intf = createThread();
+	intf = createSampleThread2();
 	var al = aliases(intf);
 
 	function assertEndPostIndented(id) {
@@ -293,6 +261,12 @@ test.testInNorderCase = function() {
 	intf.postdb.print();
 	validateState(1001, ["1001", "1004", "1014", "1008", "1016"]);
 	validateInn();
+
+}
+
+test.testNorder = function() {
+	intf = createSampleThread2();
+	//console.log(intf.postdb.getPostsByNorder());
 }
 
 function assertAll(list, p) {
@@ -339,6 +313,37 @@ function createSampleThread1(intf) {
 	});
 	return post;
 }
+function createSampleThread2() {
+	var mod = intf.newModule({
+		getPost: newDb(),
+	});
+	mod.newPost({id: 1001, body:""});
+	mod.newPost({id: 1002, body: ">>1001"});
+	mod.newPost({id: 1005, body: ">>1002"});
+	//1004
+	mod.newPost({id: 1006, body: ">>1002"});
+	//1014
+	// 1007
+	// 1004
+	mod.newPost({id: 1003, body: ">>1001"});
+	// 1007
+	mod.newPost({id: 1009, body: ">>1003"});
+	// 1011
+	// 1008
+	mod.newPost({id: 1004, body: ">>1001 >>1002 >>1005"});
+	mod.newPost({id: 1010, body: ">>1004"});
+	mod.newPost({id: 1011, body: ">>1004 >>1003"});
+	// 1015
+	mod.newPost({id: 1012, body: ">>1004"});
+	mod.newPost({id: 1014, body: ">>1012 >>1006 >>1004"});
+	mod.newPost({id: 1013, body: ">>1004"});
+	mod.newPost({id: 1007, body: ">>1001 >>1002 >> 1003"});
+	mod.newPost({id: 1008, body: ">>1001 >>1003 >>1014"});
+	mod.newPost({id: 1015, body: ">>1008 >>1011"});
+	mod.newPost({id: 1016, body: ">>1008"});
+
+	return mod;
+}
 
 function forAll(xs, p) {
 	var b = 1;
@@ -370,6 +375,7 @@ for (var name in test) {
 	console.log("*** Testing", name);
 		test[name]();
 }
+
 
 
 
