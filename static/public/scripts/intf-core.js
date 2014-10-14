@@ -679,6 +679,10 @@
 		return post.parentIds.indexOf(parent.id) >= 0;
 	}
 
+	M.isRoot = function(post) /*bool*/ {
+		return post == this.postdb.op;
+	}
+
 	M.undent = function(post) {
 		post.indented = false;
 		this.hook("undent", post);

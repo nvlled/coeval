@@ -194,6 +194,15 @@
 			},
 
 			restoreNorder: function(post) {
+				// Root posts (or OP) should
+				// always be placed first.
+				if (this.isRoot(post)) {
+					var container = post.parentNode;
+					var firstNode = container.children[0];
+					insertBefore(post.node, firstNode);
+					return;
+				}
+
 				var next = this.nextnorder(post);
 				var prev = this.prevnorder(post);
 				while(true) {
