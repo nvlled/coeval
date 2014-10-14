@@ -246,7 +246,7 @@
 
 			post1 = post2;
 			post2 = this.nextsib(post2, parent.id);
-			i++;
+			i++; // Fix: This should be in the preceding if block
 			if (start == post2)
 				break;
 		}
@@ -259,11 +259,27 @@
 			if (!curparent && !this.isInNorder(post2) && this.isUndented(post2)) {
 				this.clearSubthread(post2, null, true);
 			}
+			if (parent != curparent) {
+				this.detachChildren(post2, childset);
+			}
 
-			this.detachChildren(post2, childset);
+			// * Do the two statements in the next loop block
+			// * instead, since the html nodes end up
+			// * being jumbled in order.
+			//this.indent(post2);
+			//this.relocateAfter(post2, post1);
+		}
+
+		for (i = 1; i < posts.length; i++) {
+			post1 = posts[i-1];
+			post2 = posts[i];
+
 			this.indent(post2);
 			this.relocateAfter(post2, post1);
 		}
+		// worst case: loop count = PAGE_SIZE*3
+		// TODO: Reduce loop count
+
 		parent.page.start = post;
 		parent.page.end = post2;
 	}
