@@ -1,3 +1,5 @@
+"use strict";
+
 (function(root) {
 
 	// exports
@@ -24,7 +26,7 @@
 
 		posts.forEach(function(postData) {
 			var post = intf.newPost(postData);
-			post.node = newPostNode(data);
+			post.node = newPostNode(postData);
 
 			postdb[post.id] = post;
 			container.appendChild(post.node);
@@ -66,9 +68,9 @@
 		postNode.querySelector(".post-anchor").href = "#p"+data.id;
 		var bodyNode = postNode.querySelector(".post-body");
 
-		var parentIds = parsePostBody(data, bodyNode);
+		parsePostBody(data, bodyNode);
 
-		return { node: postNode, parentIds: parentIds };
+		return postNode;
 	}
 
 	function createPostLinkNode(id, type, handler) {
@@ -114,7 +116,6 @@
 	}
 
 	function parsePostBody(postData, node) {
-		var parentIds = [];
 		var lines = postData.body.split("\n");
 		lines.forEach(function(line) {
 			if (line[0] == '>' && line[1] != '>') {
@@ -136,8 +137,6 @@
 				var postlink = intf.parentlink(parentId, postData.id);
 				postlinkNode.onclick = intf.createLinkHandler(postlink);
 
-				parentIds.push(parentId)
-
 				node.appendChild(textNode(m[1]));
 				node.appendChild(postlinkNode);
 				node.appendChild(textNode(m[3]));
@@ -147,7 +146,6 @@
 
 			node.appendChild(br());
 		});
-		return parentIds;
 	}
 
 	function insertAfter(insertedNode, node) {
@@ -220,4 +218,5 @@
 	}
 
 })(this);
+
 
