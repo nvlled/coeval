@@ -3,10 +3,13 @@
 	this.addEventListener("load", function() {
 		intfmain.init();
 		initForm();
-	});
+		createSampleThread();
 
-	function buildThread(posts) {
-	}
+		var linkages = [["1006", "1002"], ["1010", "1004"], ["1009", "1003"], ["1005", "1002"], ["1002", "1001"]];
+		linkages.forEach(function(link) {
+			intf.attachToParent(intf.getPost(link[0]), intf.getPost(link[1]));
+		});
+	});
 
 	var sel = function(s, node) {
 		if (!node)
@@ -101,8 +104,34 @@
 		}
 	}
 
+	function createSampleThread() {
+		var posts = [
+			{id: 1001, body:""},
+			{id: 1002, body: ">>1001"},
+			{id: 1005, body: ">>1002"},
+			{id: 1006, body: ">>1002"},
+			{id: 1003, body: ">>1001"},
+			{id: 1009, body: ">>1003"},
+			{id: 1004, body: ">>1001 >>1002 >>1005"},
+			{id: 1010, body: ">>1004"},
+			{id: 1011, body: ">>1004 >>1003"},
+			{id: 1012, body: ">>1004"},
+			{id: 1014, body: ">>1012 >>1006 >>1004"},
+			{id: 1013, body: ">>1004"},
+			{id: 1007, body: ">>1001 >>1002 >> 1003"},
+			{id: 1008, body: ">>1001 >>1003 >>1014"},
+			{id: 1015, body: ">>1008 >>1011"},
+			{id: 1016, body: ">>1008"},
+		];
+
+		var container = document.querySelector("#thread-container");
+		container.innerHTML = "";
+		intfmain.buildThread(posts, container);
+	}
 
 })();
+
+
 
 
 
