@@ -150,7 +150,7 @@
 			var postmap = this.mapPostId(postlink);
 			this.visitLink(postmap);
 			return false;
-		}
+		}.bind(this);
 	}
 
 	M.getSiblings = function(post, pid) {
@@ -165,8 +165,8 @@
 	M.mapPostId = function(postlink) {
 		return {
 			type:		postlink.type,
-			targetPost: getPost(postlink.targetId),
-			sourcePost: getPost(postlink.sourceId),
+			targetPost: this.getPost(postlink.targetId),
+			sourcePost: this.getPost(postlink.sourceId),
 		}
 	}
 
@@ -384,8 +384,13 @@
 
 	function handleInNorder(post, parent) {
 		if (!this.isInNorder(parent)) {
-			this.undent(parent);
 			this.clearSubthread(parent);
+			if (this.isIndented(parent)) {
+				var gramps = this.currentParent(parent);
+				this.clearSupthread(parent, gramps);
+				this.undent(parent);
+				this.relocateAfter(parent, gramps);
+			}
 		}
 
 		if (!this.isInNorder(post)) {
@@ -444,7 +449,7 @@
 		console.log("**visiting parent", postlink)
 		var parent = postlink.targetPost;
 		var post = postlink.sourcePost;
-		this.attachToParent("parent", post, parent);
+		this.attachToParent(post, parent);
 	}
 
 	M.visitChild = function(postlink) {
