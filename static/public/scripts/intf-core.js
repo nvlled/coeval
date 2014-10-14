@@ -193,24 +193,6 @@
 		}
 	}
 
-	M.attachPosts = function(linktype, parent, post) {
-		if (parent.nextpost() == post && linktype == "parent")
-			return;
-
-		this.restoreSupthread(parent);
-		this.clearSubthread(parent);
-
-		if (!this.isIndented(post) && parent.nextpost() == post)
-			this.attachSiblings(parent, post);
-		else if (this.isIndented(post) || this.isInNorder(post))
-			this.attachSiblings(parent, post);
-		else
-			this.attachSubthread(parent, post);
-
-		// Parents are always undented
-		this.undent(parent);
-	}
-
 	M.relocateAfter = function(post, dest) {
 		this.setNextPost(dest, post);
 		this.setPrevPost(post, dest);
@@ -407,6 +389,17 @@
 		this.history.push([post.id, parent.id]);
 	}
 
+	M.attachChild = function(parent, post) {
+		if (this.nextpost(parent) == post) {
+			if (this.isUndented(post)) {
+				this.clearSubthread(parent);
+				this.attachSiblings(parent, post);
+			}
+		} else {
+			this.attachToParent(post, parent);
+		}
+	}
+
 	function handleInNorder(post, parent) {
 		if (!this.isInNorder(parent)) {
 			this.clearSubthread(parent);
@@ -481,7 +474,7 @@
 		console.log("**visiting child", postlink);
 		var child = postlink.targetPost;
 		var post = postlink.sourcePost;
-		attachPosts("child", post, child);
+		this.attachChild(post, child);
 	}
 
 	// Connects the post (or subthread)
@@ -786,9 +779,11 @@
 	}
 
 	// TODO::
+	// - make post argument order consistent
 	// - avoid destroying subthreads if possible
 	// - highlight target of childlink
 
 })(this)
+
 
 
