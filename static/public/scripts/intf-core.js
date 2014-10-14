@@ -690,12 +690,26 @@
 	function PostDB(mod) {
 		this.mod = mod;
 		this._db = {};
+		this.op = null;
 	}
 	PostDB.prototype.get = function(id) {
 		return this._db[id];
 	}
 	PostDB.prototype.set = function(id, post) {
 		this._db[id] = post;
+		if (!this.op)
+			this.op = post;
+	}
+	PostDB.prototype.getPostsByNorder = function() {
+		var posts =  [];
+		var post = this.op;
+		var i = 0;
+		while (post && i < 50) {
+			posts.push(post);
+			post = this.mod.nextnorder(post);
+			i++;
+		}
+		return posts.map(function(p) { return p.id });
 	}
 	PostDB.prototype.inNorderPosts = function() {
 		var intf = this.mod;
