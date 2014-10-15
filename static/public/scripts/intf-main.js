@@ -245,6 +245,76 @@
         return nodeTop > scrTop && nodeBot < scrBot;
     }
 
+    function PostPreview() {
+        this.node   = null;
+        this.highId = null;
+    }
+
+    PostPreview.prototype = {
+
+        hide: function() {
+            if (this.node) {
+                this.node.remove();
+            }
+            var post = intf.getPost(this.highId);
+            this.removeHighlight(post);
+        },
+
+        addHighlight: function(post) {
+            post.node.classList.add("highlight");
+            this.highId = post.id;
+        },
+
+        removeHighlight: function(post) {
+            if (post)
+                post.node.classList.remove("highlight");
+            this.highId = null;
+        },
+
+        newMouseoverHandler: function(postId) {
+            return function(e) {
+                if (this.node)
+                    this.node.remove();
+
+                var post = intf.getPost(postId);
+                if (withinScreen(post.node)) {
+                    this.addHighlight(post);
+                    return;
+                }
+
+                this.node = post.node.cloneNode(true);
+                this.node.style.position = "absolute";
+
+                var top = window.scrollY+e.clientY;
+                var bottom = top + post.node.clientHeight;
+                if (bottom >= screenBottom()*.90) {
+                    top -= post.node.clientHeight;
+                }
+                this.node.style.top = top+"px";
+                this.node.style.left = e.clientX+"px";
+                this.node.style.width = "80%";
+
+                document.body.appendChild(this.node);
+
+            }.bind(this);
+        },
+
+        newMouseoutHandler: function(postId) {
+            return function(e) {
+                var post = intf.getPost(postId);
+                post.node.classList.remove("highlight");
+
+                if (!this.node)
+                    return;
+
+                this.node.style.position = "relative";
+                this.node.style.top = "0px";
+                this.node.style.left = "0px";
+                this.node.remove();
+                this.node = null;
+            }.bind(this);
+        }
+    }
 })(this);
 
 
