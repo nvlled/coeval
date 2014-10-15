@@ -231,6 +231,20 @@
 		}
 	}
 
+    function screenTop()    { return window.scrollY; }
+    function screenBottom() { return screenTop() + window.screen.height }
+
+    function withinScreen(node) {
+        var x = 30; // I called it x because I just don't know
+        var nodeTop = node.offsetTop;
+        var nodeBot = nodeTop + node.clientHeight + x;
+
+        var scrTop = screenTop();
+        var scrBot = screenBottom();
+
+        return nodeTop > scrTop && nodeBot < scrBot;
+    }
+
 })(this);
 
 
