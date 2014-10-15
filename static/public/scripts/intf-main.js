@@ -6,11 +6,14 @@
 	root.intfmain = {
 		buildThread: buildThread,
 		init: function() {
+            postPreview = new PostPreview();
 			initPostTempl();
 		},
 	}
 
+    var postPreview;
 	var postdb = {};
+
 	function getPost(id) { return postdb[id] }
 	root.getPost = getPost;
 
@@ -80,6 +83,9 @@
 		a.classList.add(""+type);
 		a.textContent = ">>"+id;
 		a.onclick = handler;
+        a.onmouseover = postPreview.newMouseoverHandler(id);
+        a.onmouseout  = postPreview.newMouseoutHandler(id);
+
 		return a;
 	}
 
@@ -170,10 +176,11 @@
 	function createHooks() {
 		return {
 			visitLink: function(postlink) {
+                var post = postlink.targetPost;
 				if (postlink.type == "parent") {
-					var post = postlink.targetPost;
 					post.node.scrollIntoView();
 				}
+                postPreview.hide();
 			},
 
 			attachToParent: function(post, parent) {
@@ -197,7 +204,7 @@
 				// Root posts (or OP) should
 				// always be placed first.
 				if (this.isRoot(post)) {
-					var container = post.parentNode;
+					var container = post.node.parentNode;
 					var firstNode = container.children[0];
 					insertBefore(post.node, firstNode);
 					return;
@@ -315,6 +322,9 @@
             }.bind(this);
         }
     }
+
 })(this);
+
+
 
 
