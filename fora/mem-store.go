@@ -209,17 +209,17 @@ func (store *memstore) GetPosts(ids IdArgs) []Post {
     return posts
 }
 
-func (store *memstore) persistReplies(p *post) error {
+func (store *memstore) persistReplies(p *post, parentIds []Pid) error {
     data := store.data
-    if p.HasParent() {
-        id := p.Parent().Id()
-        replies := data.replies[id]
-        data.replies[id] = append(replies, p.id)
+    for _, parentId := range parentIds {
+        replies := data.replies[parentId]
+        data.replies[parentId] = append(replies, p.id)
     }
+    data.parents[p.id] = parentIds
     return nil
 }
 
-func (store *memstore) PersistPost(p *post) error {
+func (store *memstore) PersistPost(p *post, parentIds ...Pid) error {
     data := store.data
     tid := p.Thread().Id()
     // check if thread is valid
@@ -228,7 +228,7 @@ func (store *memstore) PersistPost(p *post) error {
     }
     p.id = Pid(pidGen())
     data.posts[tid][p.id] = *p
-    store.persistReplies(p)
+    store.persistReplies(p, parentIds)
     return nil
 }
 
@@ -245,6 +245,31 @@ func (store *memstore) GetReplies(ids IdArgs) []Post {
     return replies
 }
 
+func (store *memstore) GetReplyIds(ids IdArgs) []Pid {
+    _, _, pid := ids.Extract()
+    data := store.data
+    return data.replies[pid]
+}
+
+func (store *memstore) GetParents(ids IdArgs) []Post {
+    _, tid, pid := ids.Extract()
+    data := store.data
+    var parents []Post
+    for _, rid := range data.parents[pid] {
+        rep := store.lookupPost(tid, rid)
+        if rep != nil {
+            parents = append(parents, rep)
+        }
+    }
+    return parents
+}
+
+func (store *memstore) GetParentIds(ids IdArgs) []Pid {
+    _, _, pid := ids.Extract()
+    data := store.data
+    return data.parents[pid]
+}
+
 func (store *memstore) GetUser(name string) User {
     u := store.data.users[name]
     return &u
@@ -254,7 +279,6 @@ func (store *memstore) PersistUser(u *user) error {
     store.data.users[u.name] = *u
     return nil
 }
-
 
 
 

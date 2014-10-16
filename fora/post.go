@@ -52,7 +52,7 @@ func (post *post) ParentIds() []Pid {
 
 func (post *post) HasParent() bool {
     u := post.CurrentUser()
-    return userStore(u).GetParentsIds() != nil
+    return userStore(u).GetParentIds(toIdArgs(post)) != nil
 }
 
 func (p *post) Reply(title, body string) Post {
