@@ -11,11 +11,12 @@ type threadmap map[Tid]thread
 type postmap   map[Pid]post
 
 type memstoredata struct {
-    users    usermap
-    boards    boardmap
+    users   usermap
+    boards  boardmap
     threads map[Bid]threadmap
-    posts    map[Tid]postmap
+    posts   map[Tid]postmap
     replies map[Pid][]Pid
+    parents map[Pid][]Pid
 }
 
 var defaultstore memstoredata
@@ -89,6 +90,7 @@ func newMemStore() Store {
         threads: make(map[Bid]threadmap),
         posts:   make(map[Tid]postmap),
         replies: make(map[Pid][]Pid),
+        parents: make(map[Pid][]Pid),
     }}
 }
 
@@ -192,19 +194,6 @@ func (store *memstore) GetPost(ids IdArgs) Post {
     return post
 }
 
-func (store *memstore) GetReplies(ids IdArgs) []Post {
-    _, tid, pid := ids.Extract()
-    data := store.data
-    var replies []Post
-    for _, rid := range data.replies[pid] {
-        rep := store.lookupPost(tid, rid)
-        if rep != nil {
-            replies = append(replies, rep)
-        }
-    }
-    return replies
-}
-
 func (store *memstore) GetPosts(ids IdArgs) []Post {
     bid, tid, _ := ids.Extract()
     if !store.threadExists(bid, tid) {
@@ -241,6 +230,19 @@ func (store *memstore) PersistPost(p *post) error {
     data.posts[tid][p.id] = *p
     store.persistReplies(p)
     return nil
+}
+
+func (store *memstore) GetReplies(ids IdArgs) []Post {
+    _, tid, pid := ids.Extract()
+    data := store.data
+    var replies []Post
+    for _, rid := range data.replies[pid] {
+        rep := store.lookupPost(tid, rid)
+        if rep != nil {
+            replies = append(replies, rep)
+        }
+    }
+    return replies
 }
 
 func (store *memstore) GetUser(name string) User {
