@@ -1,6 +1,11 @@
 {{template "sub/header" .}}
 
-<form action='POST'>
+{{$tid := str .Id}}
+<form method='POST' action='{{url "thread-reply" "tid" $tid}}'>
+    <p>title: <input name="post-title" /></p>
+    <p> comment:
+        <textarea name="post-body"></textarea>
+    </p>
 </form>
 
 {{template "thread-op" .}}
