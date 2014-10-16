@@ -24,7 +24,10 @@ type Store interface {
     GetPost(ids IdArgs) Post
     GetReplies(ids IdArgs) []Post
     GetPosts(ids IdArgs) []Post
-    PersistPost(t *post) error
+    GetReplyIds(ids IdArgs) []Pid
+    GetParents(ids IdArgs) []Post
+    GetParentIds(ids IdArgs) []Pid
+    PersistPost(t *post, parentIds ...Pid) error
 
     GetUser(name string) User
     PersistUser(u *user) error
