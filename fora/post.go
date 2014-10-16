@@ -5,6 +5,8 @@ import (
     "strconv"
 )
 
+// TODO: Make userStore take a UserContainer argument instead
+
 type post struct {
     creator User
     currentUser User
@@ -12,7 +14,6 @@ type post struct {
     title string
     body string
     thread Thread
-    parent Post
 }
 
 func (post *post) CurrentUser() User {
@@ -39,24 +40,30 @@ func (post *post) Creator() User {
     return post.creator
 }
 
+func (post *post) Parents() []Post {
+    u := post.CurrentUser()
+    return userStore(u).GetParents(toIdArgs(post))
+}
+
+func (post *post) ParentIds() []Pid {
+    u := post.CurrentUser()
+    return userStore(u).GetParentIds(toIdArgs(post))
+}
+
 func (post *post) HasParent() bool {
-    return post.parent != nil
+    u := post.CurrentUser()
+    return userStore(u).GetParentsIds() != nil
 }
 
-func (post *post) Parent() Post {
-    return post.parent
-}
-
-func (p *post) Reply(title string, body string) Post {
+func (p *post) Reply(title, body string) Post {
     user := p.CurrentUser()
     replypost := &post{
         creator: user,
         title: title,
         body: body,
         thread: p.Thread(),
-        parent: p,
     }
-    userStore(user).PersistPost(replypost) // handle error
+    userStore(user).PersistPost(replypost, p.Id()) // handle error
     return replypost
 }
 
@@ -65,6 +72,11 @@ func (p *post) Replies() []Post {
     t := p.Thread()
     b := t.Board()
     return userStore(u).GetReplies(IdArgs{b.Id(), t.Id(), p.Id()})
+}
+
+func (post *post) ReplyIds() []Pid {
+    u := post.CurrentUser()
+    return userStore(u).GetReplyIds(toIdArgs(post))
 }
 
 func createPost(creator User, title string, body string) *post {
@@ -76,7 +88,7 @@ func createPost(creator User, title string, body string) *post {
     }
 }
 
-func newPost(thread Thread, title string, body string) Post {
+func newPost(thread Thread, title, body string) Post {
     op := thread.GetOp()
     return op.Reply(title, body)
 }
@@ -87,6 +99,14 @@ func getPost(t Thread, pid Pid) Post {
     return userStore(u).GetPost(IdArgs{bid, t.Id(), pid})
 }
 
+func toIdArgs(post Post) IdArgs {
+    t := post.Thread()
+    return IdArgs{
+        B: t.Board().Id(),
+        T: t.Id(),
+        P: post.Id(),
+    }
+}
 
 // implement sort interface
 type PostById []Post

@@ -72,16 +72,17 @@ type Post interface {
     Id() Pid
     Thread() Thread
     Creator() User
-    Parent() Post
     Reply(title string, body string) Post
     Replies() []Post
+    ReplyIds() []Pid
+
+    Parents() []Post
+    ParentIds() []Pid
 }
 
 //func BoardExists(bid bid) bool{ }
 //func GetBoard(bid bid) *Board{ }
 //func GetThread(tid tid) *Thread{ }
 //func GetPost(pid pid) *Post{ }
-
-
 
 
