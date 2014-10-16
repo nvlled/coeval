@@ -2,6 +2,12 @@ package fora
 
 var activeStore Store
 
+type IdArgs struct {
+    B Bid
+    T Tid
+    P Pid
+}
+
 type Store interface {
     New(user User) Store
     CurrentUser() User
@@ -11,17 +17,21 @@ type Store interface {
     PersistBoard(*board) error
     GetBoardPage(bid Bid, pageno int, pagesize int) []Thread
 
-    GetThread(bid Bid, tid Tid) Thread
+    GetThread(ids IdArgs) Thread
     GetThreads(bid Bid) []Thread
     PersistThread(t *thread) error
 
-    GetPost(bid Bid, tid Tid, pid Pid) Post
-    GetReplies(bid Bid, tid Tid, pid Pid) []Post
-    GetPosts(bid Bid, tid Tid) []Post
+    GetPost(ids IdArgs) Post
+    GetReplies(ids IdArgs) []Post
+    GetPosts(ids IdArgs) []Post
     PersistPost(t *post) error
 
     GetUser(name string) User
     PersistUser(u *user) error
+}
+
+func (id IdArgs) Extract() (Bid, Tid, Pid) {
+    return id.B, id.T, id.P
 }
 
 func userStore(user User) Store {
@@ -35,7 +45,5 @@ func SetUserStore(store Store) {
 func init() {
     SetUserStore(newMemStore())
 }
-
-
 
 

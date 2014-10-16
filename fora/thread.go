@@ -53,7 +53,7 @@ func (thread *thread) Reply(title string, body string) Post {
 func (thread *thread) GetPosts() []Post {
     u := thread.CurrentUser()
     b := thread.Board()
-    posts := userStore(u).GetPosts(b.Id(), thread.Id())
+    posts := userStore(u).GetPosts(IdArgs{B: b.Id(), T: thread.Id()})
     posts = posts[1:] // excluding Op
     sort.Sort(PostById(posts))
     return posts
@@ -62,7 +62,7 @@ func (thread *thread) GetPosts() []Post {
 func (thread *thread) RecentPosts() []Post {
     u := thread.CurrentUser()
     b := thread.Board()
-    posts := userStore(u).GetPosts(b.Id(), thread.Id())
+    posts := userStore(u).GetPosts(IdArgs{B: b.Id(), T: thread.Id()})
     sort.Sort(PostById(posts))
     posts = posts[1:] // excluding Op
     n := len(posts)
@@ -87,7 +87,7 @@ func newThread(board Board, title string, body string) Thread {
 
 func getThread(board Board, tid Tid) Thread {
     u := board.CurrentUser()
-    return userStore(u).GetThread(board.Id(), tid)
+    return userStore(u).GetThread(IdArgs{B: board.Id(), T: tid})
 }
 
 func getThreads(board Board) []Thread {

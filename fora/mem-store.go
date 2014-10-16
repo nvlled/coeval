@@ -129,7 +129,8 @@ func setCurrentUser(t *thread, u User) {
     }
 }
 
-func (store *memstore) GetThread(bid Bid, tid Tid) Thread {
+func (store *memstore) GetThread(ids IdArgs) Thread {
+    bid, tid, _ := ids.Extract()
     t := store.lookupThread(bid, tid)
     if t == nil {
         // noooooooooo
@@ -181,7 +182,8 @@ func (store *memstore) PersistThread(t *thread) error {
     return nil
 }
 
-func (store *memstore) GetPost(bid Bid, tid Tid, pid Pid) Post {
+func (store *memstore) GetPost(ids IdArgs) Post {
+    bid, tid, pid := ids.Extract()
     if !store.threadExists(bid, tid) {
         // thread not found
     }
@@ -190,7 +192,8 @@ func (store *memstore) GetPost(bid Bid, tid Tid, pid Pid) Post {
     return post
 }
 
-func (store *memstore) GetReplies(bid Bid, tid Tid, pid Pid) []Post {
+func (store *memstore) GetReplies(ids IdArgs) []Post {
+    _, tid, pid := ids.Extract()
     data := store.data
     var replies []Post
     for _, rid := range data.replies[pid] {
@@ -202,7 +205,8 @@ func (store *memstore) GetReplies(bid Bid, tid Tid, pid Pid) []Post {
     return replies
 }
 
-func (store *memstore) GetPosts(bid Bid, tid Tid) []Post {
+func (store *memstore) GetPosts(ids IdArgs) []Post {
+    bid, tid, _ := ids.Extract()
     if !store.threadExists(bid, tid) {
         // thread not found, abort
     }

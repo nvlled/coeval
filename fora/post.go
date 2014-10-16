@@ -64,7 +64,7 @@ func (p *post) Replies() []Post {
     u := p.CurrentUser()
     t := p.Thread()
     b := t.Board()
-    return userStore(u).GetReplies(b.Id(), t.Id(), p.Id())
+    return userStore(u).GetReplies(IdArgs{b.Id(), t.Id(), p.Id()})
 }
 
 func createPost(creator User, title string, body string) *post {
@@ -84,7 +84,7 @@ func newPost(thread Thread, title string, body string) Post {
 func getPost(t Thread, pid Pid) Post {
     u := t.CurrentUser()
     bid := t.Board().Id()
-    return userStore(u).GetPost(bid, t.Id(), pid)
+    return userStore(u).GetPost(IdArgs{bid, t.Id(), pid})
 }
 
 

@@ -27,7 +27,6 @@ func BoardURL(board fora.Board) string {
 }
 
 var env = map[string]interface{} {
-    "post_url" :
     "thread_url" : ThreadURL,
     "board_url" : BoardURL,
     "url"   : routes.URL,
