@@ -1,89 +1,89 @@
 package fora
 
 type board struct {
-	currentUser User
-	id          Bid
-	desc        string
-	creator     User
-	//threads map[string]*Thread
+    currentUser User
+    id          Bid
+    desc        string
+    creator     User
+    //threads map[string]*Thread
 }
 
 const (
-	PAGE_SIZE int = 10
+    PAGE_SIZE int = 10
 )
 
 func (board *board) CurrentUser() User {
-	return board.currentUser
+    return board.currentUser
 }
 
 func (board *board) Id() Bid {
-	return board.id
+    return board.id
 }
 
 func (board *board) Desc() string {
-	return board.desc
+    return board.desc
 }
 
 func (board *board) Creator() User {
-	return board.creator
+    return board.creator
 }
 
 func (board *board) NewThread(title string, body string) Thread {
-	return newThread(board, title, body)
+    return newThread(board, title, body)
 }
 
 func (board *board) GetThread(tid Tid) Thread {
-	return getThread(board, tid)
-	//thread := Store().GetThread(tid)
-	//thread.currentUser = board.currentUser()
+    return getThread(board, tid)
+    //thread := Store().GetThread(tid)
+    //thread.currentUser = board.currentUser()
 }
 
 func (board *board) GetThreads() []Thread {
-	return getThreads(board)
+    return getThreads(board)
 }
 
 func (board *board) GetPage(pageno int) []Thread {
-	// if !BoardExists { return err }
-	store := userStore(board.CurrentUser())
-	return store.GetBoardPage(board.Id(), pageno, PAGE_SIZE)
+    // if !BoardExists { return err }
+    store := userStore(board.CurrentUser())
+    return store.GetBoardPage(board.Id(), pageno, PAGE_SIZE)
 }
 
 func getBoard(currentUser User, bid Bid) (Board, error) {
-	var err error
-	b := userStore(currentUser).GetBoard(bid)
-	if b == nil {
-		err = BoardNotFound(bid)
-	}
-	return b, err
+    var err error
+    b := userStore(currentUser).GetBoard(bid)
+    if b == nil {
+        err = BoardNotFound(bid)
+    }
+    return b, err
 }
 
 func getBoards(currentUser User) []Board {
-	return userStore(currentUser).GetBoards()
+    return userStore(currentUser).GetBoards()
 }
 
 func BoardExists(bid Bid) bool {
-	b,_ := getBoard(Anonymous(), bid)
-	return b != nil
+    b,_ := getBoard(Anonymous(), bid)
+    return b != nil
 }
 
 func newBoard(creator User, bid Bid, desc string) (Board, error) {
-	if creator.Kind() != Admin {
-		return nil, AdminError
-	}
+    if creator.Kind() != Admin {
+        return nil, AdminError
+    }
 
-	b := &board{
-		currentUser: creator,
-		id:          bid,
-		desc:        desc,
-		creator:     creator,
-	}
+    b := &board{
+        currentUser: creator,
+        id:          bid,
+        desc:        desc,
+        creator:     creator,
+    }
 
-	if err := verifyBoardCreate(b); err != nil {
-		return nil, err
-	}
+    if err := verifyBoardCreate(b); err != nil {
+        return nil, err
+    }
 
-	userStore(creator).PersistBoard(b)
-	return b, nil
+    userStore(creator).PersistBoard(b)
+    return b, nil
 }
 
 

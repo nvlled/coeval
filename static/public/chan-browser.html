@@ -1,80 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title></title>
-	<script src='scripts/intf-core.js'></script>
-	<script src='scripts/intf-main.js'></script>
-	<script src='scripts/chan.js'></script>
-	<style>
-		body {
-			background-color: #ffd;
-		}
+    <meta charset="UTF-8">
+    <title></title>
+    <script src='scripts/intf-core.js'></script>
+    <script src='scripts/intf-main.js'></script>
+    <script src='scripts/chan.js'></script>
+    <style>
+        body {
+            background-color: #ffd;
+        }
 
-		.post {
-			padding: 2px;
-			margin: 3px;
-			background-color: #333;
-			color: #eea;
-		}
-		/*
-		.postlink.parent {
-			color: red;
-		}
-		*/
-		.postlink {
-			color: #f44;
-		}
+        .post {
+            padding: 2px;
+            margin: 3px;
+            background-color: #333;
+            color: #eea;
+        }
+        /*
+        .postlink.parent {
+            color: red;
+        }
+        */
+        .postlink {
+            color: #f44;
+        }
 
-		.postlink.child {
-			margin-right: 10px;
-		}
-		.post-replies {
-			font-size: 10;
-		}
+        .postlink.child {
+            margin-right: 10px;
+        }
+        .post-replies {
+            font-size: 10;
+        }
 
-		.post.subthread {
-			border-left: 10px solid yellow;
-			padding-left: 10px;
-		}
+        .post.subthread {
+            border-left: 10px solid yellow;
+            padding-left: 10px;
+        }
 
-		.maymay-arrow {
-			color: #1d1;
-		}
+        .maymay-arrow {
+            color: #1d1;
+        }
 
-		.indented {
-			margin-left: 50px;
-		}
+        .indented {
+            margin-left: 50px;
+        }
 
-		.post.highlight {
+        .post.highlight {
       background-color: red;
-		}
+        }
 
-	</style>
+    </style>
 </head>
 <body>
 
 <div id='board-form'>
-	<span><span>Board</span> <input id='bid' /></span>
-	<span><span>Thread</span> id <input id='tid' /></span>
-	<button>load</button>
-	<span id='info'></info>
+    <span><span>Board</span> <input id='bid' /></span>
+    <span><span>Thread</span> id <input id='tid' /></span>
+    <button>load</button>
+    <span id='info'></info>
 </div>
 <hr />
 <div id='thread-container'></div>
 
 <!-- template container -->
 <div class='template'>
-	<div class='post'>
-		<p><a class='post-anchor' href='#'>No.</a><span class='post-id'>000</span></p>
-		<p class='post-body'>
-		content 'ere
-		</p>
-		<hr />
-		<div class='post-replies'>
-			Replies:
-		</div>
-	</div>
+    <div class='post'>
+        <p><a class='post-anchor' href='#'>No.</a><span class='post-id'>000</span></p>
+        <p class='post-body'>
+        content 'ere
+        </p>
+        <hr />
+        <div class='post-replies'>
+            Replies:
+        </div>
+    </div>
 </div>
 
 </body>
