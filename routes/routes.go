@@ -44,14 +44,14 @@ var routeDef = def.Route(
 		"/board/{bid}", ct.BoardPage, "1st-board-page",
 
 		def.SRoute("/page/{page}",	ct.BoardPage,	 "board-page"),
-		def.SRoute("/catalog",	ct.BoardCatalog, "board-catalog"),
+		def.SRoute("/catalog",		ct.BoardCatalog, "board-catalog"),
 		def.SRoute("/delete",		ct.BoardDelete,  "board-delete"),
 		def.SRoute("/new-thread",	ct.ThreadCreate, "thread-create"),
 
 		def.SRoute(
 			"/thread/{tid}",	 ct.ThreadView,	  "thread-view",
-			def.SRoute("delete", ct.ThreadDelete, "thread-delete"),
-			def.SRoute("reply",  ct.ThreadReply,  "thread-reply"),
+			def.SRoute("/delete", ct.ThreadDelete, "thread-delete"),
+			def.SRoute("/reply",  ct.ThreadReply,  "thread-reply"),
 			def.SRoute(
 				"/post/{pid}",		  ct.PostView,	 "post-view",
 				def.SRoute("/delete", ct.PostDelete, "post-delete"),
@@ -104,6 +104,7 @@ func init() {
 	root.StrictSlash(true)
 	routes = def.BuildRouter(routeDef, root)
 }
+
 
 
 
