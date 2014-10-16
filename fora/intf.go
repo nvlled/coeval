@@ -61,7 +61,7 @@ type Thread interface {
     Creator() User
     GetOp() Post
     GetPost(pid Pid) Post
-    Reply(title string, body string) Post
+    Reply(title string, body string, parentIds ...Pid) Post
     GetPosts() []Post
     RecentPosts() []Post
 }
@@ -72,7 +72,7 @@ type Post interface {
     Id() Pid
     Thread() Thread
     Creator() User
-    Reply(title string, body string) Post
+    Reply(title, body string, parentIds ...Pid) Post
     Replies() []Post
     ReplyIds() []Pid
 

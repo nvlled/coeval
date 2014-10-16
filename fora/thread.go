@@ -46,8 +46,8 @@ func (thread *thread) GetPost(id Pid) Post {
     return getPost(thread, id)
 }
 
-func (thread *thread) Reply(title string, body string) Post {
-    return newPost(thread, title, body)
+func (thread *thread) Reply(title, body string, parentIds ...Pid) Post {
+    return newPost(thread, title, body, parentIds...)
 }
 
 func (thread *thread) GetPosts() []Post {
