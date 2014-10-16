@@ -27,15 +27,18 @@ Username: {{.username}}
 
 {{define "sub/post"}}
 <div class='post'>
-    >>
-    <h4>#{{.Id}} | {{.Title}} - {{.Creator.Name}}</h4>
-    {{$t := .Thread}}
-    {{$b := $t.Board}}
-    {{$link :=  url "post-view" "bid" (str $b.Id) "tid" (str $t.Id) "pid" (str .Id)}}
-    <p>[<a href='{{$link}}'>reply</a>]</p>
-    <p>
-    {{.Body}}
-    </p>
+    <div class='post'>
+      <p>
+        <a class='post-anchor' href='#'>No.</a><span class='post-id'>{{.Id}}</span>
+        <p>[<a href='{{thread_url .Thread}}'>reply</a>]</p>
+      </p>
+        <h4>#{{.Id}} | {{.Title}} - {{.Creator.Name}}</h4>
+        <p class='post-body'>
+        {{.Body}}
+        </p>
+        <hr />
+        <div class='post-replies'></div>
+    </div>
 </div>
 {{end}}
 
