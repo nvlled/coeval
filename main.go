@@ -14,9 +14,23 @@ import (
     "nvlled/coeval/control"
 )
 
+func ThreadURL(thread fora.Thread) string {
+  if (thread == nil) { return "#" }
+  return routes.URL("thread-view",
+    "bid", string(thread.Board().Id()),
+    "tid", string(thread.Id()))
+}
+
+func BoardURL(board fora.Board) string {
+  if (board == nil) { return "#" }
+  return routes.URL("1st-board-page", "bid", string(board.Id()))
+}
+
 var env = map[string]interface{} {
-    "url" : routes.URL,
-    "str" : func(x interface{}) string {
+    "thread_url" : ThreadURL,
+    "board_url" : BoardURL,
+    "url"   : routes.URL,
+    "str"   : func(x interface{}) string {
         return fmt.Sprintf("%v", x)
     },
 }
