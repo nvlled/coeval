@@ -93,7 +93,7 @@ func TestBoardListing(t *testing.T) {
 
     inconsistent := false
     for _,b1 := range boards {
-        b2 := admin.GetBoard(b1.Id())
+        b2,_ := admin.GetBoard(b1.Id())
         inconsistent = inconsistent || b1.Desc() != b2.Desc()
     }
     if inconsistent {
@@ -109,8 +109,8 @@ func TestThreadCreation(t *testing.T) {
     admin.NewBoard("g", "animu hating plebs")
     admin.NewBoard("a", "mai waifu is best gril")
 
-    g := anon.GetBoard("g")
-    a := anon.GetBoard("a")
+    g,_ := anon.GetBoard("g")
+    a,_ := anon.GetBoard("a")
 
     title := "Daily programming bread"
     body := "What are you working on /g/?"
@@ -154,9 +154,9 @@ func TestPosting(t *testing.T) {
     anon1 := Anonymous()
     anon2 := Anonymous()
 
-    g := anon1.GetBoard("g")
+    g,_ := anon1.GetBoard("g")
     dpt := g.NewThread("Daily sh?tposting thread", "What are you working on /g/?")
-    g = anon2.GetBoard("g")
+    g,_ = anon2.GetBoard("g")
     dpt2 := g.GetThread(dpt.Id())
 
     if dpt.Id() != dpt2.Id() {
@@ -177,18 +177,17 @@ func TestPosting(t *testing.T) {
         t.Error("failed to post in a thread")
     }
 
-    // GetPosts include OP
-    if len(dpt.GetPosts()) != 3 {
+    if len(dpt.GetPosts()) != 2 {
         t.Error("reply count is wrong")
     }
-    if len(dpt2.GetPosts()) != 3 {
+    if len(dpt2.GetPosts()) != 2 {
         t.Error("reply count is wrong")
     }
 
-    if post1.Parent().Id() != dpt.GetOp().Id() {
+    if !post1.IsChildOf(dpt.GetOp()) {
         t.Error("op is misparented")
     }
-    if post2.Parent().Id() != dpt.GetOp().Id() {
+    if !post2.IsChildOf(dpt.GetOp()) {
         t.Error("op is misparented")
     }
 
@@ -200,30 +199,87 @@ func TestPosting(t *testing.T) {
         t.Error("reply count is wrong")
     }
 
-    if post3.Parent().Id() != post1.Id() {
+    if !post3.IsChildOf(post1) {
         t.Error("post is misparented")
     }
-    if post4.Parent().Id() != post3.Id() {
+    if !post4.IsChildOf(post3) {
         t.Error("post is misparented")
     }
-    if post5.Parent().Id() != post1.Id() {
+    if !post5.IsChildOf(post1) {
         t.Error("post is misparented")
     }
 
-    if len(dpt.GetPosts()) != 6 {
+    if len(dpt.GetPosts()) != 5 {
         t.Error("wrong post count in thread")
     }
-    if len(dpt2.GetPosts()) != 6 {
+    if len(dpt2.GetPosts()) != 5 {
         t.Error("wrong post count in thread")
     }
     if len(post3.Replies()) != 1 {
         t.Error("wrong reply count")
     }
+}
 
+func TestReply(t *testing.T) {
+    SetUserStore(newMemStore())
+
+    admin := NewUser("admin", Admin)
+    g,_ := admin.NewBoard("g", "animu hating plebs")
+    dpt := g.NewThread("Daily anime appreciation thread", "What are you working on /g/?")
+
+    op := dpt.GetOp()
+    post1 := dpt.Reply("no", "Watching animu with riced gentto")
+    post2 := dpt.Reply("no", "thanks for using the anime picture OP")
+    post3 := dpt.Reply("no", "sauce on that pic?")
+
+    post4 := dpt.Reply("", "waeboo scums git >>/out/",
+        op.Id(), post1.Id(), post2.Id(), post3.Id())
+    post5 := post3.Reply("", "what is google")
+    post6 := post2.Reply("", "no")
+    post7 := dpt.Reply("", "you must be gnu here", post4.Id(), post6.Id())
+
+
+    if len(op.ReplyIds())    != 4 { t.Error("wrong reply count") }
+    if len(post1.ReplyIds()) != 1 { t.Error("wrong reply count") }
+    if len(post2.ReplyIds()) != 2 { t.Error("wrong reply count") }
+    if len(post3.ReplyIds()) != 2 { t.Error("wrong reply count") }
+    if len(post4.ReplyIds()) != 1 { t.Error("wrong reply count") }
+    if len(post5.ReplyIds()) != 0 { t.Error("wrong reply count") }
+    if len(post6.ReplyIds()) != 1 { t.Error("wrong reply count") }
+    if len(post7.ReplyIds()) != 0 { t.Error("wrong reply count") }
+
+    if len(op.ParentIds())    != 0 { t.Error("wrong parent count") }
+    if len(post1.ParentIds()) != 1 { t.Error("wrong parent count") }
+    if len(post2.ParentIds()) != 1 { t.Error("wrong parent count") }
+    if len(post3.ParentIds()) != 1 { t.Error("wrong parent count") }
+    if len(post4.ParentIds()) != 4 { t.Error("wrong parent count") }
+    if len(post5.ParentIds()) != 1 { t.Error("wrong parent count") }
+    if len(post6.ParentIds()) != 1 { t.Error("wrong parent count") }
+    if len(post7.ParentIds()) != 2 { t.Error("wrong parent count") }
+
+    if !op.IsParentOf(post1) { t.Error("post is disowned") }
+    if !op.IsParentOf(post2) { t.Error("post is disowned") }
+    if !op.IsParentOf(post3) { t.Error("post is disowned") }
+    if !post1.IsParentOf(post4) { t.Error("post is disowned") }
+    if !post2.IsParentOf(post4) { t.Error("post is disowned") }
+    if !post3.IsParentOf(post4) { t.Error("post is disowned") }
+    if !op.IsParentOf(post4) { t.Error("post is disowned") }
+    if !post3.IsParentOf(post5) { t.Error("post is disowned") }
+    if !post2.IsParentOf(post6) { t.Error("post is disowned") }
+    if !post4.IsParentOf(post7) { t.Error("post is disowned") }
+    if !post6.IsParentOf(post7) { t.Error("post is disowned") }
+
+    if !post1.IsChildOf(op) { t.Error("post is an adopted orphan") }
+    if !post2.IsChildOf(op) { t.Error("post is an adopted orphan") }
+    if !post3.IsChildOf(op) { t.Error("post is an adopted orphan") }
+    if !post4.IsChildOf(op) { t.Error("post is an adopted orphan") }
+
+    if post5.IsChildOf(op) { t.Error("post is an imposter child") }
+    if post6.IsChildOf(op) { t.Error("post is an imposter child") }
+    if post7.IsChildOf(op) { t.Error("post is an imposter child") }
 }
 
 func TestValidation(t *testing.T) {
 }
-
 
 
