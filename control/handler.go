@@ -9,6 +9,7 @@ import (
     "nvlled/coeval/sesion"
     "nvlled/coeval/fora"
     "nvlled/coeval/common"
+    "nvlled/coeval/urlfor"
     "strconv"
 )
 
@@ -109,7 +110,7 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
     post := thread.Reply(title, body, parentIds...)
     //flunk(errFromReply)
 
-    w.Header().Set("Location", urlfor("thread-view"))
+    w.Header().Set("Location", urlfor.Thread(thread))
     w.WriteHeader(301)
     rend.Render(w, r, setData(r, rend.Data{
         "post" : post,

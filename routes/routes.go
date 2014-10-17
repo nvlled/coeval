@@ -10,6 +10,7 @@ import (
     "nvlled/coeval/rend"
     "nvlled/coeval/sesion/key"
     ct "nvlled/coeval/control"
+    "nvlled/coeval/urlfor"
     "fmt"
     "log"
 )
@@ -70,7 +71,7 @@ var routeDef = def.Route(
 
 var routes *mux.Router
 
-func URL(name string, params ...string) string {
+func createUrl(name string, params ...string) string {
     r := routes.Get(name)
     if r != nil {
         urlpath, err := r.URL(params...)
@@ -103,6 +104,7 @@ func init() {
     root := mux.NewRouter()
     root.StrictSlash(true)
     routes = def.BuildRouter(routeDef, root)
+    urlfor.SetUrlMaker(createUrl)
 }
 
 
