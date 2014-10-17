@@ -104,12 +104,13 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
     board,err := user.GetBoard(bid)
     flunk(err)
     thread := board.GetThread(tid)
-    //flunk(errFromThread)
-    // Note: add error handling
+    //flunk(errFromGetThread)
 
     post := thread.Reply(title, body, parentIds...)
-    flash("Post submitted")
+    //flunk(errFromReply)
 
+    w.Header().Set("Location", urlfor("thread-view"))
+    w.WriteHeader(301)
     rend.Render(w, r, setData(r, rend.Data{
         "post" : post,
     }))
