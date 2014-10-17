@@ -82,6 +82,20 @@ func (post *post) ReplyIds() []Pid {
     return userStore(u).GetReplyIds(toIdArgs(post))
 }
 
+func (post *post) IsParentOf(child Post) bool {
+    pids := child.ParentIds()
+    for _,id := range pids {
+        if post.Id() == id {
+            return true
+        }
+    }
+    return false
+}
+
+func (post *post) IsChildOf(parent Post) bool {
+    return parent.IsParentOf(post)
+}
+
 func createPost(creator User, title string, body string) *post {
     return &post{
         currentUser: creator,

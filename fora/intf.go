@@ -75,6 +75,8 @@ type Post interface {
     Reply(title, body string, parentIds ...Pid) Post
     Replies() []Post
     ReplyIds() []Pid
+    IsParentOf(post Post) bool
+    IsChildOf(post Post) bool
 
     Parents() []Post
     ParentIds() []Pid
