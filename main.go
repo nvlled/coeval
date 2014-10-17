@@ -23,7 +23,7 @@ func ThreadURL(thread fora.Thread) string {
 
 func BoardURL(board fora.Board) string {
   if (board == nil) { return "#" }
-  return routes.URL("1st-board-page", "bid", string(board.Id()))
+  return routes.URL("board-view", "bid", string(board.Id()))
 }
 
 var env = map[string]interface{} {

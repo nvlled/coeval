@@ -41,7 +41,7 @@ var routeDef = def.Route(
     ),
 
     def.SRoute(
-        "/board/{bid}", ct.BoardPage, "1st-board-page",
+        "/board/{bid}", ct.BoardPage, "board-view",
 
         def.SRoute("/page/{page}",    ct.BoardPage,     "board-page"),
         def.SRoute("/catalog",        ct.BoardCatalog, "board-catalog"),
