@@ -6,7 +6,7 @@ nothing better to do.
 </p>
 
 <h2>Currently available boards</h2>
-{{range .user.GetBoards}}
+{{range .__user.GetBoards}}
 {{$id := .Id}}
 {{$boardlink := print $id | url "1st-board-page" "bid"}}
 <li><a href='{{$boardlink}}'>/{{$id}}/ - {{.Desc}} </a></li>

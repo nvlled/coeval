@@ -2,6 +2,6 @@
 <h1>coeval</h1>
 
 {{/*.*/}}
-Error: {{with .error}}{{.__msg}}{{else}}Something happened{{end}}
+Error: {{with .__error}}{{.__msg}}{{else}}Something happened{{end}}
 
 {{template "sub/footer" .}}

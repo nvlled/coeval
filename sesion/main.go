@@ -57,17 +57,13 @@ func User(r *ht.Request) fora.User {
 }
 
 func Merge(r *ht.Request, data rend.Data) rend.Data {
-    data["username"] = Username(r)
-    data["user"] = context.Get(r, key.User)
+    data["__username"] = Username(r)
+    data["__user"] = context.Get(r, key.User)
     if data["error"] == nil {
-        data["error"] = rule.Error{}
+        data["__error"] = rule.Error{}
     }
     return data
 }
-
-
-
-
 
 
 
