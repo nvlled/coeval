@@ -8,6 +8,7 @@ import (
     "nvlled/coeval/rend"
     "nvlled/coeval/sesion"
     "nvlled/coeval/fora"
+    "nvlled/coeval/common"
     "strconv"
 )
 
@@ -92,7 +93,26 @@ func ThreadDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func ThreadReply(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprint(w, "thread reply")
+    bid  := fora.Bid(mux.Vars(r)["bid"])
+    tid  := fora.Tid(mux.Vars(r)["tid"])
+    user := sesion.User(r)
+
+    title := r.FormValue("post-title")
+    body  := r.FormValue("post-body")
+    parentIds := common.ParseIds(body)
+
+    board,err := user.GetBoard(bid)
+    flunk(err)
+    thread := board.GetThread(tid)
+    //flunk(errFromThread)
+    // Note: add error handling
+
+    post := thread.Reply(title, body, parentIds...)
+    flash("Post submitted")
+
+    rend.Render(w, r, setData(r, rend.Data{
+        "post" : post,
+    }))
 }
 
 func PostView(w http.ResponseWriter, r *http.Request) {
@@ -129,10 +149,6 @@ func readInt(n string, defVal int) int {
     }
     return x
 }
-
-
-
-
 
 
 
