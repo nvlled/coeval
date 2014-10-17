@@ -5,7 +5,6 @@ type board struct {
     id          Bid
     desc        string
     creator     User
-    //threads map[string]*Thread
 }
 
 const (
@@ -34,8 +33,6 @@ func (board *board) NewThread(title string, body string) Thread {
 
 func (board *board) GetThread(tid Tid) Thread {
     return getThread(board, tid)
-    //thread := Store().GetThread(tid)
-    //thread.currentUser = board.currentUser()
 }
 
 func (board *board) GetThreads() []Thread {
@@ -43,7 +40,6 @@ func (board *board) GetThreads() []Thread {
 }
 
 func (board *board) GetPage(pageno int) []Thread {
-    // if !BoardExists { return err }
     store := userStore(board.CurrentUser())
     return store.GetBoardPage(board.Id(), pageno, PAGE_SIZE)
 }
