@@ -17,7 +17,6 @@ import (
 
 var GET = def.GET
 var POST = def.POST
-var group = def.Group
 
 var routeDef = def.Route(
     "/", ct.Home, "home",
@@ -30,15 +29,8 @@ var routeDef = def.Route(
         def.Hooks(ct.AttachUser),
         def.Guards(ct.RequireAdmin),
 
-        def.SRoute("/board/create",
-        def.Ts{
-            group(GET,    def.H(ct.BoardCreate)),
-            group(POST, def.H(ct.SubmitBoardCreate)),
-        }, "board-create"),
-
-        //def.SRoute("/board/create", group(GET,    def.H(ct.BoardCreate)),       "board-create"),
-        //def.SRoute("/board/create", group(POST, def.H(ct.SubmitBoardCreate)), "board-submit-create"),
-
+        def.SRoute(GET("/board/create"), ct.BoardCreate,       "board-create"),
+        def.SRoute(POST("/board/create"), ct.SubmitBoardCreate, "board-submit-create"),
     ),
 
     def.SRoute(
@@ -90,7 +82,7 @@ func Handler() http.Handler {
 
 func init() {
     // inject route name on the context
-    routeDef.MapRoute(func(d *def.RouteDef) {
+    routeDef.Map(func(d *def.RouteDef) {
         d.AddTransformer(def.TransformerFunc(func(r *mux.Route) {
             def.Attach(r, func(req *http.Request) {
                 context.Set(req, key.RouteName, d.Name())
