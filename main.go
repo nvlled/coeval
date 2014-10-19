@@ -9,6 +9,7 @@ import (
     //"os/signal"
     //"syscall"
     "nvlled/coeval/fora"
+    "nvlled/coeval/sesion"
     "nvlled/coeval/routes"
     "nvlled/coeval/rend"
     "nvlled/coeval/control"
@@ -16,6 +17,8 @@ import (
 )
 
 var env = map[string]interface{} {
+    "get_errors" : sesion.GetErrors,
+    "set_last_form" : sesion.SetLastFormPath,
     "post_url" : urlfor.Post,
     "thread_url" : urlfor.Thread,
     "board_url" : urlfor.Board,
@@ -29,6 +32,7 @@ func createHandler() http.Handler {
     rend.SetEnv(env)
     handler := routes.Handler()
     handler = control.CatchError(handler)
+    handler = sesion.WrapResp(handler)
     return handler
 }
 
@@ -54,6 +58,3 @@ func main() {
     initMessageBoard()
     log.Fatal(http.ListenAndServe(":7070", createHandler()))
 }
-
-
-
