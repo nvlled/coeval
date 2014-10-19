@@ -95,12 +95,11 @@ func User(r *ht.Request) fora.User {
     return fora.Anonymous()
 }
 
-func Merge(r *ht.Request, data rend.Data) rend.Data {
+func Merge(w ht.ResponseWriter, r *ht.Request, data rend.Data) rend.Data {
+    data["__resp"] = w
+    data["__req"] = r
     data["__username"] = Username(r)
     data["__user"] = context.Get(r, key.User)
-    if data["error"] == nil {
-        data["__error"] = rule.Error{}
-    }
     return data
 }
 
