@@ -7,7 +7,6 @@ import (
     "nvlled/coeval/rend"
     "github.com/gorilla/sessions"
     "github.com/gorilla/context"
-    //"strings"
     "nvlled/coeval/fora"
     "github.com/nvlled/rule"
 )
@@ -65,6 +64,18 @@ func Merge(r *ht.Request, data rend.Data) rend.Data {
     return data
 }
 
+func WrapResp(handler ht.Handler) ht.HandlerFunc {
+	return func(w ht.ResponseWriter, r *ht.Request) {
+		context.Set(r, "resp", w)
+		handler.ServeHTTP(w, r)
+	}
+}
 
+func Resp(r *ht.Request) ht.ResponseWriter {
+	switch t := context.Get(r, "resp").(type) {
+	case ht.ResponseWriter: return t
+	}
+	return nil
+}
 
 
