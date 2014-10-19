@@ -76,8 +76,7 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func ThreadView(w http.ResponseWriter, r *http.Request) {
-    bid := fora.Bid(mux.Vars(r)["bid"])
-    tid := fora.Tid(mux.Vars(r)["tid"])
+    bid, tid, _ := getIdsFromMuxVars(r)
     user := sesion.User(r)
 
     board,err := user.GetBoard(bid)
@@ -94,8 +93,7 @@ func ThreadDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func ThreadReply(w http.ResponseWriter, r *http.Request) {
-    bid  := fora.Bid(mux.Vars(r)["bid"])
-    tid  := fora.Tid(mux.Vars(r)["tid"])
+    bid, tid, _ := getIdsFromMuxVars(r)
     user := sesion.User(r)
 
     title := r.FormValue("post-title")
@@ -127,6 +125,13 @@ func PostDelete(w http.ResponseWriter, r *http.Request) {
 
 func PostReply(w http.ResponseWriter, r *http.Request) {
     fmt.Fprint(w, "post reply")
+}
+
+func getIdsFromMuxVars(r *http.Request) (fora.Bid, fora.Tid, fora.Pid) {
+    vars := mux.Vars(r)
+    return fora.Bid(vars["bid"]),
+    fora.Tid(vars["tid"]),
+    fora.Pid(vars["pid"])
 }
 
 var fileServer = http.StripPrefix("/public", http.FileServer(http.Dir("static/public")))
