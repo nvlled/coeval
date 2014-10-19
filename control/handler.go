@@ -20,7 +20,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
-    rend.Render(w, r, sesion.Merge(r, rend.Data{}))
+    rend.Render(w, r, sesion.Merge(w, r, rend.Data{}))
 }
 
 func Admin(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +37,8 @@ func BoardPage(w http.ResponseWriter, r *http.Request) {
     bid := fora.Bid(mux.Vars(r)["bid"])
     board,err := u.GetBoard(bid)
     flunk(err)
-    rend.RenderRoute("board-page", w, r, setData(r, rend.Data{
+    rend.RenderRoute("board-page", w, r, sesion.Merge(w, r, rend.Data{
+        "bid" : bid,
         "pageno" : pageno,
         "threads" : board.GetPage(readInt(pageno, 0)),
     }))
@@ -48,8 +49,8 @@ func BoardCatalog(w http.ResponseWriter, r *http.Request) {
 }
 
 func BoardCreate(w http.ResponseWriter, r *http.Request) {
-    rend.Render(w, r, sesion.Merge(r, rend.Data{
-        "error" : sesion.FlashGet(r, "error"),
+    rend.Render(w, r, sesion.Merge(w, r, rend.Data{
+        //"error" : sesion.FlashGet(r, "error"),
     }))
 }
 
@@ -83,7 +84,7 @@ func ThreadView(w http.ResponseWriter, r *http.Request) {
     flunk(err)
     thread := board.GetThread(tid)
 
-    rend.Render(w, r, setData(r, rend.Data{
+    rend.Render(w, r, sesion.Merge(w, r, rend.Data{
         "thread" : thread,
     }))
 }
@@ -110,7 +111,7 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
 
     w.Header().Set("Location", urlfor.Thread(thread))
     w.WriteHeader(301)
-    rend.Render(w, r, setData(r, rend.Data{
+    rend.Render(w, r, sesion.Merge(w, r, rend.Data{
         "post" : post,
     }))
 }
@@ -137,10 +138,6 @@ func getIdsFromMuxVars(r *http.Request) (fora.Bid, fora.Tid, fora.Pid) {
 var fileServer = http.StripPrefix("/public", http.FileServer(http.Dir("static/public")))
 func ServeStatic(w http.ResponseWriter, r *http.Request) {
     fileServer.ServeHTTP(w, r)
-}
-
-func setData(r *http.Request, data rend.Data) rend.Data {
-    return sesion.Merge(r, data)
 }
 
 func flunk(err error) {
