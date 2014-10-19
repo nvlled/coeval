@@ -154,5 +154,21 @@ func readInt(n string, defVal int) int {
     return x
 }
 
+func returnToForm(w http.ResponseWriter, r *http.Request, err error) {
+    formPath := sesion.LastFormPath(r)
+    sesion.SetErrors(w, r, err)
+
+    if formPath != "" {
+        w.Header().Set("Location", formPath)
+        w.WriteHeader(301)
+    }
+
+    rend.Render(w, r, sesion.Merge(w, r, rend.Data{
+        "error" : err,
+    }))
+}
+
+
+
 
 
