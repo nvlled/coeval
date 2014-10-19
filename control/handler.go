@@ -61,7 +61,7 @@ func SubmitBoardCreate(w http.ResponseWriter, r *http.Request) {
 
     b, err := u.NewBoard(bid,desc)
     if err != nil {
-        sesion.FlashSet(w, r, "error", err)
+        sesion.SetErrors(w, r, err)
         BoardCreate(w, r)
     } else {
         fmt.Fprint(w, "board created: ", b.Id())
@@ -73,7 +73,26 @@ func BoardDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func ThreadCreate(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprint(w, "thread create")
+    bid, _, _ := getIdsFromMuxVars(r)
+    user := sesion.User(r)
+
+    title := r.FormValue("title")
+    body := r.FormValue("body")
+
+    board, err := user.GetBoard(bid)
+    flunk(err)
+    thread := board.NewThread(title, body)
+
+    if err != nil {
+        returnToForm(w, r, err)
+        return
+    }
+
+    w.Header().Set("Location", urlfor.Thread(thread))
+    w.WriteHeader(301)
+    rend.Render(w, r, sesion.Merge(w, r, rend.Data{
+        "thread" : thread,
+    }))
 }
 
 func ThreadView(w http.ResponseWriter, r *http.Request) {
