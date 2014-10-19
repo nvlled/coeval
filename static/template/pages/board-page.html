@@ -1,13 +1,22 @@
 {{template "sub/header" .}}
-<p>Page {{.pageno}}</p>
+{{$err := get_errors .}}
+{{set_last_form .}}
+<form method="post" action='{{url "thread-create" "bid" (str .bid)}}'>
+	<p>title: <input name="post-title"/>
+		{{template "error" $err.title}}
+	</p>
+    <p>comment: <textarea name="post-body"></textarea>
+		{{template "error" $err.body}}
+	</p>
+    <input type="submit" value="create new thread"/>
+</form>
+<p>page {{.pageno}}</p>
 {{range .threads}}
     <div>
         {{template "sub/thread" .}}
         {{range .RecentPosts}}
             {{template "sub/post" .}}
         {{end}}
-        {{/*
-        */}}
     </div>
     <hr />
 {{else}}

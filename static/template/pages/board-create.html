@@ -1,12 +1,13 @@
 {{template "sub/header" .}}
 
+{{$err := get_errors .}}
 <form method="GET" action='{{url "board-create"}}'>
-    {{with .__error.__msg}}<div class='error'>{{.}}</div>{{end}}
+    {{with $err.__msg}}<div class='error'>{{.}}</div>{{end}}
     <p>Board id: <input name='bid' />
-    {{with .__error.bid}}<div class='error'>{{.}}</div>{{end}}
+    {{with $err.bid}}<div class='error'>{{.}}</div>{{end}}
     </p>
     <p>Board desc: <input name='desc' />
-    {{with .__error.desc}}<div class='error'>{{.}}</div>{{end}}
+    {{with $err.desc}}<div class='error'>{{.}}</div>{{end}}
     </p>
     <input type="submit" />
 </form>
