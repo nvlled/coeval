@@ -39,43 +39,43 @@ func FlashGet(r *ht.Request, key string) interface{} {
 }
 
 func SetLastFormPath(data rend.Data) string {
-	var w ht.ResponseWriter
-	var r *ht.Request
-	switch t := data["__resp"].(type) {
-	case ht.ResponseWriter: w = t
-	default: return ""
-	}
-	switch t := data["__req"].(type) {
-	case *ht.Request: r = t
-	default: return ""
-	}
+    var w ht.ResponseWriter
+    var r *ht.Request
+    switch t := data["__resp"].(type) {
+        case ht.ResponseWriter: w = t
+        default: return ""
+    }
+    switch t := data["__req"].(type) {
+        case *ht.Request: r = t
+        default: return ""
+    }
 
-	FlashSet(w, r, "form-path", r.URL.Path)
-	return ""
+    FlashSet(w, r, "form-path", r.URL.Path)
+    return ""
 }
 
 func LastFormPath(r *ht.Request) string {
-	switch t := FlashGet(r, "form-path").(type) {
-	case string: return t
-	}
-	return ""
+    switch t := FlashGet(r, "form-path").(type) {
+        case string: return t
+    }
+    return ""
 }
 
 func SetErrors(w ht.ResponseWriter, r *ht.Request, err error) {
-	FlashSet(w, r, "error", err)
+    FlashSet(w, r, "error", err)
 }
 
 func GetErrors(data rend.Data) interface{} {
-	switch t := data["error"].(type) {
-	case error: return t
-	}
-	switch r := data["__req"].(type) {
-	case *ht.Request:
-		switch t := FlashGet(r, "error").(type) {
-		case error: return t
-		}
-	}
-	return rule.Error{}
+    switch t := data["error"].(type) {
+        case error: return t
+    }
+    switch r := data["__req"].(type) {
+    case *ht.Request:
+        switch t := FlashGet(r, "error").(type) {
+            case error: return t
+        }
+    }
+    return rule.Error{}
 }
 
 func Username(r *ht.Request) string {
@@ -104,17 +104,17 @@ func Merge(w ht.ResponseWriter, r *ht.Request, data rend.Data) rend.Data {
 }
 
 func WrapResp(handler ht.Handler) ht.HandlerFunc {
-	return func(w ht.ResponseWriter, r *ht.Request) {
-		context.Set(r, "resp", w)
-		handler.ServeHTTP(w, r)
-	}
+    return func(w ht.ResponseWriter, r *ht.Request) {
+        context.Set(r, "resp", w)
+        handler.ServeHTTP(w, r)
+    }
 }
 
 func Resp(r *ht.Request) ht.ResponseWriter {
-	switch t := context.Get(r, "resp").(type) {
-	case ht.ResponseWriter: return t
-	}
-	return nil
+    switch t := context.Get(r, "resp").(type) {
+        case ht.ResponseWriter: return t
+    }
+    return nil
 }
 
 
