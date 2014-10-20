@@ -68,11 +68,24 @@ func (p *post) Reply(title, body string, parentIds ...Pid) (Post, error) {
         return nil, err
     }
 
+    store := userStore(user)
     if parentIds == nil {
         parentIds = []Pid{p.Id()}
+    } else {
+        parentIds = filterValidPostIds(store, parentIds)
     }
-    userStore(user).PersistPost(replypost, parentIds...) // handle error
+    store.PersistPost(replypost, parentIds...)
     return replypost, nil
+}
+
+func filterValidPostIds(store Store, postIds []Pid) []Pid {
+    var filtered []Pid
+    for _,id := range postIds {
+        if store.GetPost(IdArgs{P: id}) != nil {
+            filtered = append(filtered, id)
+        }
+    }
+    return filtered
 }
 
 func (p *post) Replies() []Post {
