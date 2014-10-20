@@ -14,7 +14,7 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-    username := "nvlled"
+    username :=  r.FormValue("username")
     sesion.SetUsername(username, w, r)
     fmt.Fprint(w, "logged in as ", username)
 }
@@ -76,12 +76,13 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
     bid, _, _ := getIdsFromMuxVars(r)
     user := sesion.User(r)
 
-    title := r.FormValue("title")
-    body := r.FormValue("body")
+    title := r.FormValue("post-title")
+    body := r.FormValue("post-body")
+
     board := user.GetBoard(bid)
     flunkNil(board, fora.BoardNotFound(bid))
 
-    thread := board.NewThread(title, body)
+    thread, err := board.NewThread(title, body)
 
     if err != nil {
         returnToForm(w, r, err)
@@ -124,8 +125,8 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
     flunkNil(board, fora.BoardNotFound(bid))
     thread := board.GetThread(tid)
 
-    post := thread.Reply(title, body, parentIds...)
-    //flunk(errFromReply)
+    post, err := thread.Reply(title, body, parentIds...)
+    flunk(err)
 
     w.Header().Set("Location", urlfor.Thread(thread))
     w.WriteHeader(301)
@@ -179,7 +180,7 @@ func readInt(n string, defVal int) int {
 }
 
 func returnToForm(w http.ResponseWriter, r *http.Request, err error) {
-    formPath := sesion.LastFormPath(r)
+    formPath := r.FormValue("form-path")
     sesion.SetErrors(w, r, err)
 
     if formPath != "" {
