@@ -1,12 +1,12 @@
 {{template "sub/header" .}}
 {{$err := get_errors .}}
-{{set_last_form .}}
 <form method="post" action='{{url "thread-create" "bid" (str .bid)}}'>
+    <input type="hidden" name="form-path" value="{{.__req.URL.Path}}"/>
 	<p>title: <input name="post-title"/>
-		{{template "error" $err.title}}
+        {{$err.title}}
 	</p>
     <p>comment: <textarea name="post-body"></textarea>
-		{{template "error" $err.body}}
+        {{$err.body}}
 	</p>
     <input type="submit" value="create new thread"/>
 </form>

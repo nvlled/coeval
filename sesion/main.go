@@ -38,29 +38,6 @@ func FlashGet(r *ht.Request, key string) interface{} {
     return nil
 }
 
-func SetLastFormPath(data rend.Data) string {
-    var w ht.ResponseWriter
-    var r *ht.Request
-    switch t := data["__resp"].(type) {
-        case ht.ResponseWriter: w = t
-        default: return ""
-    }
-    switch t := data["__req"].(type) {
-        case *ht.Request: r = t
-        default: return ""
-    }
-
-    FlashSet(w, r, "form-path", r.URL.Path)
-    return ""
-}
-
-func LastFormPath(r *ht.Request) string {
-    switch t := FlashGet(r, "form-path").(type) {
-        case string: return t
-    }
-    return ""
-}
-
 func SetErrors(w ht.ResponseWriter, r *ht.Request, err error) {
     FlashSet(w, r, "error", err)
 }
