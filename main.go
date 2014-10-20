@@ -18,7 +18,6 @@ import (
 
 var env = map[string]interface{} {
     "get_errors" : sesion.GetErrors,
-    "set_last_form" : sesion.SetLastFormPath,
     "post_url" : urlfor.Post,
     "thread_url" : urlfor.Thread,
     "board_url" : urlfor.Board,
@@ -38,14 +37,14 @@ func createHandler() http.Handler {
 
 func initMessageBoard() {
     println("initializing message board")
-    user := fora.NewUser("nvlled", fora.Admin)
+    user,_ := fora.NewUser("nvlled", fora.Admin)
     g,_ := user.NewBoard("g", "animu hating plebs")
     user.NewBoard("a", "saten-san a sl**")
 
     g.NewThread("Daily purgamming thread", "What are you working /g/")
     g.NewThread("Java thread", "What's so bad about java?")
     g.NewThread("DPT", "What are you working on /dpt/?")
-    dpt := g.NewThread("Daily programming thread", "Animu edition")
+    dpt,_ := g.NewThread("Daily programming thread", "Animu edition")
 
     i := 0
     for i < 100 {
@@ -58,3 +57,7 @@ func main() {
     initMessageBoard()
     log.Fatal(http.ListenAndServe(":7070", createHandler()))
 }
+
+
+
+

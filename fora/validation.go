@@ -109,7 +109,6 @@ func postBodyValidLen(post Post) rule.Error {
 }
 
 func postHasBody(post Post) rule.Error {
-    println("postbody = ", post.Body(), len(post.Body()))
     if len(post.Body()) == 0 {
         return rule.AnError("body", "need body")
     }
