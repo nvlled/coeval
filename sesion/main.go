@@ -17,10 +17,19 @@ const (
 
 var store = sessions.NewCookieStore([]byte("supersecretpassword"))
 
-func SetUsername(username string, w ht.ResponseWriter, r *ht.Request) {
+func Set(w ht.ResponseWriter, r *ht.Request, key string, value interface{}) {
     s,_ := store.Get(r, Name)
-    s.Values[key.Username] = username
+    s.Values[key] = value
     s.Save(r, w)
+}
+
+func Get(r *ht.Request, key string) interface{} {
+    s,_ := store.Get(r, Name)
+    return s.Values[key]
+}
+
+func SetUsername(username string, w ht.ResponseWriter, r *ht.Request) {
+    Set(w, r, key.Username, username)
 }
 
 func FlashSet(w ht.ResponseWriter, r *ht.Request, key string, val interface{}) {
