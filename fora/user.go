@@ -60,6 +60,11 @@ func NewUser(name string, kind Kind) (User, error) {
         name: name,
         kind: kind,
     }
+
+    if err := verifyUserDetails(user); err != nil {
+        return nil, err
+    }
+
     u := Anonymous()
     userStore(u).PersistUser(user)
     return user, nil

@@ -79,6 +79,11 @@ func newThread(board Board, title string, body string) (Thread, error) {
         op: op,
         board: board,
     }
+
+    if err := verifyPostDetails(op); err != nil {
+        return nil, err
+    }
+
     op.thread = t
     userStore(u).PersistThread(t)
     userStore(u).PersistPost(op)
@@ -110,5 +115,6 @@ func (threads ThreadById) Less(i, j int) bool {
     y,_ := strconv.Atoi(string(threads[j].Id()))
     return x < y
 }
+
 
 

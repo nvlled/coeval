@@ -63,6 +63,11 @@ func (p *post) Reply(title, body string, parentIds ...Pid) (Post, error) {
         body: body,
         thread: p.Thread(),
     }
+
+    if err := verifyPostDetails(replypost); err != nil {
+        return nil, err
+    }
+
     if parentIds == nil {
         parentIds = []Pid{p.Id()}
     }
