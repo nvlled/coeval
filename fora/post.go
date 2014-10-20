@@ -55,7 +55,7 @@ func (post *post) HasParent() bool {
     return userStore(u).GetParentIds(toIdArgs(post)) != nil
 }
 
-func (p *post) Reply(title, body string, parentIds ...Pid) Post {
+func (p *post) Reply(title, body string, parentIds ...Pid) (Post, error) {
     user := p.CurrentUser()
     replypost := &post{
         creator: user,
@@ -67,7 +67,7 @@ func (p *post) Reply(title, body string, parentIds ...Pid) Post {
         parentIds = []Pid{p.Id()}
     }
     userStore(user).PersistPost(replypost, parentIds...) // handle error
-    return replypost
+    return replypost, nil
 }
 
 func (p *post) Replies() []Post {
@@ -105,7 +105,7 @@ func createPost(creator User, title string, body string) *post {
     }
 }
 
-func newPost(thread Thread, title, body string, parentIds ...Pid) Post {
+func newPost(thread Thread, title, body string, parentIds ...Pid) (Post, error) {
     op := thread.GetOp()
     return op.Reply(title, body, parentIds...)
 }

@@ -24,11 +24,12 @@ type Tid string
 type Pid string
 
 type User interface {
+    UserContainer
     Name() string
     Kind() Kind
     NewUser(name string, kind Kind) (User, error)
     NewBoard(boardId Bid, desc string) (Board, error)
-    GetBoard(boardId Bid) (Board, error)
+    GetBoard(boardId Bid) Board
     GetBoards() []Board
 }
 
@@ -81,10 +82,4 @@ type Post interface {
     Parents() []Post
     ParentIds() []Pid
 }
-
-//func BoardExists(bid bid) bool{ }
-//func GetBoard(bid bid) *Board{ }
-//func GetThread(tid tid) *Thread{ }
-//func GetPost(pid pid) *Post{ }
-
 

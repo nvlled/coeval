@@ -7,6 +7,7 @@ import (
 type user struct {
     name string
     kind Kind
+    currentUser User
 }
 
 func (user *user) Name() string {
@@ -17,11 +18,15 @@ func (user *user) Kind() Kind {
     return user.kind
 }
 
+func (user *user) CurrentUser() User {
+    return user.currentUser
+}
+
 func (user *user) NewBoard(boardId Bid, desc string) (Board, error) {
     return newBoard(user, boardId, desc)
 }
 
-func (user *user) GetBoard(boardId Bid) (Board, error) {
+func (user *user) GetBoard(boardId Bid) Board {
     return getBoard(user, boardId)
 }
 
@@ -29,7 +34,7 @@ func (user *user) GetBoards() []Board {
     return getBoards(user)
 }
 
-func (user *user) NewUser(name string, kind Kind) User {
+func (user *user) NewUser(name string, kind Kind) (User, error) {
     return NewUser(name, kind)
 }
 
@@ -50,14 +55,16 @@ func GetUser(name string) User {
     return userStore(u).GetUser(name)
 }
 
-func NewUser(name string, kind Kind) User {
+func NewUser(name string, kind Kind) (User, error) {
     user := &user{
         name: name,
         kind: kind,
     }
     u := Anonymous()
     userStore(u).PersistUser(user)
-    return user
+    return user, nil
 }
+
+
 
 

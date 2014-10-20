@@ -27,7 +27,7 @@ func (board *board) Creator() User {
     return board.creator
 }
 
-func (board *board) NewThread(title string, body string) Thread {
+func (board *board) NewThread(title string, body string) (Thread, error) {
     return newThread(board, title, body)
 }
 
@@ -44,13 +44,9 @@ func (board *board) GetPage(pageno int) []Thread {
     return store.GetBoardPage(board.Id(), pageno, PAGE_SIZE)
 }
 
-func getBoard(currentUser User, bid Bid) (Board, error) {
-    var err error
+func getBoard(currentUser User, bid Bid) Board {
     b := userStore(currentUser).GetBoard(bid)
-    if b == nil {
-        err = BoardNotFound(bid)
-    }
-    return b, err
+    return b
 }
 
 func getBoards(currentUser User) []Board {
@@ -58,7 +54,7 @@ func getBoards(currentUser User) []Board {
 }
 
 func BoardExists(bid Bid) bool {
-    b,_ := getBoard(Anonymous(), bid)
+    b := getBoard(Anonymous(), bid)
     return b != nil
 }
 
@@ -81,6 +77,5 @@ func newBoard(creator User, bid Bid, desc string) (Board, error) {
     userStore(creator).PersistBoard(b)
     return b, nil
 }
-
 
 

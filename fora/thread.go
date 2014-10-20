@@ -46,7 +46,7 @@ func (thread *thread) GetPost(id Pid) Post {
     return getPost(thread, id)
 }
 
-func (thread *thread) Reply(title, body string, parentIds ...Pid) Post {
+func (thread *thread) Reply(title, body string, parentIds ...Pid) (Post, error) {
     return newPost(thread, title, body, parentIds...)
 }
 
@@ -69,7 +69,7 @@ func (thread *thread) RecentPosts() []Post {
     return posts[int(math.Max(0, float64(n-5))):n]
 }
 
-func newThread(board Board, title string, body string) Thread {
+func newThread(board Board, title string, body string) (Thread, error) {
     var op *post
     var t *thread
     u := board.CurrentUser()
@@ -82,7 +82,7 @@ func newThread(board Board, title string, body string) Thread {
     op.thread = t
     userStore(u).PersistThread(t)
     userStore(u).PersistPost(op)
-    return t
+    return t, nil
 }
 
 func getThread(board Board, tid Tid) Thread {
