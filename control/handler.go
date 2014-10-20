@@ -35,8 +35,8 @@ func BoardPage(w http.ResponseWriter, r *http.Request) {
     u := sesion.User(r)
     pageno := mux.Vars(r)["page"]
     bid := fora.Bid(mux.Vars(r)["bid"])
-    board,err := u.GetBoard(bid)
-    flunk(err)
+    board := u.GetBoard(bid)
+    flunkNil(board, fora.BoardNotFound(bid))
     rend.RenderRoute("board-page", w, r, sesion.Merge(w, r, rend.Data{
         "bid" : bid,
         "pageno" : pageno,
@@ -78,9 +78,9 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
 
     title := r.FormValue("title")
     body := r.FormValue("body")
+    board := user.GetBoard(bid)
+    flunkNil(board, fora.BoardNotFound(bid))
 
-    board, err := user.GetBoard(bid)
-    flunk(err)
     thread := board.NewThread(title, body)
 
     if err != nil {
@@ -99,8 +99,8 @@ func ThreadView(w http.ResponseWriter, r *http.Request) {
     bid, tid, _ := getIdsFromMuxVars(r)
     user := sesion.User(r)
 
-    board,err := user.GetBoard(bid)
-    flunk(err)
+    board := user.GetBoard(bid)
+    flunkNil(board, fora.BoardNotFound(bid))
     thread := board.GetThread(tid)
 
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
@@ -120,10 +120,9 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
     body  := r.FormValue("post-body")
     parentIds := common.ParseIds(body)
 
-    board,err := user.GetBoard(bid)
-    flunk(err)
+    board := user.GetBoard(bid)
+    flunkNil(board, fora.BoardNotFound(bid))
     thread := board.GetThread(tid)
-    //flunk(errFromGetThread)
 
     post := thread.Reply(title, body, parentIds...)
     //flunk(errFromReply)
@@ -165,6 +164,12 @@ func flunk(err error) {
     }
 }
 
+func flunkNil(obj interface{}, err error) {
+    if obj == nil {
+        panic(err)
+    }
+}
+
 func readInt(n string, defVal int) int {
     x, err := strconv.Atoi(n)
     if err != nil {
@@ -186,8 +191,6 @@ func returnToForm(w http.ResponseWriter, r *http.Request, err error) {
         "error" : err,
     }))
 }
-
-
 
 
 
