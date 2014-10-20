@@ -271,8 +271,11 @@ func (store *memstore) GetParentIds(ids IdArgs) []Pid {
 }
 
 func (store *memstore) GetUser(name string) User {
-    u := store.data.users[name]
-    return &u
+    u, ok := store.data.users[name]
+    if ok {
+        return &u
+    }
+    return nil
 }
 
 func (store *memstore) PersistUser(u *user) error {
