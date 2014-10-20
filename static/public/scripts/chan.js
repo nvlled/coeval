@@ -5,7 +5,11 @@
         initForm();
         createSampleThread();
 
-        var linkages = [["1006", "1002"], ["1010", "1004"], ["1009", "1003"], ["1005", "1002"], ["1002", "1001"]];
+        // TODO: Fix bug
+        var linkages = [["1006", "1002"], ["1010", "1004"], ["1009", "1003"], ["1005", "1002"], ["1002", "1001"], ["1008", "1001"], ["1016", "1008"], ["1008", "1003"], ["1007", "1001"], ["1004", "1001"], ["1003", "1001"]];
+
+        linkages = [];
+
         linkages.forEach(function(link) {
             intf.attachToParent(intf.getPost(link[0]), intf.getPost(link[1]));
         });
@@ -123,14 +127,12 @@
             {id: 1015, body: ">>1008 >>1011"},
             {id: 1016, body: ">>1008"},
         ];
-
         var container = document.querySelector("#thread-container");
         container.innerHTML = "";
         intfmain.buildThread(posts, container);
     }
 
 })();
-
 
 
 

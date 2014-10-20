@@ -782,6 +782,7 @@
     // - make post argument order consistent
     // - avoid destroying subthreads if possible
     // - highlight target of childlink
+    // - norder restoration is broke
 
 })(this)
 

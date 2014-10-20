@@ -152,9 +152,6 @@
             var pretext = line.slice(lastIndex);
             node.appendChild(textNode(pretext));
 
-            if (!matched)
-                node.appendChild(textNode(line));
-
             node.appendChild(br());
         });
     }
