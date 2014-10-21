@@ -33,16 +33,26 @@ func SetUsername(username string, w ht.ResponseWriter, r *ht.Request) {
 }
 
 func FlashSet(w ht.ResponseWriter, r *ht.Request, key string, val interface{}) {
-    s,_ := store.Get(r, Name)
+    s, err := store.Get(r, Name)
+    if err != nil { panic(err) }
     s.AddFlash(val, key)
     s.Save(r, w)
 }
 
-func FlashGet(r *ht.Request, key string) interface{} {
-    s,_ := store.Get(r, Name)
+func FlashGetAll(w ht.ResponseWriter, r *ht.Request, key string) []interface{} {
+    s, err := store.Get(r, Name)
+    if err != nil { panic(err) }
+
     fs := s.Flashes(key)
-    if len(fs) > 0 {
-        return fs[0]
+    s.Save(r, w)
+    return fs
+}
+
+func FlashGet(w ht.ResponseWriter, r *ht.Request, key string) interface{} {
+    fs := FlashGetAll(w, r, key)
+    n := len(fs)
+    if n > 0 {
+        return fs[n - 1]
     }
     return nil
 }
@@ -57,7 +67,7 @@ func GetErrors(data rend.Data) interface{} {
     }
     switch r := data["__req"].(type) {
     case *ht.Request:
-        switch t := FlashGet(r, "error").(type) {
+        switch t := FlashGet(Resp(r), r, "error").(type) {
             case error: return t
         }
     }
@@ -86,6 +96,7 @@ func Merge(w ht.ResponseWriter, r *ht.Request, data rend.Data) rend.Data {
     data["__req"] = r
     data["__username"] = Username(r)
     data["__user"] = context.Get(r, key.User)
+    data["__notifications"] = FlashGetAll(w, r, "notifications")
     return data
 }
 
@@ -93,6 +104,7 @@ func WrapResp(handler ht.Handler) ht.HandlerFunc {
     return func(w ht.ResponseWriter, r *ht.Request) {
         context.Set(r, "resp", w)
         handler.ServeHTTP(w, r)
+
     }
 }
 
@@ -102,5 +114,7 @@ func Resp(r *ht.Request) ht.ResponseWriter {
     }
     return nil
 }
+
+
 
 

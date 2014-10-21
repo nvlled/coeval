@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="/public/styles/main.css" />
 </head>
 <body>
+{{range .__notifications}}
+    <p class="notification">(!) {{.__notifications}}</p>
+{{end}}
+
 Username: {{.__username}}
 {{end}}
 
