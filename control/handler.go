@@ -28,7 +28,10 @@ func Admin(w http.ResponseWriter, r *http.Request) {
 }
 
 func BoardList(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprint(w, "board list")
+    u := sesion.User(r)
+    rend.Render(w, r, sesion.Merge(w, r, rend.Data{
+        "boards" : u.GetBoards(),
+    }))
 }
 
 func BoardPage(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +53,6 @@ func BoardCatalog(w http.ResponseWriter, r *http.Request) {
 
 func BoardCreate(w http.ResponseWriter, r *http.Request) {
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
-        //"error" : sesion.FlashGet(r, "error"),
     }))
 }
 

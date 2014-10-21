@@ -33,6 +33,7 @@ var routeDef = def.Route(
         def.SRoute(POST("/board/create"), ct.SubmitBoardCreate, "board-submit-create"),
     ),
 
+    def.SRoute("/board/list", ct.BoardList, "board-list"),
     def.SRoute(
         "/board/{bid}", ct.BoardPage, "board-view",
 

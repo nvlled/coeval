@@ -1,0 +1,10 @@
+{{template "sub/header" .}}
+
+<h2>Boards</h2>
+<ul>
+{{range .boards}}
+<li><a href="{{board_url .}}"/>{{.Id}}</a></li>
+{{end}}
+</ul>
+
+{{template "sub/footer"}}
