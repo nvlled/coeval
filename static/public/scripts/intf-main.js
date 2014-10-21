@@ -98,12 +98,6 @@
         return document.createElement("br");
     }
 
-    function meymey() {
-        var span = document.createElement("span");
-        span.classList.add("maymay-arrow");
-        return span;
-    }
-
     function maymayArrow(text) {
         var span = document.createElement("span");
         span.classList.add("maymay-arrow");
@@ -113,12 +107,6 @@
 
     function textNode(t) {
         return document.createTextNode(t)
-    }
-
-    function spanNode(t) {
-        var span = document.createElement("span");
-        span.innerHTML = t;
-        return span
     }
 
     function parsePostBody(postData, node) {

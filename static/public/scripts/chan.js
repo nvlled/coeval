@@ -67,9 +67,6 @@
         intfmain.buildThread(dptPosts, container);
     }
 
-    function createThreadURL(bid, tid) {
-    }
-
     function fetchResource(url, succfn, errorfn) {
         console.log("*** fetching", url)
         var req = new XMLHttpRequest();
