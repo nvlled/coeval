@@ -10,10 +10,21 @@ function newDb() {
 
 var test = {};
 
-test.testCreation = function() {
-    intf = intf.newModule({
-        getPost: newDb(),
+test.testGeneral = function() {
+    intf = createSampleThread3();
+    intf.postdb.print();
+    var linkages = [["1006", "1002"], ["1010", "1004"], ["1009", "1003"], ["1005", "1002"], ["1002", "1001"], ["1008", "1001"], ["1016", "1008"], ["1008", "1003"], ["1007", "1001"], ["1004", "1001"], ["1003", "1001"]];
+
+
+    linkages.forEach(function(link) {
+        intf.attachToParent(intf.getPost(link[0]), intf.getPost(link[1]));
+        intf.postdb.print();
+        validateInn(intf);
     });
+}
+
+test.testCreation = function() {
+    intf = intf.newModule();
     var id, body;
 
     id = 1001;
@@ -57,9 +68,7 @@ test.testCreation = function() {
 }
 
 test.testLinking = function() {
-    intf = intf.newModule({
-        getPost: newDb(),
-    });
+    intf = intf.newModule();
     var post = createSampleThread1(intf);
 
     assert.equal(intf.nextsib(post[2], 1001), post[4]);
@@ -124,31 +133,6 @@ test.testInNorderCase = function() {
         var posts = al.subt(id);
         assert.ok(intf.isIndented(posts[posts.length-1]));
     }
-    var validateInn = function() {
-        var innPosts = intf.postdb.inNorderPosts();
-        innPosts.forEach(function(post) {
-            var ind = intf.isIndented(post);
-            var inn = intf.isInNorder(post);
-            assert.ok(!ind && inn,
-                      post.id + " is inNorder but ind="+ind +
-                      " inn="+inn);
-        });
-    }
-    var validateState = function(id, expected) {
-        if (!intf.isSubthreadRoot(al.p(id))) {
-            console.warn("** validating a non-root post", id, "skipping...");
-            return;
-        }
-
-        var ids = al.subtIds(id);
-        var bid = ids[ids.length-1];
-        assert.deepEqual(ids, expected);
-        assert.deepEqual(ids.slice(0).reverse(), al.suptIds(bid));
-        assertAll(al.subt(id), function(post) {
-            return !intf.isInNorder(post);
-        });
-        assert.ok(intf.isIndented(al.p(bid)));
-    }
 
     intf.postdb.print();
 
@@ -157,120 +141,139 @@ test.testInNorderCase = function() {
     intf.postdb.print();
     //assert.deepEqual(al.subtIds(1001), ["1001", "1002", "1003", "1004"]);
     //assertEndPostIndented(1001);
-    validateState(1001, ["1001", "1002", "1003", "1004"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1002", "1003", "1004"]);
+    validateInn(intf);
 
     intf.attachToParent(al.p(1014), al.p(1012));
     intf.postdb.print();
-    validateState(1012, ["1012", "1014"]);
-    validateState(1001, ["1001", "1002", "1003", "1004"]);
-    validateInn();
+    validateState(intf, 1012, ["1012", "1014"]);
+    validateState(intf, 1001, ["1001", "1002", "1003", "1004"]);
+    validateInn(intf);
 
     intf.attachToParent(al.p(1015), al.p(1008));
     intf.postdb.print();
-    validateState(1008, ["1008", "1015", "1016"]);
-    validateState(1012, ["1012", "1014"]);
-    validateState(1001, ["1001", "1002", "1003", "1004"]);
-    validateInn();
+    validateState(intf, 1008, ["1008", "1015", "1016"]);
+    validateState(intf, 1012, ["1012", "1014"]);
+    validateState(intf, 1001, ["1001", "1002", "1003", "1004"]);
+    validateInn(intf);
 
     // undented(parent), indented(parent)
     intf.attachToParent(al.p(1003), al.p(1001));
     intf.postdb.print();
-    validateState(1008, ["1008", "1015", "1016"]);
-    validateState(1012, ["1012", "1014"]);
-    validateState(1001, ["1001", "1003", "1004", "1007"]);
-    validateInn();
+    validateState(intf, 1008, ["1008", "1015", "1016"]);
+    validateState(intf, 1012, ["1012", "1014"]);
+    validateState(intf, 1001, ["1001", "1003", "1004", "1007"]);
+    validateInn(intf);
 
     // undented(parent), innorder(parent)
     intf.attachToParent(al.p(1002), al.p(1001));
     intf.postdb.print();
-    validateState(1001, ["1001", "1002", "1003", "1004"]);
-    validateState(1008, ["1008", "1015", "1016"]);
-    validateState(1012, ["1012", "1014"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1002", "1003", "1004"]);
+    validateState(intf, 1008, ["1008", "1015", "1016"]);
+    validateState(intf, 1012, ["1012", "1014"]);
+    validateInn(intf);
 
     // innorder(parent), indented(parent)
     intf.attachToParent(al.p(1015), al.p(1011));
     intf.postdb.print();
-    validateState(1001, ["1001", "1002", "1003", "1004"]);
-    validateState(1012, ["1012", "1014"]);
-    validateState(1008, ["1008", "1016"]);
-    validateState(1011, ["1011", "1015"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1002", "1003", "1004"]);
+    validateState(intf, 1012, ["1012", "1014"]);
+    validateState(intf, 1008, ["1008", "1016"]);
+    validateState(intf, 1011, ["1011", "1015"]);
+    validateInn(intf);
 
     intf.clearSubthread(al.p(1011), null, true);
     intf.postdb.print();
-    validateState(1001, ["1001", "1002", "1003", "1004"]);
-    validateState(1012, ["1012", "1014"]);
-    validateState(1008, ["1008", "1016"]);
+    validateState(intf, 1001, ["1001", "1002", "1003", "1004"]);
+    validateState(intf, 1012, ["1012", "1014"]);
+    validateState(intf, 1008, ["1008", "1016"]);
     assert.ok(intf.isInNorder(al.p(1011)));
     assert.ok(intf.isInNorder(al.p(1015)));
-    validateInn();
+    validateInn(intf);
 
     intf.attachToParent(al.p(1014), al.p(1006));
     intf.postdb.print();
-    validateState(1001, ["1001", "1002", "1003", "1004"]);
-    validateState(1006, ["1006", "1014"]);
-    validateState(1008, ["1008", "1016"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1002", "1003", "1004"]);
+    validateState(intf, 1006, ["1006", "1014"]);
+    validateState(intf, 1008, ["1008", "1016"]);
+    validateInn(intf);
 
     // siblings
     intf.attachToParent(al.p(1004), al.p(1002));
     intf.postdb.print();
-    validateState(1001, ["1001", "1002", "1004", "1007", "1005"]);
-    validateState(1006, ["1006", "1014"]);
-    validateState(1008, ["1008", "1016"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1002", "1004", "1007", "1005"]);
+    validateState(intf, 1006, ["1006", "1014"]);
+    validateState(intf, 1008, ["1008", "1016"]);
+    validateInn(intf);
 
     intf.attachToParent(al.p(1004), al.p(1005));
     intf.postdb.print();
-    validateState(1001, ["1001", "1002", "1005", "1004"]);
-    validateState(1006, ["1006", "1014"]);
-    validateState(1008, ["1008", "1016"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1002", "1005", "1004"]);
+    validateState(intf, 1006, ["1006", "1014"]);
+    validateState(intf, 1008, ["1008", "1016"]);
+    validateInn(intf);
 
     // ancestor
     intf.attachToParent(al.p(1014), al.p(1006));
     intf.postdb.print();
-    validateState(1001, ["1001", "1002", "1005", "1004"]);
-    validateState(1006, ["1006", "1014"]);
-    validateState(1008, ["1008", "1016"]);
+    validateState(intf, 1001, ["1001", "1002", "1005", "1004"]);
+    validateState(intf, 1006, ["1006", "1014"]);
+    validateState(intf, 1008, ["1008", "1016"]);
 
     intf.attachToParent(al.p(1002), al.p(1001));
     intf.postdb.print();
-    validateState(1001, ["1001", "1002", "1005", "1004"]);
-    validateState(1006, ["1006", "1014"]);
-    validateState(1008, ["1008", "1016"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1002", "1005", "1004"]);
+    validateState(intf, 1006, ["1006", "1014"]);
+    validateState(intf, 1008, ["1008", "1016"]);
+    validateInn(intf);
 
     intf.attachToParent(al.p(1004), al.p(1001));
     intf.postdb.print();
-    //validateState(1001, ["1001", "1004", "1007", "1008"]);
-    validateState(1001, ["1001", "1004", "1007"]);
-    validateState(1006, ["1006", "1014"]);
-    validateState(1008, ["1008", "1016"]);
-    validateInn();
+    //validateState(intf, 1001, ["1001", "1004", "1007", "1008"]);
+    validateState(intf, 1001, ["1001", "1004", "1007"]);
+    validateState(intf, 1006, ["1006", "1014"]);
+    validateState(intf, 1008, ["1008", "1016"]);
+    validateInn(intf);
 
     intf.attachToParent(al.p(1014), al.p(1004));
     intf.postdb.print();
-    validateState(1001, ["1001", "1004", "1014", "1013", "1010"]);
-    validateState(1008, ["1008", "1016"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1004", "1014", "1013", "1010"]);
+    validateState(intf, 1008, ["1008", "1016"]);
+    validateInn(intf);
 
     intf.attachToParent(al.p(1008), al.p(1014));
     intf.postdb.print();
-    validateState(1001, ["1001", "1004", "1014", "1008", "1016"]);
-    validateInn();
+    validateState(intf, 1001, ["1001", "1004", "1014", "1008", "1016"]);
+    validateInn(intf);
 
 }
 
-test.testNorder = function() {
-    intf = createSampleThread2();
-    //console.log(intf.postdb.getPostsByNorder());
+var validateInn = function(intf) {
+    var innPosts = intf.postdb.inNorderPosts();
+    innPosts.forEach(function(post) {
+        var ind = intf.isIndented(post);
+        var inn = intf.isInNorder(post);
+        assert.ok(!ind && inn,
+                    post.id + " is inNorder but ind="+ind +
+                    " inn="+inn);
+    });
 }
 
-function assertAll(list, p) {
-    assert.ok(forAll(list, p));
+var validateState = function(intf, id, expected) {
+    var post = intf.getPost(id)
+    if (!intf.isSubthreadRoot(post)) {
+        console.warn("** validating a non-root post", id, "skipping...");
+        return;
+    }
+
+    var ids = intf.getSubthreadIds(post);
+    var bid = ids[ids.length-1];
+    assert.deepEqual(ids, expected);
+    assert.deepEqual(ids.slice(0).reverse(), intf.getSupthreadIds(intf.getPost(bid)));
+    assertAll(intf.getSubthread(id), function(post) {
+        return !intf.isInNorder(post);
+    });
+    assert.ok(intf.isIndented(intf.getPost(bid)));
 }
 
 function createSampleThread1(intf) {
@@ -314,9 +317,7 @@ function createSampleThread1(intf) {
     return post;
 }
 function createSampleThread2() {
-    var mod = intf.newModule({
-        getPost: newDb(),
-    });
+    mod = intf.newModule();
     mod.newPost({id: 1001, body:""});
     mod.newPost({id: 1002, body: ">>1001"});
     mod.newPost({id: 1005, body: ">>1002"});
@@ -343,6 +344,35 @@ function createSampleThread2() {
     mod.newPost({id: 1016, body: ">>1008"});
 
     return mod;
+}
+
+function createSampleThread3() {
+    mod = intf.newModule();
+    var posts = [
+        {id: 1001, body:""},
+        {id: 1002, body: ">>1001"},
+        {id: 1005, body: ">>1002"},
+        {id: 1006, body: ">>1002"},
+        {id: 1003, body: ">>1001"},
+        {id: 1009, body: ">>1003"},
+        {id: 1004, body: ">>1001 testing >>1002 123\nmumble>>1005jumble"},
+        {id: 1010, body: ">>1004"},
+        {id: 1011, body: ">>1004 >>1003"},
+        {id: 1012, body: ">>1004"},
+        {id: 1014, body: ">>1012 >>1006 >>1004"},
+        {id: 1013, body: ">>1004"},
+        {id: 1007, body: ">>1001 >>1002 >> 1003"},
+        {id: 1008, body: ">>1001 >>1003 >>1014"},
+        {id: 1015, body: ">>1008 >>1011"},
+        {id: 1016, body: ">>1008"},
+    ].forEach(function(data) {
+        mod.newPost(data);
+    });
+    return mod;
+}
+
+function assertAll(list, p) {
+    assert.ok(forAll(list, p));
 }
 
 function forAll(xs, p) {
@@ -373,10 +403,8 @@ for (var name in test) {
     if (name.search("test") != 0)
         continue;
     console.log("*** Testing", name);
-        test[name]();
+    test[name]();
 }
-
-
 
 
 
