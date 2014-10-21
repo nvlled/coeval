@@ -530,6 +530,15 @@
     }
 
     M.clearSubthread = function(post, downto, inclusive) {
+        var nextpost = this.nextpost(post);
+
+        // Preserve subthread
+        if (!inclusive && nextpost && this.isUndented(nextpost)) {
+            this.clearNextPost(post);
+            this.clearPrevPost(nextpost);
+            return;
+        }
+
         if (!inclusive)
             post = this.nextpost(post);
         // restore subthreads to normal order
@@ -785,8 +794,6 @@
 
     // TODO::
     // - make post argument order consistent
-    // - avoid destroying subthreads if possible
-    // - highlight target of childlink
     // - norder restoration is broke
 
 })(this)
