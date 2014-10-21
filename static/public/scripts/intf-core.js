@@ -324,7 +324,8 @@
         if (!parent || this.isInNorder(parent) || this.isIndented(parent))
             return;
 
-        this.clearSubthread(parent);
+        if (this.isIndented(post))
+            this.clearSubthread(parent);
 
         n = n || 0;
 
@@ -455,10 +456,13 @@
     function handleGeneralCase(post, parent) {
         this.undent(parent);
         this.clearSubthread(parent);
-        if (this.isUndented(post)) {
+
+        var isUndented = this.isUndented(post);
+        this.detachPost(post);
+
+        if (isUndented) {
             this.attachSubthread(parent, post);
         } else {
-            this.detachPost(post);
             this.attachSiblings(parent, post);
         }
     }
@@ -752,8 +756,9 @@
                 n += subt.length;
             }
         }
+        var actualLen = mapLength(this._db);
         console.log("posts rendered: ", n);
-        console.assert(n === mapLength(this._db), "rendered all posts");
+        console.assert(n === actualLen, "rendered all " +actualLen+ " posts");
 
         function printPost(prefix, post) {
             if (intf.isIndented(post))
