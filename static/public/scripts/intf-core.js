@@ -77,21 +77,19 @@
 
     M.newPost = function(data) {
         var post = {
-            id:        data.id.toString(),
-            body:       data.body,
-            norder:    {nextId:  null, prevId: null},
-            sib:       {nextId:  {},   prevId: {}},
-            page:       {start: null, end: null},
-            nextpostId:  null,
-            prevpostId:  null,
-            indented:  false,
-            parentIds: this.parsePostIds(data.body),
-            firstchildId: null,
-            lastchildId:  null,
-            numReplies: 0,
-            inNorder:   true,
-            // I relied too much on linked lists
-            // Fix: Add some structure
+            id:             data.id.toString(),
+            body:           data.body,
+            norder:         {nextId:  null, prevId: null},
+            sib:            {nextId:  {},   prevId: {}},
+            page:           {start:   null, end:    null},
+            nextpostId:     null,
+            prevpostId:     null,
+            indented:       false,
+            parentIds:      this.parsePostIds(data.body),
+            firstchildId:   null,
+            lastchildId:    null,
+            numReplies:     0,
+            inNorder:       true,
         }
 
         var prevpost = this.lastCreatedPost;
@@ -110,8 +108,6 @@
     M.linksToPosts = function(post) {
         var pids = post.parentIds;
         pids.forEach(function(pid) {
-            // Just assign a blank object
-            // to avoid checking for nulls
             var parent = this.getPost(pid);
             if (!parent) {
                 console.warn("parent ", pid, " of ", post.id, " not found ");
@@ -146,7 +142,8 @@
             if (!matches)
                 return [];
             return matches.map(function(s) {
-                return s.slice(2); // remove trailing >>
+                // remove trailing >>
+                return s.slice(2);
             });
         }
     })();
@@ -170,7 +167,7 @@
 
     M.mapPostId = function(postlink) {
         return {
-            type:        postlink.type,
+            type:       postlink.type,
             targetPost: this.getPost(postlink.targetId),
             sourcePost: this.getPost(postlink.sourceId),
         }
@@ -178,7 +175,7 @@
 
     M.childlink = function(targetId, sourceId) {
         return {
-            type:        "child",
+            type:      "child",
             targetId: targetId,
             sourceId: sourceId,
         }
@@ -186,7 +183,7 @@
 
     M.parentlink = function(targetId, sourceId) {
         return {
-            type:        "parent",
+            type:     "parent",
             targetId: targetId,
             sourceId: sourceId,
         }
@@ -480,9 +477,6 @@
         this.attachChild(post, child);
     }
 
-    // Connects the post (or subthread)
-    // refered to by postlink.sourceId to the
-    // post refered to by the postlink.targetId
     M.visitLink = function(postlink) {
         switch(postlink.type) {
             case "parent" : this.visitParent(postlink); break;
@@ -512,6 +506,7 @@
 
         if (!inclusive)
             post = this.nextpost(post);
+
         // restore subthreads to normal order
         while(post && post != downto) {
             var next = this.nextpost(post);
@@ -622,26 +617,27 @@
         post.sib.prevId[pid] = prev.id;
     }
 
-    M.isInNorder = function(post) /*bool*/ {
+    M.isInNorder = function(post) {
         return post.inNorder;
     }
 
-    M.isIndented = function(post) /*bool*/ {
+    M.isIndented = function(post) {
         return post.indented;
     }
-    M.isUndented = function(post) /*bool*/ {
+
+    M.isUndented = function(post) {
         return !this.isIndented(post);
     }
 
-    M.isSubthreadRoot = function(post) /*bool*/ {
+    M.isSubthreadRoot = function(post) {
         return !this.isInNorder(post) && !this.prevpost(post);
     }
 
-    M.isChildOf = function(post, parent) /*bool*/ {
+    M.isChildOf = function(post, parent) {
         return post.parentIds.indexOf(parent.id) >= 0;
     }
 
-    M.isRoot = function(post) /*bool*/ {
+    M.isRoot = function(post) {
         return post == this.postdb.op;
     }
 
@@ -678,11 +674,9 @@
     PostDB.prototype.getPostsByNorder = function() {
         var posts =  [];
         var post = this.op;
-        var i = 0;
-        while (post && i < 50) {
+        while (post) {
             posts.push(post);
             post = this.mod.nextnorder(post);
-            i++;
         }
         return posts.map(function(p) { return p.id });
     }
