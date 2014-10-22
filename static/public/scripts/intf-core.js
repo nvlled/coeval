@@ -117,7 +117,6 @@
                 console.warn("parent ", pid, " of ", post.id, " not found ");
                 return;
             }
-            console.assert(parent);
 
             var post1 = this.getPost(this.prevChildId[pid]);
             var post2 = post;
@@ -492,34 +491,6 @@
         this.hook("visitLink", postlink);
     }
 
-    M.nextPage = function(post) {
-        if (this.isUndented(post)) {
-            var child = post.page.end;
-            var next = child.sibilings.next;
-            if (next) { // avoid showing a blank page
-                this.attachSiblings(post, next); // exclude child
-            }
-        }
-    }
-
-    M.prevPage = function(post) {
-        if (this.isUndented(post)) {
-            var child = post.page.start;
-            // TODO: Create attachSiblings that goes backwards
-            var i = 0;
-            var prev = child.siblings.prev;
-            while (i < PAGE_SIZE) {
-                if (!prev.siblings.prev)
-                    break;
-                prev = prev.siblings.prev;
-                i++;
-            }
-            if (prev) {
-                this.attachSiblings(post, next);
-            }
-        }
-    }
-
     M.restoreNorder = function(post) {
         console.log("**restoring norder", post.id);
         this.hook("restoreNorder", post);
@@ -585,21 +556,6 @@
     M.getSupthreadIds = function(post) {
         return this.getSupthread(post)
             .map(function(post) { return post.id });
-    }
-
-    M.restoreSupthread = function(post) {
-        var nextpost = post;
-        var prev;
-        post = post.prevpost();
-        while(post && this.isIndented(post)) {
-            prev = post.prevpost();
-            this.restoreNorder(post);
-            post = prev;
-        }
-        if (prev) {
-            console.log("suppost", prev.id, "->", nextpost.id);
-            this.setNextPost(prev, nextpost);
-        }
     }
 
     M.nextpost = function(post) {
