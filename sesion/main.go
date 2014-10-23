@@ -61,16 +61,11 @@ func SetErrors(w ht.ResponseWriter, r *ht.Request, err error) {
     FlashSet(w, r, "error", err)
 }
 
-func GetErrors(data rend.Data) interface{} {
-    switch t := data["error"].(type) {
+func GetErrors(w ht.ResponseWriter, r *ht.Request) error {
+    switch t := FlashGet(w, r, "error").(type) {
         case error: return t
     }
-    switch r := data["__req"].(type) {
-    case *ht.Request:
-        switch t := FlashGet(Resp(r), r, "error").(type) {
-            case error: return t
-        }
-    }
+
     return rule.Error{}
 }
 
@@ -97,6 +92,7 @@ func Merge(w ht.ResponseWriter, r *ht.Request, data rend.Data) rend.Data {
     data["__username"] = Username(r)
     data["__user"] = context.Get(r, key.User)
     data["__notifications"] = FlashGetAll(w, r, "notifications")
+    data["__error"] = GetErrors(w, r)
     return data
 }
 
@@ -104,7 +100,6 @@ func WrapResp(handler ht.Handler) ht.HandlerFunc {
     return func(w ht.ResponseWriter, r *ht.Request) {
         context.Set(r, "resp", w)
         handler.ServeHTTP(w, r)
-
     }
 }
 
@@ -114,7 +109,6 @@ func Resp(r *ht.Request) ht.ResponseWriter {
     }
     return nil
 }
-
 
 
 

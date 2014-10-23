@@ -1,6 +1,6 @@
 {{template "sub/header" .}}
 
-{{$err := get_errors .}}
+{{$err := .__errors}}
 <form method="GET" action='{{url "board-create"}}'>
     {{with $err.__msg}}<div class='error'>{{.}}</div>{{end}}
     <p>Board id: <input name='bid' />

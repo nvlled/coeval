@@ -1,5 +1,5 @@
 {{template "sub/header" .}}
-{{$err := get_errors .}}
+{{$err := .__error}}
 <form method="post" action='{{url "thread-create" "bid" (str .bid)}}'>
     <input type="hidden" name="form-path" value="{{.__req.URL.Path}}"/>
 	<p>title: <input name="post-title"/>

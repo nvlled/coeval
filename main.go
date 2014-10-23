@@ -17,7 +17,6 @@ import (
 )
 
 var env = map[string]interface{} {
-    "get_errors" : sesion.GetErrors,
     "post_url" : urlfor.Post,
     "thread_url" : urlfor.Thread,
     "board_url" : urlfor.Board,

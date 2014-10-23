@@ -44,7 +44,7 @@ func CatchError(handler ht.Handler) ht.Handler {
             if err := recover(); err != nil {
                 var render = func(err interface{}) {
                     rend.RenderRoute("error", w, r, rend.Data{
-                        "error" : err,
+                        "__error" : err,
                     })
                 }
                 w.WriteHeader(401);
@@ -52,8 +52,10 @@ func CatchError(handler ht.Handler) ht.Handler {
                 case rule.Error : render(t)
                 case map[string]interface{}: render(t)
                 case string: render(rule.AnError("__msg", t))
-                default: log.Println(err)
-                }
+                default: {
+                    render(rule.AnError("__msg", "Something happened"))
+                }}
+                log.Println(err)
             }
         } ()
         handler.ServeHTTP(w, r)
