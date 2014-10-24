@@ -5,6 +5,7 @@ import (
     "math"
     "sort"
     "strconv"
+    "fmt"
 )
 
 type thread struct {
@@ -67,6 +68,12 @@ func (thread *thread) RecentPosts() []Post {
     posts = posts[1:] // excluding Op
     n := len(posts)
     return posts[int(math.Max(0, float64(n-5))):n]
+}
+
+func (t *thread) String() string {
+    op := t.GetOp()
+    return fmt.Sprintf("thread{[bid=%v, tid=%v], pid=%v, title=%v, body=%v}",
+        t.Board().Id(), t.Id(), op.Id(), op.Title(), op.Body())
 }
 
 func newThread(board Board, title string, body string) (Thread, error) {

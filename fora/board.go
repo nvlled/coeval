@@ -1,5 +1,9 @@
 package fora
 
+import (
+    "fmt"
+)
+
 type board struct {
     currentUser User
     id          Bid
@@ -33,6 +37,10 @@ func (board *board) NewThread(title string, body string) (Thread, error) {
 
 func (board *board) GetThread(tid Tid) Thread {
     return getThread(board, tid)
+}
+
+func (b *board) String() string {
+    return fmt.Sprintf("board{%v, %v}", b.Id(), b.Desc())
 }
 
 func (board *board) GetThreads() []Thread {
@@ -77,5 +85,6 @@ func newBoard(creator User, bid Bid, desc string) (Board, error) {
     userStore(creator).PersistBoard(b)
     return b, nil
 }
+
 
 

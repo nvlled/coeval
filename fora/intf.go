@@ -31,6 +31,7 @@ type User interface {
     NewBoard(boardId Bid, desc string) (Board, error)
     GetBoard(boardId Bid) Board
     GetBoards() []Board
+    String() string
 }
 
 type UserContainer interface {
@@ -47,6 +48,7 @@ type Board interface {
     GetThread(tid Tid) Thread
     GetThreads() []Thread
     GetPage(page int) []Thread
+    String() string
 }
 
 type PostData interface {
@@ -65,6 +67,7 @@ type Thread interface {
     Reply(title string, body string, parentIds ...Pid) (Post, error)
     GetPosts() []Post
     RecentPosts() []Post
+    String() string
 }
 
 type Post interface {
@@ -81,5 +84,6 @@ type Post interface {
 
     Parents() []Post
     ParentIds() []Pid
+    String() string
 }
 

@@ -3,6 +3,7 @@ package fora
 
 import (
     "strconv"
+    "fmt"
 )
 
 // TODO: Make userStore take a UserContainer argument instead
@@ -112,6 +113,12 @@ func (post *post) IsParentOf(child Post) bool {
 
 func (post *post) IsChildOf(parent Post) bool {
     return parent.IsParentOf(post)
+}
+
+func (p *post) String() string {
+    t := p.Thread()
+    return fmt.Sprintf("post{[bid=%v, tid=%v], id=%v, title=%v, body=%v}",
+        t.Board().Id(), t.Id(), p.Id(), p.Title(), p.Body())
 }
 
 func createPost(creator User, title string, body string) *post {
