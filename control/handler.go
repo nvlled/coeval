@@ -129,9 +129,19 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
     board := user.GetBoard(bid)
     flunkNil(board, fora.BoardNotFound(bid))
     thread := board.GetThread(tid)
+    println(board.GetThread(fora.Tid("18238123")).GetOp())
+    flunkNil(thread, fora.ThreadNotFound(tid))
 
     post, err := thread.Reply(title, body, parentIds...)
     flunk(err)
+
+    //if err != nil {
+    //    returnToForm(w, r, err, sesion.FormVal{
+    //        "title" : title,
+    //        "body" : body,
+    //    })
+    //    return
+    //}
 
     w.Header().Set("Location", urlfor.Thread(thread))
     w.WriteHeader(301)
@@ -195,9 +205,8 @@ func returnToForm(w http.ResponseWriter, r *http.Request, err error, form sesion
     }
 
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
-        "error" : err,
+        "__error" : err,
     }))
 }
-
 
 

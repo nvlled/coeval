@@ -1,7 +1,9 @@
 {{template "sub/header" .}}
 <h1>coeval</h1>
 
-{{/*.*/}}
-Error: {{with .__error}}{{.__msg}}{{else}}Something happened{{end}}
+Error:
+{{range $name, $msg := .__error}}
+    <p>{{$name}} -- {{$msg}}</p>
+{{end}}
 
 {{template "sub/footer" .}}

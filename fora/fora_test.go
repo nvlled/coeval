@@ -3,16 +3,16 @@ package fora
 
 import (
     "testing"
-    //"fmt"
+    "fmt"
 )
 
 func TestUser(t *testing.T) {
     SetUserStore(newMemStore())
 
-    admin1 := NewUser("admin1", Admin)
-    admin2 := NewUser("admin2", Admin)
+    admin1,_ := NewUser("admin1", Admin)
+    admin2,_ := NewUser("admin2", Admin)
     anon1 := Anonymous()
-    anon2 := NewUser("pleb", Anon)
+    anon2,_ := NewUser("pleb", Anon)
 
     if admin1.Kind() != Admin {
         t.Error("wrong user kind")
@@ -45,7 +45,7 @@ func TestUser(t *testing.T) {
 func TestBoardCreation(t *testing.T) {
     SetUserStore(newMemStore())
 
-    admin := NewUser("admin", Admin)
+    admin,_ := NewUser("admin", Admin)
     anon := Anonymous()
 
     var b Board
@@ -75,7 +75,7 @@ func TestBoardCreation(t *testing.T) {
 func TestBoardListing(t *testing.T) {
     SetUserStore(newMemStore())
 
-    admin := NewUser("admin", Admin)
+    admin,_ := NewUser("admin", Admin)
     var boards []Board
     var b Board
     b,_ = admin.NewBoard("a", "aaa"); boards = append(boards, b)
@@ -93,7 +93,7 @@ func TestBoardListing(t *testing.T) {
 
     inconsistent := false
     for _,b1 := range boards {
-        b2,_ := admin.GetBoard(b1.Id())
+        b2 := admin.GetBoard(b1.Id())
         inconsistent = inconsistent || b1.Desc() != b2.Desc()
     }
     if inconsistent {
@@ -104,17 +104,17 @@ func TestBoardListing(t *testing.T) {
 func TestThreadCreation(t *testing.T) {
     SetUserStore(newMemStore())
 
-    admin := NewUser("admin", Admin)
-    anon := NewUser("admin", Admin)
+    admin,_ := NewUser("admin", Admin)
+    anon,_ := NewUser("anon", Admin)
     admin.NewBoard("g", "animu hating plebs")
     admin.NewBoard("a", "mai waifu is best gril")
 
-    g,_ := anon.GetBoard("g")
-    a,_ := anon.GetBoard("a")
+    g := anon.GetBoard("g")
+    a := anon.GetBoard("a")
 
     title := "Daily programming bread"
     body := "What are you working on /g/?"
-    dpt := g.NewThread(title, body)
+    dpt,_ := g.NewThread(title, body)
 
     if dpt == nil {
         t.Error("thread creation failed")
@@ -128,7 +128,7 @@ func TestThreadCreation(t *testing.T) {
 
     // check if thread belongs to correct thread
 
-    dpt2 := g.NewThread(title + " animu edition", body)
+    dpt2,_ := g.NewThread(title + " animu edition", body)
     if dpt.Id() == dpt2.Id() {
         t.Error("thread id is not unique")
     }
@@ -147,16 +147,16 @@ func TestThreadCreation(t *testing.T) {
 func TestPosting(t *testing.T) {
     SetUserStore(newMemStore())
 
-    admin := NewUser("admin", Admin)
+    admin,_ := NewUser("admin", Admin)
     admin.NewBoard("g", "animu hating plebs")
     admin.NewBoard("a", "saten-san general")
 
     anon1 := Anonymous()
     anon2 := Anonymous()
 
-    g,_ := anon1.GetBoard("g")
-    dpt := g.NewThread("Daily sh?tposting thread", "What are you working on /g/?")
-    g,_ = anon2.GetBoard("g")
+    g := anon1.GetBoard("g")
+    dpt,_ := g.NewThread("Daily sh?tposting thread", "What are you working on /g/?")
+    g = anon2.GetBoard("g")
     dpt2 := g.GetThread(dpt.Id())
 
     if dpt.Id() != dpt2.Id() {
@@ -170,8 +170,8 @@ func TestPosting(t *testing.T) {
         t.Error("current user is not maintained")
     }
 
-    post1:= dpt.Reply("sage", "Op is not using an animu pic")
-    post2:= dpt2.Reply("nope", "Rewriting the kernel in gentoo")
+    post1,_ := dpt.Reply("sage", "Op is not using an animu pic")
+    post2,_ := dpt2.Reply("nope", "Rewriting the kernel in gentoo")
 
     if post1 == nil || post2 == nil {
         t.Error("failed to post in a thread")
@@ -191,9 +191,9 @@ func TestPosting(t *testing.T) {
         t.Error("op is misparented")
     }
 
-    post3 := post1.Reply("no", "no")
-    post4 := post3.Reply("yes", "no you")
-    post5 := post1.Reply("", "weaaboo scum git the fukt >>out")
+    post3,_ := post1.Reply("no", "no")
+    post4,_ := post3.Reply("yes", "no you")
+    post5,_ := post1.Reply("", "weaaboo scum git the fukt >>out")
 
     if len(post1.Replies()) != 2 {
         t.Error("reply count is wrong")
@@ -223,21 +223,20 @@ func TestPosting(t *testing.T) {
 func TestReply(t *testing.T) {
     SetUserStore(newMemStore())
 
-    admin := NewUser("admin", Admin)
+    admin,_ := NewUser("admin", Admin)
     g,_ := admin.NewBoard("g", "animu hating plebs")
-    dpt := g.NewThread("Daily anime appreciation thread", "What are you working on /g/?")
+    dpt,_ := g.NewThread("Daily anime appreciation thread", "What are you working on /g/?")
 
     op := dpt.GetOp()
-    post1 := dpt.Reply("no", "Watching animu with riced gentto")
-    post2 := dpt.Reply("no", "thanks for using the anime picture OP")
-    post3 := dpt.Reply("no", "sauce on that pic?")
+    post1,_ := dpt.Reply("no", "Watching animu with riced gentto")
+    post2,_ := dpt.Reply("no", "thanks for using the anime picture OP")
+    post3,_ := dpt.Reply("no", "sauce on that pic?")
 
-    post4 := dpt.Reply("", "waeboo scums git >>/out/",
+    post4,_ := dpt.Reply("", "waeboo scums git >>/out/",
         op.Id(), post1.Id(), post2.Id(), post3.Id())
-    post5 := post3.Reply("", "what is google")
-    post6 := post2.Reply("", "no")
-    post7 := dpt.Reply("", "you must be gnu here", post4.Id(), post6.Id())
-
+    post5,_ := post3.Reply("", "what is google")
+    post6,_ := post2.Reply("", "no")
+    post7,_ := dpt.Reply("", "you must be gnu here", post4.Id(), post6.Id())
 
     if len(op.ReplyIds())    != 4 { t.Error("wrong reply count") }
     if len(post1.ReplyIds()) != 1 { t.Error("wrong reply count") }
@@ -279,7 +278,48 @@ func TestReply(t *testing.T) {
     if post7.IsChildOf(op) { t.Error("post is an imposter child") }
 }
 
-func TestValidation(t *testing.T) {
+func TestGetters(t *testing.T) {
+    SetUserStore(newMemStore())
+
+    fmt.Print()
+
+    admin,_ := NewUser("admin", Admin)
+    g,_ := admin.NewBoard("g", "animu hating plebs")
+    dpt,_ := g.NewThread("Daily anime appreciation thread", "What are you working on /g/?")
+    post,_ := dpt.Reply("tap", "lul")
+
+    if admin.GetBoard(Bid("g")) == nil {
+        t.Error("board g should exist")
+    }
+    if admin.GetBoard(Bid("x")) != nil {
+        t.Error("board x should not exist")
+    }
+    if admin.GetBoard(Bid("y")) != nil {
+        t.Error("board y should not exist")
+    }
+
+    if g.GetThread(dpt.Id()) == nil {
+        t.Error("thread should exist")
+    }
+    if g.GetThread(Tid("123j1923j")) != nil {
+        t.Error("thread should not exist")
+    }
+    if g.GetThread(Tid("81981928")) != nil {
+        t.Error("thread should not exist")
+    }
+
+    if dpt.GetPost(dpt.GetOp().Id()) == nil {
+        t.Error("op should exist")
+    }
+    if dpt.GetPost(post.Id()) == nil {
+        t.Error("post should exist")
+    }
+    if dpt.GetPost(Pid("123123")) != nil {
+        t.Error("post should not exist")
+    }
+
 }
+
+
 
 

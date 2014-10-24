@@ -11,6 +11,7 @@ import (
     "nvlled/coeval/sesion/key"
     "github.com/nvlled/rule"
     "log"
+    "runtime/debug"
 )
 
 type handler func(ht.ResponseWriter, *ht.Request)
@@ -56,6 +57,7 @@ func CatchError(handler ht.Handler) ht.Handler {
                     render(rule.AnError("__msg", "Something happened"))
                 }}
                 log.Println(err)
+                debug.PrintStack()
             }
         } ()
         handler.ServeHTTP(w, r)

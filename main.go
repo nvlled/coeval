@@ -20,6 +20,9 @@ var env = map[string]interface{} {
     "post_url" : urlfor.Post,
     "thread_url" : urlfor.Thread,
     "board_url" : urlfor.Board,
+    "with_post_url" : urlfor.RouteWithPost,
+    "with_thread_url" : urlfor.RouteWithThread,
+    "with_board_url" : urlfor.RouteWithBoard,
     "url" : urlfor.Route,
     "str" : func(x interface{}) string {
         return fmt.Sprintf("%v", x)
