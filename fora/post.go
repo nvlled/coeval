@@ -73,17 +73,19 @@ func (p *post) Reply(title, body string, parentIds ...Pid) (Post, error) {
     if parentIds == nil {
         parentIds = []Pid{p.Id()}
     } else {
-        parentIds = filterValidPostIds(store, parentIds)
+        parentIds = filterValidPostIds(store, p.Thread().Id(), parentIds)
     }
     store.PersistPost(replypost, parentIds...)
     return replypost, nil
 }
 
-func filterValidPostIds(store Store, postIds []Pid) []Pid {
+func filterValidPostIds(store Store, tid Tid, postIds []Pid) []Pid {
     var filtered []Pid
     for _,id := range postIds {
-        if store.GetPost(IdArgs{P: id}) != nil {
+        if store.GetPost(IdArgs{P: id, T: tid}) != nil {
             filtered = append(filtered, id)
+        } else {
+            println("shit>", id)
         }
     }
     return filtered
