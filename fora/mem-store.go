@@ -55,8 +55,10 @@ func (store *memstore) lookupThread(bid Bid, tid Tid) *thread {
     if _, ok := data.threads[bid]; !ok {
         data.threads[bid] = make(threadmap)
     }
-    t := data.threads[bid][tid]
-    return &t
+    if t, ok := data.threads[bid][tid]; ok {
+        return &t
+    }
+    return nil
 }
 
 func (store *memstore) lookupPost(tid Tid, pid Pid) *post {
@@ -64,8 +66,10 @@ func (store *memstore) lookupPost(tid Tid, pid Pid) *post {
     if _, ok := data.posts[tid]; !ok {
         data.posts[tid] = make(postmap)
     }
-    p := data.posts[tid][pid]
-    return &p
+    if p, ok := data.posts[tid][pid]; ok {
+        return &p
+    }
+    return nil
 }
 
 func (store *memstore) threadExists(bid Bid, tid Tid) bool {
@@ -135,7 +139,7 @@ func (store *memstore) GetThread(ids IdArgs) Thread {
     bid, tid, _ := ids.Extract("bid", "tid")
     t := store.lookupThread(bid, tid)
     if t == nil {
-        // noooooooooo
+        return nil
     }
     setCurrentUser(t, store.user)
     return t
@@ -187,6 +191,9 @@ func (store *memstore) PersistThread(t *thread) error {
 func (store *memstore) GetPost(ids IdArgs) Post {
     _, tid, pid := ids.Extract("tid", "pid")
     post := store.lookupPost(tid, pid)
+    if post == nil {
+        return nil
+    }
     post.currentUser = store.user
     return post
 }
