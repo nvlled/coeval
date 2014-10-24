@@ -60,6 +60,7 @@ type Thread interface {
     UserContainer
     PostData
     Id() Tid
+    Bid() Bid
     Board() Board
     Creator() User
     GetOp() Post
@@ -74,6 +75,8 @@ type Post interface {
     UserContainer
     PostData
     Id() Pid
+    Tid() Tid
+    Bid() Bid
     Thread() Thread
     Creator() User
     Reply(title, body string, parentIds ...Pid) (Post, error)

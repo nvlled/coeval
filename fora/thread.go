@@ -23,6 +23,10 @@ func (thread *thread) Id() Tid {
     return thread.id
 }
 
+func (thread *thread) Bid() Bid {
+    return thread.board.Id()
+}
+
 func (thread *thread) Title() string {
     return thread.op.Title()
 }

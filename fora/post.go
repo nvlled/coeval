@@ -25,6 +25,14 @@ func (post *post) Id() Pid {
     return post.id
 }
 
+func (post *post) Tid() Tid {
+    return post.thread.Id()
+}
+
+func (post *post) Bid() Bid {
+    return post.thread.Board().Id()
+}
+
 func (post *post) Title() string {
     return post.title
 }
