@@ -132,7 +132,7 @@ func setCurrentUser(t *thread, u User) {
 }
 
 func (store *memstore) GetThread(ids IdArgs) Thread {
-    bid, tid, _ := ids.Extract()
+    bid, tid, _ := ids.Extract("bid", "tid")
     t := store.lookupThread(bid, tid)
     if t == nil {
         // noooooooooo
@@ -185,17 +185,14 @@ func (store *memstore) PersistThread(t *thread) error {
 }
 
 func (store *memstore) GetPost(ids IdArgs) Post {
-    bid, tid, pid := ids.Extract()
-    if !store.threadExists(bid, tid) {
-        // thread not found
-    }
+    _, tid, pid := ids.Extract("tid", "pid")
     post := store.lookupPost(tid, pid)
     post.currentUser = store.user
     return post
 }
 
 func (store *memstore) GetPosts(ids IdArgs) []Post {
-    bid, tid, _ := ids.Extract()
+    bid, tid, _ := ids.Extract("bid", "tid")
     if !store.threadExists(bid, tid) {
         // thread not found, abort
     }
@@ -233,7 +230,7 @@ func (store *memstore) PersistPost(p *post, parentIds ...Pid) error {
 }
 
 func (store *memstore) GetReplies(ids IdArgs) []Post {
-    _, tid, pid := ids.Extract()
+    _, tid, pid := ids.Extract("tid", "pid")
     data := store.data
     var replies []Post
     for _, rid := range data.replies[pid] {
@@ -246,13 +243,13 @@ func (store *memstore) GetReplies(ids IdArgs) []Post {
 }
 
 func (store *memstore) GetReplyIds(ids IdArgs) []Pid {
-    _, _, pid := ids.Extract()
+    _, _, pid := ids.Extract("pid")
     data := store.data
     return data.replies[pid]
 }
 
 func (store *memstore) GetParents(ids IdArgs) []Post {
-    _, tid, pid := ids.Extract()
+    _, tid, pid := ids.Extract("tid", "pid")
     data := store.data
     var parents []Post
     for _, rid := range data.parents[pid] {
@@ -265,7 +262,7 @@ func (store *memstore) GetParents(ids IdArgs) []Post {
 }
 
 func (store *memstore) GetParentIds(ids IdArgs) []Pid {
-    _, _, pid := ids.Extract()
+    _, _, pid := ids.Extract("pid")
     data := store.data
     return data.parents[pid]
 }

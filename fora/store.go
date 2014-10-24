@@ -33,7 +33,14 @@ type Store interface {
     PersistUser(u *user) error
 }
 
-func (id IdArgs) Extract() (Bid, Tid, Pid) {
+func (id IdArgs) Extract(required ...string) (Bid, Tid, Pid) {
+    for _,s := range required {
+        switch s {
+        case "bid": if string(id.B) == "" { panic("Missing required bid arg") }
+        case "tid": if string(id.T) == "" { panic("Missing required tid arg") }
+        case "pid": if string(id.P) == "" { panic("Missing required pid arg") }
+        }
+    }
     return id.B, id.T, id.P
 }
 
