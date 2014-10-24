@@ -6,12 +6,6 @@ import (
     "fmt"
 )
 
-//type Error string
-//
-//func (err Error) Error() string {
-//    return string(err)
-//}
-
 var AdminError = rule.AnError("__msg", "User must be admin to create a board")
 
 func BoardNotFound(bid Bid) error {
@@ -19,7 +13,8 @@ func BoardNotFound(bid Bid) error {
     return rule.AnError("__msg", msg)
 }
 
-
-
-
+func ThreadNotFound(tid Tid) error {
+    msg := fmt.Sprintf("thread %v is not found", tid)
+    return rule.AnError("__msg", msg)
+}
 
