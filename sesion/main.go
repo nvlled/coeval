@@ -9,11 +9,14 @@ import (
     "github.com/gorilla/context"
     "nvlled/coeval/fora"
     "github.com/nvlled/rule"
+    "encoding/gob"
 )
 
 const (
     Name = "coeval-session"
 )
+
+type FormVal map[string]string
 
 var store = sessions.NewCookieStore([]byte("supersecretpassword"))
 
@@ -61,12 +64,24 @@ func SetErrors(w ht.ResponseWriter, r *ht.Request, err error) {
     FlashSet(w, r, "error", err)
 }
 
+func SaveForm(w ht.ResponseWriter, r *ht.Request, form FormVal) {
+    FlashSet(w, r, "form", form)
+}
+
 func GetErrors(w ht.ResponseWriter, r *ht.Request) error {
     switch t := FlashGet(w, r, "error").(type) {
         case error: return t
     }
 
     return rule.Error{}
+}
+
+func GetForm(w ht.ResponseWriter, r *ht.Request) FormVal  {
+    switch t := FlashGet(w, r, "form").(type) {
+        case FormVal: return t
+    }
+
+    return FormVal{}
 }
 
 func Username(r *ht.Request) string {
@@ -93,6 +108,7 @@ func Merge(w ht.ResponseWriter, r *ht.Request, data rend.Data) rend.Data {
     data["__user"] = context.Get(r, key.User)
     data["__notifications"] = FlashGetAll(w, r, "notifications")
     data["__error"] = GetErrors(w, r)
+    data["__form"] = GetForm(w, r)
     return data
 }
 
@@ -110,5 +126,8 @@ func Resp(r *ht.Request) ht.ResponseWriter {
     return nil
 }
 
+func init() {
+    gob.Register(make(FormVal))
+}
 
 

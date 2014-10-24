@@ -87,7 +87,10 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
     thread, err := board.NewThread(title, body)
 
     if err != nil {
-        returnToForm(w, r, err)
+        returnToForm(w, r, err, sesion.FormVal{
+            "title" : title,
+            "body" : body,
+        })
         return
     }
 
@@ -181,9 +184,10 @@ func readInt(n string, defVal int) int {
     return x
 }
 
-func returnToForm(w http.ResponseWriter, r *http.Request, err error) {
+func returnToForm(w http.ResponseWriter, r *http.Request, err error, form sesion.FormVal) {
     formPath := r.FormValue("form-path")
     sesion.SetErrors(w, r, err)
+    sesion.SaveForm(w, r, form)
 
     if formPath != "" {
         w.Header().Set("Location", formPath)
