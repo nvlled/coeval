@@ -2,26 +2,38 @@
 
 (function(root) {
 
+    var postPreview;
+    var postdb = {};
+    var postOps = {};
+
     // exports
     root.intfmain = {
         buildThread: buildThread,
-        init: function() {
+        init: function(opts) {
+            opts = opts || {};
+
+            if (!opts.postOps) {
+                postOps.newNode = newPostNode;
+                postOps.addChildlink = addChildlink;
+                initPostTempl();
+            } else {
+                console.assert(typeof postOps.newNode==="function");
+                console.assert(typeof postOps.addChildlink==="function");
+                postOps = postOps;
+            }
+
+            intf = intf.newModule({
+                getPost: getPost,
+                hooks: createHooks(),
+                parsePostIds: opts.parsePostIds,
+            });
+
             postPreview = new PostPreview();
-            initPostTempl();
         },
     }
 
-    var postPreview;
-    var postdb = {};
-
     function getPost(id) { return postdb[id] }
     root.getPost = getPost;
-
-    intf = intf.newModule({
-        newNode: newPostNode,
-        getPost: getPost,
-        hooks: createHooks(),
-    });
 
     function buildThread(posts, container) {
         if (!container)
@@ -29,7 +41,7 @@
 
         posts.forEach(function(postData) {
             var post = intf.newPost(postData);
-            post.node = newPostNode(postData);
+            post.node = postOps.newNode(postData);
 
             postdb[post.id] = post;
             container.appendChild(post.node);
@@ -45,7 +57,7 @@
             var parentNode = document.getElementById("p"+parentId);
             var postlink = intf.childlink(post.id, parentId);
             if (parentNode) {
-                addChildlink(parentNode, postlink);
+                postOps.addChildlink(parentNode, postlink);
             }
         });
     }
@@ -309,7 +321,5 @@
     }
 
 })(this);
-
-
 
 
