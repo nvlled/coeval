@@ -59,8 +59,8 @@ func (thread *thread) GetPosts() []Post {
     u := thread.CurrentUser()
     b := thread.Board()
     posts := userStore(u).GetPosts(IdArgs{B: b.Id(), T: thread.Id()})
-    posts = posts[1:] // excluding Op
     sort.Sort(PostById(posts))
+    posts = posts[1:] // excluding Op
     return posts
 }
 
