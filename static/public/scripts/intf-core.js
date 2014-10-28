@@ -40,6 +40,9 @@
         return this.postdb.get(id);
     }
 
+    M.CHILD_LINK = "child";
+    M.PARENT_LINK = "parent";
+
     M.firstchild = function(post) {
         return this.getPost(post.firstchildId);
     }
