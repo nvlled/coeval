@@ -27,6 +27,7 @@ var env = map[string]interface{} {
     "str" : func(x interface{}) string {
         return fmt.Sprintf("%v", x)
     },
+    "render_postlinks" : rend.RenderPostlinks,
 }
 
 func createHandler() http.Handler {

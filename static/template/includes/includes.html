@@ -20,29 +20,34 @@ Username: {{.__username}}
 {{end}}
 
 {{define "sub/thread"}}
-<div class='thread'>
-    <h3>#{{.Id}} | {{.Title}} - {{.Creator.Name}}</h3>
+<div id="p{{.Id}}" class='post thread'>
+    <a name="p{{.Id}}" class='post-anchor' href="#p{{.Id}}">No.</a><span class='post-id'>{{.Id}}</span>
+    <h3>{{.Title}} - {{.Creator.Name}}</h3>
     {{$link :=  url "thread-view" "bid" (str .Board.Id) "tid" (str .Id)}}
-    <p>[<a href='{{$link}}'>reply</a>]</p>
-    <p>
+    {{/*<p>[<a href='{{$link}}'>reply</a>]</p>*/}}
+    <p class="post-body">
     {{.Body}}
     </p>
-<div>
+    <div class='post-replies'>replies::</div>
+    <hr />
+</div>
+{{end}}
+
+{{define "sub/postlink"}}
+<a class="postlink" href="#p{{.Id}}">{{.Text}}</a>
 {{end}}
 
 {{define "sub/post"}}
-<div class='post'>
-    <div class='post'>
-      <p>
-        <a class='post-anchor' href='#'>No.</a><span class='post-id'>{{.Id}}</span>
-        <p>[<a href='{{thread_url .Thread}}'>reply</a>]</p>
-      </p>
-        <h4>#{{.Id}} | {{.Title}} - {{.Creator.Name}}</h4>
-        <p class='post-body'>
-        {{.Body}}
-        </p>
-        <hr />
-        <div class='post-replies'></div>
-    </div>
+<div id="p{{.Id}}" class='post'>
+    <p>
+    <a name="p{{.Id}}" class='post-anchor' href="#p{{.Id}}">No.</a><span class='post-id'>{{.Id}}</span>
+    {{/*<p>[<a href='{{thread_url .Thread}}'>reply</a>]</p>*/}}
+    </p>
+    <h4>{{.Title}} - {{.Creator.Name}}</h4>
+    <p class='post-body'>
+    {{render_postlinks .Body}}
+    </p>
+    <div class='post-replies'>replies::</div>
+    <hr />
 </div>
 {{end}}
