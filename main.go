@@ -41,26 +41,46 @@ func createHandler() http.Handler {
 func initMessageBoard() {
     println("initializing message board")
     user,_ := fora.NewUser("nvlled", fora.Admin)
-    g,_ := user.NewBoard("g", "animu hating plebs")
+    user.NewBoard("g", "animu hating plebs")
     user.NewBoard("a", "saten-san a sl**")
 
-    g.NewThread("Daily purgamming thread", "What are you working /g/")
-    g.NewThread("Java thread", "What's so bad about java?")
-    g.NewThread("DPT", "What are you working on /dpt/?")
+    user = fora.Anonymous()
+    g := user.GetBoard("g")
+
+    //g.NewThread("Daily purgamming thread", "What are you working /g/")
+    //g.NewThread("Java thread", "What's so bad about java?")
+    //g.NewThread("DPT", "What are you working on /dpt/?")
     dpt,_ := g.NewThread("Daily programming thread", "Animu edition")
 
-    i := 0
-    for i < 100 {
-        dpt.Reply(fmt.Sprintf("Reply %v", i), "12345")
-        i++
+    post1 := dpt.GetOp()
+    post2,_ := dpt.ReplyOn("", refer(post1))
+    post5,_ := dpt.ReplyOn("", refer(post2))
+    post6,_ := dpt.ReplyOn("", refer(post2))
+    post3,_ := dpt.ReplyOn("", refer(post1))
+    post9,_ := dpt.ReplyOn("", refer(post3))
+    post4,_ := dpt.ReplyOn("", refer(post1, post2, post5))
+    post10,_ := dpt.ReplyOn("", refer(post4))
+    post11,_ := dpt.ReplyOn("", refer(post4, post3))
+    post12,_ := dpt.ReplyOn("", refer(post4))
+    post14,_ := dpt.ReplyOn("", refer(post12, post6, post4))
+    post13,_ := dpt.ReplyOn("", refer(post4))
+    post7,_ := dpt.ReplyOn("", refer(post1, post2, post3))
+    post8,_ := dpt.ReplyOn("", refer(post1, post3, post14))
+    post15,_ := dpt.ReplyOn("", refer(post8, post11))
+    post16,_ := dpt.ReplyOn("", refer(post8))
+
+    println(post9, post10, post13, post7, post15, post16)
+}
+
+func refer(posts ...fora.Post) string {
+    s := ""
+    for _, post := range posts {
+        s = fmt.Sprintf("%s>>%s\n", s, string(post.Id()))
     }
+    return s
 }
 
 func main() {
     initMessageBoard()
     log.Fatal(http.ListenAndServe(":7070", createHandler()))
 }
-
-
-
-
