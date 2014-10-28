@@ -66,6 +66,7 @@ type Thread interface {
     GetOp() Post
     GetPost(pid Pid) Post
     Reply(title string, body string, parentIds ...Pid) (Post, error)
+    ReplyOn(title string, body string) (Post, error)
     GetPosts() []Post
     RecentPosts() []Post
     String() string

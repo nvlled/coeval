@@ -55,6 +55,11 @@ func (thread *thread) Reply(title, body string, parentIds ...Pid) (Post, error) 
     return newPost(thread, title, body, parentIds...)
 }
 
+func (thread *thread) ReplyOn(title, body string) (Post, error) {
+    parentIds := ParseIds(body)
+    return thread.Reply(title, body, parentIds...)
+}
+
 func (thread *thread) GetPosts() []Post {
     u := thread.CurrentUser()
     b := thread.Board()

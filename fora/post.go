@@ -4,6 +4,7 @@ package fora
 import (
     "strconv"
     "fmt"
+    "nvlled/coeval/common"
 )
 
 // TODO: Make userStore take a UserContainer argument instead
@@ -175,4 +176,13 @@ func (posts PostById) Less(i, j int) bool {
     x,_ := strconv.Atoi(string(posts[i].Id()))
     y,_ := strconv.Atoi(string(posts[j].Id()))
     return x < y
+}
+
+func ParseIds(text string) []Pid {
+    ids := common.ParseIds(text)
+    var parentIds []Pid
+    for _, id := range ids {
+        parentIds = append(parentIds, Pid(id))
+    }
+    return parentIds
 }

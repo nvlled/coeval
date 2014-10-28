@@ -8,7 +8,6 @@ import (
     "nvlled/coeval/rend"
     "nvlled/coeval/sesion"
     "nvlled/coeval/fora"
-    "nvlled/coeval/common"
     "nvlled/coeval/urlfor"
     "strconv"
 )
@@ -124,7 +123,7 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
 
     title := r.FormValue("post-title")
     body  := r.FormValue("post-body")
-    parentIds := common.ParseIds(body)
+    parentIds := fora.ParseIds(body)
 
     board := user.GetBoard(bid)
     flunkNil(board, fora.BoardNotFound(bid))
