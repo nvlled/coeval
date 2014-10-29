@@ -662,6 +662,19 @@
         this.hook("indent", post);
     }
 
+    M.dump = function() {
+        return {
+            posts: this.postdb.dump(),
+            state: this.history,
+        }
+    }
+
+    M.applyLinks = function(linkages) {
+        linkages.forEach(function(link) {
+            this.attachToParent(this.getPost(link[0]), this.getPost(link[1]));
+        }.bind(this));
+    }
+
     root.printSubthread = function(post) {
         while(post) {
             console.log("subt>", post.id);
@@ -681,6 +694,29 @@
         this._db[id] = post;
         if (!this.op)
             this.op = post;
+    }
+    PostDB.prototype.printDump = function() {
+        var d = this.dump();
+        d.forEach(function(x) {
+            console.log(x.toSource());
+        });
+    }
+    PostDB.prototype.dump = function() {
+        var posts = [];
+        for (var k in this._db) {
+            var p = this._db[k];
+            posts.push({id: p.id, parentIds: p.parentIds});
+        }
+        //posts.sort(byId);
+        return posts;
+
+        function byId(p1, p2) {
+            var x = parseInt(p1.id);
+            var y = parseInt(p2.id);
+            if (Number.isNaN(x) || Number.isNaN(y))
+                return p1.id > p1.id
+            return x > y;
+        }
     }
     PostDB.prototype.getPostsByNorder = function() {
         var posts =  [];
