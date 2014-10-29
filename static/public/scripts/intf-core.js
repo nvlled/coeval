@@ -81,14 +81,14 @@
     M.newPost = function(data) {
         var post = {
             id:             data.id.toString(),
-            body:           data.body,
+            body:           data.body || "",
             norder:         {nextId:  null, prevId: null},
             sib:            {nextId:  {},   prevId: {}},
             page:           {start:   null, end:    null},
             nextpostId:     null,
             prevpostId:     null,
             indented:       false,
-            parentIds:      this.parsePostIds(data.body),
+            parentIds:      data.parentIds || this.parsePostIds(data.body),
             firstchildId:   null,
             lastchildId:    null,
             numReplies:     0,
