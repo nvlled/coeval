@@ -69,6 +69,7 @@
                     var container = post.node.parentNode;
                     var firstNode = container.children[0];
                     insertBefore(post.node, firstNode);
+                    post.node.classList.remove(classMap.SUBTHREAD);
                     return;
                 }
 
@@ -76,14 +77,12 @@
                 var prev = this.prevnorder(post);
                 while(true) {
                     if (prev) {
-                        console.log("prev:", prev.id);
                         if (this.isInNorder(prev)) {
                             insertAfter(post.node, prev.node);
                             break;
                         }
                         prev = this.prevnorder(prev);
                     } else if (next) {
-                        console.log("next:", next.id);
                         if (this.isInNorder(next)) {
                             insertBefore(post.node, next.node);
                             break;

@@ -322,16 +322,23 @@
 
         if (!parent || this.isInNorder(parent) || this.isIndented(parent))
             return;
+        console.log("**detaching", post.id, "from", parent.id);
 
         if (this.isIndented(post))
             this.clearSubthread(parent);
+        else if (this.nextpost(post) == null) //**
+            this.restoreNorder(post);
+
+        // ensure nextpost is cleared
+        // or else the preceding check above** will fail
+        // on next iteration
+        this.clearNextPost(parent);
 
         n = n || 0;
-
         var size = 0;
-
         var lastpost = parent;
         var start = post;
+
         while (size < PAGE_SIZE && n < maxiter) {
             if (!childset[post.id] && this.isInNorder(post)) {
                 size++;
@@ -344,8 +351,8 @@
                 break;
             n++;
         }
-
         var gramps = this.prevpost(parent);
+
         if (n >= maxiter || (!gramps && size == 0)) {
             this.clearSupthread(parent);
             this.clearSubthread(parent, null, true);
@@ -392,6 +399,7 @@
     M.attachChild = function(parent, post) {
         if (this.nextpost(parent) == post) {
             if (this.isUndented(post)) {
+                this.indent(post);
                 this.clearSubthread(parent);
                 this.attachSiblings(parent, post);
             }
@@ -750,6 +758,3 @@
     // - norder restoration is broke
 
 })(this)
-
-
-

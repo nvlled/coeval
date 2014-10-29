@@ -33,7 +33,6 @@ function buildThread() {
 
         var post = intfcore.newPost(data);
         post.node = node;
-        console.log("** post: ", post);
         addLinkHandlers(post);
         linkToParentNodes(post);
     }
