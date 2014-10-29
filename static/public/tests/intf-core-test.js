@@ -12,16 +12,68 @@ var test = {};
 
 test.testGeneral = function() {
     intf = createSampleThread3();
-    intf.postdb.print();
     var linkages = [["1006", "1002"], ["1010", "1004"], ["1009", "1003"], ["1005", "1002"], ["1002", "1001"], ["1008", "1001"], ["1016", "1008"], ["1008", "1003"], ["1007", "1001"], ["1004", "1001"], ["1003", "1001"]];
 
-
-    linkages.forEach(function(link) {
-        intf.attachToParent(intf.getPost(link[0]), intf.getPost(link[1]));
-        intf.postdb.print();
-        validateInn(intf);
-    });
+    intf.postdb.print();
+    linkPosts(intf, linkages);
 }
+
+test.testGeneral2 = function() {
+    var sauce = [
+        {id:"0", parentIds:[]},
+        {id:"1", parentIds:["0"]},
+        {id:"2", parentIds:["1"]},
+        {id:"3", parentIds:["1"]},
+        {id:"4", parentIds:["0"]},
+        {id:"5", parentIds:["4"]},
+        {id:"6", parentIds:["0", "1", "2"]},
+        {id:"7", parentIds:["6"]},
+        {id:"8", parentIds:["6", "4"]},
+        {id:"9", parentIds:["6"]},
+        {id:"10", parentIds:["9", "3", "6"]},
+        {id:"11", parentIds:["6"]},
+        {id:"12", parentIds:["0", "1", "4"]},
+        {id:"13", parentIds:["0", "4", "10"]},
+        {id:"14", parentIds:["13", "8"]},
+        {id:"15", parentIds:["13"]},
+        {id:"16", parentIds:[]},
+        {id:"17", parentIds:["0", "1"]}
+    ]
+    var intf = createThreadFromSource(sauce);
+    var linkages = [["1", "0"], ["2", "1"], ["6", "2"], ["4", "0"], ["6", "2"], ["7", "6"], ["1", "0"], ["4", "0"], ["6", "0"], ["4", "0"], ["6", "0"]]
+
+    intf.postdb.print();
+    linkPosts(intf, linkages);
+}
+
+test.testGeneral3 = function() {
+    var sauce = [
+        {id:"0", parentIds:[]},
+        {id:"1", parentIds:["0"]},
+        {id:"2", parentIds:["1"]},
+        {id:"3", parentIds:["1"]},
+        {id:"4", parentIds:["0"]},
+        {id:"5", parentIds:["4"]},
+        {id:"6", parentIds:["0", "1", "2"]},
+        {id:"7", parentIds:["6"]},
+        {id:"8", parentIds:["6", "4"]},
+        {id:"9", parentIds:["6"]},
+        {id:"10", parentIds:["9", "3", "6"]},
+        {id:"11", parentIds:["6"]},
+        {id:"12", parentIds:["0", "1", "4"]},
+        {id:"13", parentIds:["0", "4", "10"]},
+        {id:"14", parentIds:["13", "8"]},
+        {id:"15", parentIds:["13"]},
+        {id:"16", parentIds:[]},
+        {id:"17", parentIds:["0", "1"]}
+    ]
+    var intf = createThreadFromSource(sauce);
+    var linkages = [["1", "0"], ["4", "0"], ["6", "0"], ["12", "0"], ["13", "0"], ["14", "13"], ["4", "0"], ["8", "4"], ["14", "8"], ["6", "0"], ["13", "0"], ["4", "0"], ["1", "0"], ["4", "0"], ["1", "0"], ["4", "0"], ["6", "0"], ["12", "0"], ["13", "0"], ["12", "0"], ["1", "0"], ["4", "0"], ["6", "0"], ["12", "0"], ["4", "0"], ["8", "6"]];
+
+    intf.postdb.print();
+    linkPosts(intf, linkages);
+}
+
 
 test.testCreation = function() {
     intf = intf.newModule();
@@ -371,6 +423,14 @@ function createSampleThread3() {
     return mod;
 }
 
+function createThreadFromSource(srcThread) {
+    mod = intf.newModule();
+    srcThread.forEach(function(data) {
+        mod.newPost(data);
+    });
+    return mod;
+}
+
 function assertAll(list, p) {
     assert.ok(forAll(list, p));
 }
@@ -399,12 +459,19 @@ function toSet(list) {
     return m;
 }
 
+function linkPosts(intf, linkages) {
+    linkages.forEach(function(link) {
+        intf.attachToParent(intf.getPost(link[0]), intf.getPost(link[1]));
+        intf.postdb.print();
+        validateInn(intf);
+    });
+}
+
 for (var name in test) {
     if (name.search("test") != 0)
         continue;
     console.log("*** Testing", name);
     test[name]();
 }
-
 
 
