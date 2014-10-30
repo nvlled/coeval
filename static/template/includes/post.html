@@ -1,0 +1,42 @@
+
+{{define "sub/thread"}}
+<div id="p{{.Id}}" class='post thread'>
+    <a name="p{{.Id}}" class='post-anchor' href="#p{{.Id}}">No.</a><span class='post-id'>{{.Id}}</span>
+    {{$link :=  url "thread-view" "bid" (str .Board.Id) "tid" (str .Id)}}
+    <p>[<a href='{{$link}}'>reply</a>]</p>
+    {{template "sub/post-body" .GetOp}}
+</div>
+{{end}}
+
+{{define "sub/post-preview"}}
+<div id="p{{.Id}}" class='post'>
+    <p>
+    <a name="p{{.Id}}" class='post-anchor' href="{{post_url .}}">No.</a><span class='post-id'>{{.Id}}</span>
+    {{/*<p>[<a href='{{thread_url .Thread}}'>reply</a>]</p>*/}}
+    </p>
+    {{template "sub/post-body" .}}
+</div>
+{{end}}
+
+{{define "sub/post"}}
+<div id="p{{.Id}}" class='post'>
+    <p>
+    <a name="p{{.Id}}" class='post-anchor' href="#p{{.Id}}">No.</a><span class='post-id'>{{.Id}}</span>
+    {{/*<p>[<a href='{{thread_url .Thread}}'>reply</a>]</p>*/}}
+    </p>
+    {{template "sub/post-body" .}}
+</div>
+{{end}}
+
+{{define "sub/post-body"}}
+    <h4>{{.Title}} - {{.Creator.Name}}</h4>
+    <p class='post-body'>
+    {{render_postlinks .}}
+    </p>
+    <div class='post-replies'>replies::</div>
+    <hr />
+{{end}}
+
+{{define "sub/postlink"}}
+<a class="postlink" href="{{.Link}}">{{.Text}}</a>
+{{end}}
