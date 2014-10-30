@@ -29,7 +29,7 @@
 {{end}}
 
 {{define "sub/post-body"}}
-    <h4>{{.Title}} - {{.Creator.Name}}</h4>
+    <h4>{{.Title}} <span>{{.Creator.Name}}</span></h4>
     <p class='post-body'>
     {{render_postlinks .}}
     </p>

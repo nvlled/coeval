@@ -7,18 +7,18 @@
     <link rel="stylesheet" href="/public/styles/main.css" />
 </head>
 <body>
-{{range .__notifications}}
-    <p class="notification">(!) {{.__notifications}}</p>
-{{end}}
 
-{{with .__username}}
-Username: {{.}}
-{{end}}
-
-
+<div id="wrapper">
+    {{with .__username}}
+    Username: {{.}}
+    {{end}}
+    {{range .__notifications}}
+        <p class="notification">(!) {{.}}</p>
+    {{end}}
 {{end}}
 
 {{define "sub/footer"}}
+</div><!-- end wrapper -->
 </body>
 </html>
 {{end}}
