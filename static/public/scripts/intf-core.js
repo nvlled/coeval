@@ -110,12 +110,14 @@
 
     M.linksToPosts = function(post) {
         var pids = post.parentIds;
+        var validPids = [];
         pids.forEach(function(pid) {
             var parent = this.getPost(pid);
             if (!parent) {
                 console.warn("parent ", pid, " of ", post.id, " not found ");
                 return;
             }
+            validPids.push(pid);
 
             var post1 = this.getPost(this.prevChildId[pid]);
             var post2 = post;
@@ -136,6 +138,7 @@
 
             this.prevChildId[pid] = post2.id;
         }.bind(this));
+        post.parentIds = validPids;
     }
 
     M.parsePostIds = (function() {
