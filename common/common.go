@@ -16,3 +16,12 @@ func ParseIds(postBody string) []string {
     }
     return pids
 }
+
+func ToMap(params ...string) map[string]string {
+    m := make(map[string]string)
+    for i := 0; i < len(params) - 1; i += 2 {
+        k, v := params[i], params[i+1]
+        m[k] = v
+    }
+    return m
+}
