@@ -149,7 +149,16 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostView(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprint(w, "post view")
+    bid, tid, _ := getIdsFromMuxVars(r)
+    user := sesion.User(r)
+
+    board := user.GetBoard(bid)
+    flunkNil(board, fora.BoardNotFound(bid))
+    thread := board.GetThread(tid)
+
+    flunkNil(thread, fora.ThreadNotFound(tid))
+    w.Header().Set("Location", urlfor.Thread(thread))
+    w.WriteHeader(301)
 }
 
 func PostDelete(w http.ResponseWriter, r *http.Request) {
