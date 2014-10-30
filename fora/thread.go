@@ -8,6 +8,10 @@ import (
     "fmt"
 )
 
+const (
+    RECENT_COUNT = 4
+)
+
 type thread struct {
     currentUser User
     id Tid
@@ -76,7 +80,7 @@ func (thread *thread) RecentPosts() []Post {
     sort.Sort(PostById(posts))
     posts = posts[1:] // excluding Op
     n := len(posts)
-    return posts[int(math.Max(0, float64(n-5))):n]
+    return posts[int(math.Max(0, float64(n-RECENT_COUNT))):n]
 }
 
 func (t *thread) String() string {
@@ -132,6 +136,3 @@ func (threads ThreadById) Less(i, j int) bool {
     y,_ := strconv.Atoi(string(threads[j].Id()))
     return x < y
 }
-
-
-
