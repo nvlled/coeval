@@ -60,6 +60,15 @@ func FlashGet(w ht.ResponseWriter, r *ht.Request, key string) interface{} {
     return nil
 }
 
+func AddNotification(w ht.ResponseWriter, r *ht.Request, message string) {
+    FlashSet(w, r, "notifications", message)
+}
+
+func GetNotifications(w ht.ResponseWriter, r *ht.Request) []interface{} {
+    fs := FlashGetAll(w, r, "notifications")
+    return fs
+}
+
 func SetErrors(w ht.ResponseWriter, r *ht.Request, err error) {
     FlashSet(w, r, "error", err)
 }
@@ -106,7 +115,7 @@ func Merge(w ht.ResponseWriter, r *ht.Request, data rend.Data) rend.Data {
     data["__req"] = r
     data["__username"] = Username(r)
     data["__user"] = context.Get(r, key.User)
-    data["__notifications"] = FlashGetAll(w, r, "notifications")
+    data["__notifications"] = GetNotifications(w, r)
     data["__error"] = GetErrors(w, r)
     data["__form"] = GetForm(w, r)
     return data

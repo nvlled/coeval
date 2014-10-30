@@ -94,6 +94,7 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    sesion.AddNotification(w, r, "thread created")
     w.Header().Set("Location", urlfor.Thread(thread))
     w.WriteHeader(301)
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
@@ -108,6 +109,7 @@ func ThreadView(w http.ResponseWriter, r *http.Request) {
     board := user.GetBoard(bid)
     flunkNil(board, fora.BoardNotFound(bid))
     thread := board.GetThread(tid)
+    flunkNil(thread, fora.ThreadNotFound(tid))
 
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
         "thread" : thread,
@@ -142,6 +144,7 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    sesion.AddNotification(w, r, "post submitted")
     w.Header().Set("Location", urlfor.Thread(thread))
     w.WriteHeader(301)
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
@@ -216,4 +219,3 @@ func returnToForm(w http.ResponseWriter, r *http.Request, err error, form sesion
         "__error" : err,
     }))
 }
-
