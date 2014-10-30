@@ -102,6 +102,7 @@ func newThread(board Board, title string, body string) (Thread, error) {
 
     op.thread = t
     userStore(u).PersistThread(t)
+    op.id = Pid(t.id)
     userStore(u).PersistPost(op)
     return t, nil
 }

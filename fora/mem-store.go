@@ -40,7 +40,6 @@ func IdGen() func() string {
     }
 }
 
-var tidGen = IdGen()
 var pidGen = IdGen()
 
 func (store *memstore) lookupBoard(bid Bid) *board {
@@ -183,7 +182,7 @@ func (store *memstore) PersistThread(t *thread) error {
     if _, ok := data.threads[bid]; !ok {
         data.threads[bid] = make(threadmap)
     }
-    t.id = Tid(tidGen())
+    t.id = Tid(pidGen())
     data.threads[bid][t.id] = *t
     return nil
 }
@@ -230,7 +229,9 @@ func (store *memstore) PersistPost(p *post, parentIds ...Pid) error {
     if _, ok := data.posts[tid]; !ok {
         data.posts[tid] = make(postmap)
     }
-    p.id = Pid(pidGen())
+    if p.id == "" {
+        p.id = Pid(pidGen())
+    }
     data.posts[tid][p.id] = *p
     store.persistReplies(p, parentIds)
     return nil
