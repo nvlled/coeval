@@ -43,6 +43,9 @@ func initMessageBoard() {
     user,_ := fora.NewUser("nvlled", fora.Admin)
     user.NewBoard("g", "animu hating plebs")
     user.NewBoard("a", "saten-san a sl**")
+    user.NewBoard("b", "random")
+    user.NewBoard("pol", "politics")
+    user.NewBoard("sci", "science")
 
     user = fora.Anonymous()
     g := user.GetBoard("g")
