@@ -10,10 +10,6 @@ body {
     color: #eea;
 }
 
-a {
-    color: #ddd;
-}
-
 /*
 .postlink.parent {
 color: red;
@@ -49,4 +45,8 @@ color: red;
 
 .notification {
     color: green;
+}
+
+.postlink.void {
+    text-decoration: line-through;
 }

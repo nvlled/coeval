@@ -10,8 +10,10 @@ var cm = {
     POST_BODY: "post-body",
     POST_REPLIES: "post-replies",
     POST_LINK: "postlink",
+    POST_VOIDLINK: "void",
     HIGHLIGHT: "highlight",
     POST: "post",
+
 }
 
 this.addEventListener("load", init);
@@ -53,8 +55,14 @@ function addLinkHandlers(post) {
         var postlink = intfcore.parentlink(parentId, post.id);
         var parent = intfcore.getPost(parentId);
 
-        intfmain.addLinkNodeAttrs(parent, linkNode, "parent");
-        linkNode.onclick = intfcore.createLinkHandler(postlink);
+        if (parent) {
+            intfmain.addLinkNodeAttrs(parent, linkNode, "parent");
+            linkNode.onclick = intfcore.createLinkHandler(postlink);
+        } else {
+            linkNode.classList.add(cm.POST_VOIDLINK);
+            linkNode.href = "#";
+            linkNode.onclick = function() { return false };
+        }
     }
 }
 
