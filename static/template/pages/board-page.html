@@ -1,4 +1,10 @@
 {{template "sub/header" .}}
+{{template "sub/boardnav" .__user.GetBoards}}
+
+{{with .board}}
+<h2>/{{.Id}}/ — {{.Desc}}</h2>
+{{end}}
+
 {{$err := .__error}}
 {{$f := .__form}}
 <form method="post" action='{{url "thread-create" "bid" (str .bid)}}'>

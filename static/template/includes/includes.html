@@ -11,7 +11,11 @@
     <p class="notification">(!) {{.__notifications}}</p>
 {{end}}
 
-Username: {{.__username}}
+{{with .__username}}
+Username: {{.}}
+{{end}}
+
+
 {{end}}
 
 {{define "sub/footer"}}
@@ -24,7 +28,7 @@ Username: {{.__username}}
     <a name="p{{.Id}}" class='post-anchor' href="#p{{.Id}}">No.</a><span class='post-id'>{{.Id}}</span>
     <h3>{{.Title}} - {{.Creator.Name}}</h3>
     {{$link :=  url "thread-view" "bid" (str .Board.Id) "tid" (str .Id)}}
-    {{/*<p>[<a href='{{$link}}'>reply</a>]</p>*/}}
+    <p>[<a href='{{$link}}'>reply</a>]</p>
     <p class="post-body">
     {{.Body}}
     </p>
@@ -50,4 +54,9 @@ Username: {{.__username}}
     <div class='post-replies'>replies::</div>
     <hr />
 </div>
+{{end}}
+
+{{define "sub/boardnav"}}
+[/ {{range .}}<a href="{{board_url .}}">{{.Id}}</a> / {{end}}
+] [<a href="/">Home</a>]
 {{end}}

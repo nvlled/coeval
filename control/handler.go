@@ -43,6 +43,7 @@ func BoardPage(w http.ResponseWriter, r *http.Request) {
         "bid" : bid,
         "pageno" : pageno,
         "threads" : board.GetPage(readInt(pageno, 0)),
+        "board" : board,
     }))
 }
 

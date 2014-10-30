@@ -2,6 +2,7 @@ package fora
 
 import (
     "fmt"
+    "sort"
 )
 
 type board struct {
@@ -58,7 +59,9 @@ func getBoard(currentUser User, bid Bid) Board {
 }
 
 func getBoards(currentUser User) []Board {
-    return userStore(currentUser).GetBoards()
+    boards := userStore(currentUser).GetBoards()
+    sort.Sort(BoardById(boards))
+    return boards
 }
 
 func BoardExists(bid Bid) bool {
@@ -87,4 +90,16 @@ func newBoard(creator User, bid Bid, desc string) (Board, error) {
 }
 
 
+type BoardById []Board
 
+func (boards BoardById) Len() int {
+    return len(boards)
+}
+
+func (boards BoardById) Swap(i, j int) {
+    boards[i], boards[j] = boards[j], boards[i]
+}
+
+func (boards BoardById) Less(i, j int) bool {
+    return boards[i].Id() < boards[j].Id()
+}

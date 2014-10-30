@@ -1,4 +1,6 @@
 {{template "sub/header" .}}
+{{template "sub/boardnav" .__user.GetBoards}}
+
 {{$err := .__error}}
 {{$f := .__form}}
 <form method="POST" action='{{with_thread_url "thread-reply" .thread}}'>
