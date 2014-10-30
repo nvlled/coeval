@@ -39,9 +39,10 @@
         return {
             visitLink: function(postlink) {
                 var post = postlink.targetPost;
-                if (postlink.type == "parent") {
-                    post.node.scrollIntoView();
-                }
+                var node = post.node;
+                var a = node.querySelector("."+cm.POST_ANCHOR);
+                a.click();
+                //post.node.scrollIntoView();
                 postPreview.hide();
             },
 

@@ -11,6 +11,7 @@ var cm = {
     POST_REPLIES: "post-replies",
     POST_LINK: "postlink",
     POST_VOIDLINK: "void",
+    POST_ANCHOR: "post-anchor",
     HIGHLIGHT: "highlight",
     POST: "post",
 
