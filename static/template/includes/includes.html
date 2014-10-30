@@ -34,18 +34,18 @@ Username: {{.__username}}
 {{end}}
 
 {{define "sub/postlink"}}
-<a class="postlink" href="#p{{.Id}}">{{.Text}}</a>
+<a class="postlink" href="{{.Link}}">{{.Text}}</a>
 {{end}}
 
 {{define "sub/post"}}
 <div id="p{{.Id}}" class='post'>
     <p>
-    <a name="p{{.Id}}" class='post-anchor' href="#p{{.Id}}">No.</a><span class='post-id'>{{.Id}}</span>
+    <a name="p{{.Id}}" class='post-anchor' href="{{post_url .}}">No.</a><span class='post-id'>{{.Id}}</span>
     {{/*<p>[<a href='{{thread_url .Thread}}'>reply</a>]</p>*/}}
     </p>
     <h4>{{.Title}} - {{.Creator.Name}}</h4>
     <p class='post-body'>
-    {{render_postlinks .Body}}
+    {{render_postlinks .}}
     </p>
     <div class='post-replies'>replies::</div>
     <hr />

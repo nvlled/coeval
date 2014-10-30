@@ -8,6 +8,7 @@ import (
     "github.com/gorilla/mux"
     "github.com/gorilla/context"
     "nvlled/coeval/rend"
+    "nvlled/coeval/common"
     "nvlled/coeval/sesion/key"
     ct "nvlled/coeval/control"
     "nvlled/coeval/urlfor"
@@ -64,6 +65,22 @@ var routeDef = def.Route(
 
 var routes *mux.Router
 
+var customUrlMap = map[string]func(name string, params ...string) string {
+    "post-view" : func(_ string, params ...string)string {
+        pid, ok := common.ToMap(params...)["pid"]
+        if !ok { panic("missing arg: pid") }
+        url := createUrl("thread-view", params...)
+        return url+"#p"+pid
+    },
+}
+
+func UrlFor(name string, params ...string) string {
+    if urlmap, ok := customUrlMap[name]; ok {
+        return urlmap(name, params...)
+    }
+    return createUrl(name, params...)
+}
+
 func createUrl(name string, params ...string) string {
     r := routes.Get(name)
     if r != nil {
@@ -97,9 +114,5 @@ func init() {
     root := mux.NewRouter()
     root.StrictSlash(true)
     routes = def.BuildRouter(routeDef, root)
-    urlfor.SetUrlMaker(createUrl)
+    urlfor.SetUrlMaker(UrlFor)
 }
-
-
-
-
