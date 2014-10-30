@@ -10,8 +10,10 @@ import (
 )
 
 func RenderPostlinks(post fora.Post) template.HTML {
-    re := regexp.MustCompile(`>>\d+`)
-    bs := re.ReplaceAllFunc([]byte(post.Body()), func(idBytes []byte) []byte {
+    idRe := regexp.MustCompile(`>>\d+`)
+    brRe:= regexp.MustCompile(`\n`)
+
+    bs := idRe.ReplaceAllFunc([]byte(post.Body()), func(idBytes []byte) []byte {
         id := string(idBytes[2:])
         text := string(idBytes)
         var buf bytes.Buffer
@@ -24,6 +26,9 @@ func RenderPostlinks(post fora.Post) template.HTML {
         })
         if err != nil { panic(err) }
         return buf.Bytes()
+    })
+    bs = brRe.ReplaceAllFunc(bs, func(_ []byte) []byte {
+        return []byte("<br>")
     })
     return template.HTML(bs)
 }
