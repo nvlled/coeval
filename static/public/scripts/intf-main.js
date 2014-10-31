@@ -40,10 +40,13 @@
             visitLink: function(postlink) {
                 var post = postlink.targetPost;
                 var node = post.node;
-                var a = node.querySelector("."+cm.POST_ANCHOR);
-                a.click();
-                //post.node.scrollIntoView();
                 postPreview.hide();
+                if (postlink.type === "parent") {
+                    //var a = node.querySelector("."+cm.POST_ANCHOR);
+                    //a.click();
+                    post.node.scrollIntoView();
+                }
+                postPreview.addHighlight("", node);
             },
 
             attachToParent: function(post, parent) {
@@ -152,6 +155,7 @@
 
         newMouseoverHandler: function(sourceId, post) {
             return function(e) {
+                this.removeHighlight();
                 this.removeClone();
 
                 var node = post.node;
