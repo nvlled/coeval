@@ -68,13 +68,26 @@ function addLinkHandlers(post) {
     }
 }
 
+function keepViewOffset(node, fn) {
+    return function() {
+        var scroll = window.scrollY;
+        var x = node.offsetTop;
+        var val = fn.apply(null, arguments);
+        var y = node.offsetTop;
+        var scroll_ = scroll-(x-y)
+        window.scrollTo(0, scroll_);
+        return val;
+    }
+}
+
 function linkToParentNodes(post) {
     post.parentIds.forEach(function(parentId) {
         var parentNode = document.getElementById("p"+parentId);
         var postlink = intfcore.childlink(post.id, parentId);
         if (parentNode) {
             var linkNode = intfmain.createPostLinkNode(parentId, post, intfcore.CHILD_LINK);
-            linkNode.onclick = intfcore.createLinkHandler(postlink);
+            var handler = intfcore.createLinkHandler(postlink);
+            linkNode.onclick = keepViewOffset(parentNode, handler);
 
             var replies = parentNode.querySelector("."+cm.POST_REPLIES);
             var added = replies.added;
