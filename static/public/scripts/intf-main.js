@@ -30,6 +30,7 @@
         node.classList.add("postlink");
         node.classList.add(""+type);
         node.textContent = ">>"+post.id;
+        node.classList.add("pl"+post.id);
         node.onmouseover = postPreview.newMouseoverHandler(sourceId, post);
         node.onmouseout  = postPreview.newMouseoutHandler();
         return node;
@@ -50,7 +51,12 @@
             },
 
             attachToParent: function(post, parent) {
-                parent.node.classList.add(classMap.SUBTHREAD);
+                var node = parent.node;
+                var linkNode = node.querySelector(".pl"+post.id);
+
+                deactivatePostlinks(node);
+                linkNode.classList.add(cm.POST_LINK_ACTIVE);
+                node.classList.add(classMap.SUBTHREAD);
             },
 
             undent: function(post) {
@@ -99,6 +105,7 @@
                     }
                 }
                 post.node.classList.remove(classMap.SUBTHREAD);
+                deactivatePostlinks(post.node);
             },
         }
     }
@@ -141,7 +148,7 @@
         showReferredLink: function(sourceId, node) {
             var linkNodes = node.querySelectorAll(".pl"+sourceId);
             for (var i = 0; i < linkNodes.length; i++) {
-                linkNodes[i].classList.add("referred");
+                linkNodes[i].classList.add(cm.POST_LINK_REF);
             }
             this.sourceId = sourceId;
         },
@@ -149,7 +156,7 @@
         hideReferredLink: function(sourceId, node) {
             var linkNodes = node.querySelectorAll(".pl"+sourceId);
             for (var i = 0; i < linkNodes.length; i++) {
-                linkNodes[i].classList.remove("referred");
+                linkNodes[i].classList.remove(cm.POST_LINK_REF);
             }
         },
 
@@ -199,6 +206,14 @@
             }.bind(this);
         }
     }
+
+    function deactivatePostlinks(node) {
+        var linkNodes = node.querySelectorAll(".active");
+        for (var i = 0; i < linkNodes.length; i++) {
+            linkNodes[i].classList.remove(cm.POST_LINK_ACTIVE);
+        }
+    }
+
 
     function screenTop()    { return window.scrollY; }
     function screenBottom() { return screenTop() + window.innerHeight }

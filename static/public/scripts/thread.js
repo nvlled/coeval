@@ -12,6 +12,8 @@ var cm = {
     POST_LINK: "postlink",
     POST_VOIDLINK: "void",
     POST_ANCHOR: "post-anchor",
+    POST_LINK_REF: "referred",
+    POST_LINK_ACTIVE: "active",
     HIGHLIGHT: "highlight",
     POST: "post",
 
@@ -59,7 +61,6 @@ function addLinkHandlers(post) {
         if (parent) {
             intfmain.addLinkNodeAttrs(post.id, parent, linkNode, "parent");
             linkNode.onclick = intfcore.createLinkHandler(postlink);
-            linkNode.classList.add("pl"+parentId);
         } else {
             linkNode.classList.add(cm.POST_VOIDLINK);
             linkNode.href = "#";

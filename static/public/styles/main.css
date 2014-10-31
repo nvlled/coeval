@@ -54,3 +54,11 @@ body {
 .postlink.referred {
     background-color: orange;
 }
+
+.quote {
+    color: green;
+}
+
+.postlink.active {
+    color: green;
+}
