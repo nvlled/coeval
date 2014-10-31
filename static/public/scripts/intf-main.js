@@ -201,17 +201,18 @@
     }
 
     function screenTop()    { return window.scrollY; }
-    function screenBottom() { return screenTop() + window.screen.height }
+    function screenBottom() { return screenTop() + window.innerHeight }
 
     function withinScreen(node) {
-        var x = 30; // I called it x because I just don't know
+        var h = node.clientHeight;
         var nodeTop = node.offsetTop;
-        var nodeBot = nodeTop + node.clientHeight + x;
+        var nodeMid = node.offsetTop + h/2;
+        var nodeBot = nodeTop + h;
 
         var scrTop = screenTop();
         var scrBot = screenBottom();
 
-        return nodeTop > scrTop && nodeBot < scrBot;
+        return nodeMid > scrTop && nodeMid < scrBot;
     }
 
     function insertAfter(insertedNode, node) {
@@ -228,8 +229,6 @@
         parent.appendChild(node);
     }
 
-
     init();
-
 
 })(this);
