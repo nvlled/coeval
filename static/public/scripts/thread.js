@@ -59,7 +59,7 @@ function addLinkHandlers(post) {
         var parent = intfcore.getPost(parentId);
 
         if (parent) {
-            intfmain.addLinkNodeAttrs(post.id, parent, linkNode, "parent");
+            intfmain.addLinkNodeAttrs(post, parent, linkNode, "parent");
             linkNode.onclick = intfcore.createLinkHandler(postlink);
         } else {
             linkNode.classList.add(cm.POST_VOIDLINK);
@@ -86,7 +86,8 @@ function linkToParentNodes(post) {
         var parentNode = document.getElementById("p"+parentId);
         var postlink = intfcore.childlink(post.id, parentId);
         if (parentNode) {
-            var linkNode = intfmain.createPostLinkNode(parentId, post, intfcore.CHILD_LINK);
+            var parent = {id: parentId, node: parentNode}; // or intfcore.getPost
+            var linkNode = intfmain.createPostLinkNode(parent, post, intfcore.CHILD_LINK);
             var handler = intfcore.createLinkHandler(postlink);
             linkNode.onclick = keepViewOffset(parentNode, handler);
 

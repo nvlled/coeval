@@ -20,18 +20,19 @@
         classMap = cm;
     }
 
-    function createPostLinkNode(sourceId, post, type) {
+    function createPostLinkNode(sourcePost, post, type) {
         var a = document.createElement("a");
-        return addLinkNodeAttrs(sourceId, post, a, type);
+        return addLinkNodeAttrs(sourcePost, post, a, type);
     }
 
-    function addLinkNodeAttrs(sourceId, post, node, type) {
+    // TODO: Change arguments to a postlink instead
+    function addLinkNodeAttrs(sourcePost, post, node, type) {
         node.href = '#p'+post.id;
         node.classList.add("postlink");
         node.classList.add(""+type);
         node.textContent = ">>"+post.id;
         node.classList.add("pl"+post.id);
-        node.onmouseover = postPreview.newMouseoverHandler(sourceId, post);
+        node.onmouseover = postPreview.newMouseoverHandler(type, sourcePost, post);
         node.onmouseout  = postPreview.newMouseoutHandler();
         return node;
     }
@@ -160,29 +161,35 @@
             }
         },
 
-        newMouseoverHandler: function(sourceId, post) {
+        newMouseoverHandler: function(type, sourcePost, post) {
             return function(e) {
                 this.removeHighlight();
                 this.removeClone();
 
                 var node = post.node;
                 if (withinScreen(node)) {
-                    this.addHighlight(sourceId, node);
+                    this.addHighlight(sourcePost.id, node);
                     return;
                 }
 
                 var clone = node.cloneNode(true);
+                this.showReferredLink(sourcePost.id, clone);
+                clone.classList.add("preview")
                 clone.style.position = "absolute";
-                this.showReferredLink(sourceId, clone);
+                clone.style.width = sourcePost.node.clientWidth+"px";
+                clone.style.left = sourcePost.node.offsetLeft+"px";
+                clone.classList.remove(cm.INDENTED);
+                clone.classList.remove(cm.SUBTHREAD);
 
                 var top = window.scrollY+e.clientY;
-                var bottom = top + node.clientHeight;
-                if (bottom >= screenBottom()*.90) {
-                    top -= node.clientHeight;
+                var h = node.clientHeight;
+                var magic = 30; // TODO: Make less ironic
+                if (type === "child")
+                    clone.style.top = (top+magic)+"px";
+                else {
+                    var h = node.clientHeight;
+                    clone.style.top = (top-h-magic)+"px";
                 }
-                clone.style.top = top+"px";
-                clone.style.left = e.clientX+"px";
-                clone.style.width = "80%";
 
                 document.body.appendChild(clone);
                 this.clonedNode = clone;
@@ -215,8 +222,8 @@
     }
 
 
-    function screenTop()    { return window.scrollY; }
-    function screenBottom() { return screenTop() + window.innerHeight }
+    function screenTop()      { return window.scrollY; }
+    function screenBottom()   { return screenTop() + window.innerHeight }
 
     function withinScreen(node) {
         var h = node.clientHeight;
