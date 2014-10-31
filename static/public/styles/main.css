@@ -66,3 +66,11 @@ body {
 .postlink.active {
     color: green;
 }
+
+textarea {
+    width: 100%;
+}
+
+.error {
+    color: red;
+}

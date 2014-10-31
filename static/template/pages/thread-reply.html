@@ -1,6 +1,8 @@
 {{template "sub/header" .}}
 Post submitted #{{.Id}}
-<a href={{post_url .post}}>
+{{with .post}}
+<a href={{post_url .}}>
     Click here to continue
 </a>
+{{end}}
 {{template "sub/footer"}}
