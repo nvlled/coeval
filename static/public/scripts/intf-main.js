@@ -20,18 +20,18 @@
         classMap = cm;
     }
 
-    function createPostLinkNode(post, type) {
+    function createPostLinkNode(sourceId, post, type) {
         var a = document.createElement("a");
-        return addLinkNodeAttrs(post, a, type);
+        return addLinkNodeAttrs(sourceId, post, a, type);
     }
 
-    function addLinkNodeAttrs(post, node, type) {
+    function addLinkNodeAttrs(sourceId, post, node, type) {
         node.href = '#p'+post.id;
         node.classList.add("postlink");
         node.classList.add(""+type);
         node.textContent = ">>"+post.id;
-        node.onmouseover = postPreview.newMouseoverHandler(post.node);
-        node.onmouseout  = postPreview.newMouseoutHandler(post.node);
+        node.onmouseover = postPreview.newMouseoverHandler(sourceId, post);
+        node.onmouseout  = postPreview.newMouseoutHandler();
         return node;
     }
 
@@ -104,7 +104,7 @@
         this.clonedNode = null;
         this.highlightedNode = null;
         this.node   = null;
-        this.highId = null;
+        this.sourceId = null;
     }
 
     PostPreview.prototype = {
@@ -120,29 +120,49 @@
             }
         },
 
-        addHighlight: function(node) {
+        addHighlight: function(sourceId, node) {
             node.classList.add(classMap.HIGHLIGHT);
+            this.showReferredLink(sourceId, node);
             this.highlightedNode = node;
         },
 
         removeHighlight: function() {
             var node = this.highlightedNode;
-            if (node)
+            if (node) {
                 node.classList.remove(classMap.HIGHLIGHT);
+                this.hideReferredLink(this.sourceId, node);
+            }
             this.highlightedNode = null;
         },
 
-        newMouseoverHandler: function(node) {
+        showReferredLink: function(sourceId, node) {
+            var linkNodes = node.querySelectorAll(".pl"+sourceId);
+            for (var i = 0; i < linkNodes.length; i++) {
+                linkNodes[i].classList.add("referred");
+            }
+            this.sourceId = sourceId;
+        },
+
+        hideReferredLink: function(sourceId, node) {
+            var linkNodes = node.querySelectorAll(".pl"+sourceId);
+            for (var i = 0; i < linkNodes.length; i++) {
+                linkNodes[i].classList.remove("referred");
+            }
+        },
+
+        newMouseoverHandler: function(sourceId, post) {
             return function(e) {
                 this.removeClone();
 
+                var node = post.node;
                 if (withinScreen(node)) {
-                    this.addHighlight(node);
+                    this.addHighlight(sourceId, node);
                     return;
                 }
 
                 var clone = node.cloneNode(true);
                 clone.style.position = "absolute";
+                this.showReferredLink(sourceId, clone);
 
                 var top = window.scrollY+e.clientY;
                 var bottom = top + node.clientHeight;

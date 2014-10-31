@@ -57,8 +57,9 @@ function addLinkHandlers(post) {
         var parent = intfcore.getPost(parentId);
 
         if (parent) {
-            intfmain.addLinkNodeAttrs(parent, linkNode, "parent");
+            intfmain.addLinkNodeAttrs(post.id, parent, linkNode, "parent");
             linkNode.onclick = intfcore.createLinkHandler(postlink);
+            linkNode.classList.add("pl"+parentId);
         } else {
             linkNode.classList.add(cm.POST_VOIDLINK);
             linkNode.href = "#";
@@ -72,7 +73,7 @@ function linkToParentNodes(post) {
         var parentNode = document.getElementById("p"+parentId);
         var postlink = intfcore.childlink(post.id, parentId);
         if (parentNode) {
-            var linkNode = intfmain.createPostLinkNode(post, intfcore.CHILD_LINK);
+            var linkNode = intfmain.createPostLinkNode(parentId, post, intfcore.CHILD_LINK);
             linkNode.onclick = intfcore.createLinkHandler(postlink);
 
             var replies = parentNode.querySelector("."+cm.POST_REPLIES);

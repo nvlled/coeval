@@ -50,3 +50,7 @@ body {
 .postlink.void {
     text-decoration: line-through;
 }
+
+.postlink.referred {
+    background-color: orange;
+}
