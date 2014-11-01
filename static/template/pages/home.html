@@ -1,8 +1,7 @@
 {{template "sub/header" .}}
 <h1>coeval</h1>
 <p>
-A message board for worthless lunatics who have
-nothing better to do.
+A message board with a crappy user-interface
 </p>
 
 <h2>Currently available boards</h2>
@@ -11,6 +10,5 @@ nothing better to do.
 {{$boardlink := print $id | url "board-view" "bid"}}
 <li><a href='{{$boardlink}}'>/{{$id}}/ - {{.Desc}} </a></li>
 {{end}}
-
 
 {{template "sub/footer" .}}
