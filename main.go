@@ -5,7 +5,7 @@ import (
     //"github.com/gorilla/mux"
     "net/http"
     "log"
-    //"os"
+    "os"
     //"os/signal"
     //"syscall"
     "nvlled/coeval/fora"
@@ -14,6 +14,10 @@ import (
     "nvlled/coeval/rend"
     "nvlled/coeval/control"
     "nvlled/coeval/urlfor"
+)
+
+const (
+    DEFAULT_PORT = "7070"
 )
 
 var env = map[string]interface{} {
@@ -50,29 +54,28 @@ func initMessageBoard() {
     user = fora.Anonymous()
     g := user.GetBoard("g")
 
-    //g.NewThread("Daily purgamming thread", "What are you working /g/")
-    //g.NewThread("Java thread", "What's so bad about java?")
-    //g.NewThread("DPT", "What are you working on /dpt/?")
+    g.NewThread("Daily purgamming thread", "What are you working /g/")
+    g.NewThread("Java thread", "What's so bad about java?")
+    g.NewThread("DPT", "What are you working on /dpt/?")
     dpt,_ := g.NewThread("Daily programming thread", "Animu edition")
 
-    post1 := dpt.GetOp()
-    post2,_ := dpt.ReplyOn("", refer(post1))
-    post5,_ := dpt.ReplyOn("", refer(post2))
-    post6,_ := dpt.ReplyOn("", refer(post2))
-    post3,_ := dpt.ReplyOn("", refer(post1))
-    post9,_ := dpt.ReplyOn("", refer(post3))
-    post4,_ := dpt.ReplyOn("", refer(post1, post2, post5))
-    post10,_ := dpt.ReplyOn("", refer(post4))
-    post11,_ := dpt.ReplyOn("", refer(post4, post3))
-    post12,_ := dpt.ReplyOn("", refer(post4))
-    post14,_ := dpt.ReplyOn("", refer(post12, post6, post4))
-    post13,_ := dpt.ReplyOn("", refer(post4))
-    post7,_ := dpt.ReplyOn("", refer(post1, post2, post3))
-    post8,_ := dpt.ReplyOn("", refer(post1, post3, post14))
-    post15,_ := dpt.ReplyOn("", refer(post8, post11))
-    post16,_ := dpt.ReplyOn("", refer(post8))
-
-    println(post9, post10, post13, post7, post15, post16)
+    post := make(map[int]fora.Post)
+    post[1] = dpt.GetOp()
+    post[2],_ = dpt.ReplyOn("", refer(post[1]))
+    post[5],_ = dpt.ReplyOn("", refer(post[2]))
+    post[6],_ = dpt.ReplyOn("", refer(post[2]))
+    post[3],_ = dpt.ReplyOn("", refer(post[1]))
+    post[9],_ = dpt.ReplyOn("", refer(post[3]))
+    post[4],_ = dpt.ReplyOn("", refer(post[1], post[2], post[5]))
+    post[10],_ = dpt.ReplyOn("", refer(post[4]))
+    post[11],_ = dpt.ReplyOn("", refer(post[4], post[3]))
+    post[12],_ = dpt.ReplyOn("", refer(post[4]))
+    post[14],_ = dpt.ReplyOn("", refer(post[12], post[6], post[4]))
+    post[13],_ = dpt.ReplyOn("", refer(post[4]))
+    post[7],_ = dpt.ReplyOn("", refer(post[1], post[2], post[3]))
+    post[8],_ = dpt.ReplyOn("", refer(post[1], post[3], post[14]))
+    post[15],_ = dpt.ReplyOn("", refer(post[8], post[11]))
+    post[16],_ = dpt.ReplyOn("", refer(post[8]))
 }
 
 func refer(posts ...fora.Post) string {
@@ -85,5 +88,10 @@ func refer(posts ...fora.Post) string {
 
 func main() {
     initMessageBoard()
-    log.Fatal(http.ListenAndServe(":7070", createHandler()))
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = DEFAULT_PORT
+    }
+    log.Println("listening at port", port)
+    log.Fatal(http.ListenAndServe(":"+port, createHandler()))
 }
