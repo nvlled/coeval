@@ -1,0 +1,30 @@
+{
+	"ImportPath": "nvlled/coeval",
+	"GoVersion": "go1.3.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "14f550f51af52180c2eefed15e5fd18d63c0a64a"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "4b8fbc56f3b2400a7c7ea3dba9b3539787c486b6"
+		},
+		{
+			"ImportPath": "github.com/gorilla/securecookie",
+			"Rev": "1b0c7f6e9ab3d7f500fd7d50c7ad835ff428139b"
+		},
+		{
+			"ImportPath": "github.com/gorilla/sessions",
+			"Rev": "aa5e036e6c44aec69a32eb41097001978b29ad31"
+		},
+		{
+			"ImportPath": "github.com/nvlled/roudetef",
+			"Rev": "707383eafe9081b0c4fb893d2f5087904cfdba74"
+		},
+		{
+			"ImportPath": "github.com/nvlled/rule",
+			"Rev": "a4b641b7db2059813fed5cd0f89ec48222f4b65a"
+		}
+	]
+}
