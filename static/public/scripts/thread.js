@@ -1,7 +1,13 @@
 "use strict";
 
-var intfcore;
-var intfmain;
+(function(root) {
+
+root.thread = {
+    init: init,
+}
+
+var intfcore = root.intf;
+var intfmain = root.intfmain;
 
 var cm = {
     INDENTED: "indented",
@@ -16,13 +22,11 @@ var cm = {
     POST_LINK_ACTIVE: "active",
     HIGHLIGHT: "highlight",
     POST: "post",
-
 }
 
 function init(opts) {
     cm = mergeObject(opts.cm, cm)
 
-function init() {
     intfmain.setClassMap(cm);
     intfcore = intf.newModule({
         hooks: intfmain.createHooks(),
