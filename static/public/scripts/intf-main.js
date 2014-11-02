@@ -44,7 +44,7 @@
                 var node = post.node;
                 postPreview.hide();
                 if (postlink.type === "parent") {
-                    //var a = node.querySelector("."+cm.POST_ANCHOR);
+                    //var a = node.querySelector("."+classMap.POST_ANCHOR);
                     //a.click();
                     post.node.scrollIntoView();
                 }
@@ -56,7 +56,7 @@
                 var linkNode = node.querySelector(".pl"+post.id);
 
                 deactivatePostlinks(node);
-                linkNode.classList.add(cm.POST_LINK_ACTIVE);
+                linkNode.classList.add(classMap.POST_LINK_ACTIVE);
                 node.classList.add(classMap.SUBTHREAD);
             },
 
@@ -157,7 +157,7 @@
         showReferredLink: function(sourceId, node) {
             var linkNodes = node.querySelectorAll(".pl"+sourceId);
             for (var i = 0; i < linkNodes.length; i++) {
-                linkNodes[i].classList.add(cm.POST_LINK_REF);
+                linkNodes[i].classList.add(classMap.POST_LINK_REF);
             }
             this.sourceId = sourceId;
         },
@@ -165,7 +165,7 @@
         hideReferredLink: function(sourceId, node) {
             var linkNodes = node.querySelectorAll(".pl"+sourceId);
             for (var i = 0; i < linkNodes.length; i++) {
-                linkNodes[i].classList.remove(cm.POST_LINK_REF);
+                linkNodes[i].classList.remove(classMap.POST_LINK_REF);
             }
         },
 
@@ -186,8 +186,8 @@
                 clone.style.position = "absolute";
                 clone.style.width = sourcePost.node.clientWidth+"px";
                 clone.style.left = sourcePost.node.offsetLeft+"px";
-                clone.classList.remove(cm.INDENTED);
-                clone.classList.remove(cm.SUBTHREAD);
+                clone.classList.remove(classMap.INDENTED);
+                clone.classList.remove(classMap.SUBTHREAD);
 
                 var top = window.scrollY+e.clientY;
                 var h = node.clientHeight;
@@ -223,9 +223,9 @@
     }
 
     function deactivatePostlinks(node) {
-        var linkNodes = node.querySelectorAll(".active");
+        var linkNodes = node.querySelectorAll("."+classMap.POST_LINK_ACTIVE);
         for (var i = 0; i < linkNodes.length; i++) {
-            linkNodes[i].classList.remove(cm.POST_LINK_ACTIVE);
+            linkNodes[i].classList.remove(classMap.POST_LINK_ACTIVE);
         }
     }
 
