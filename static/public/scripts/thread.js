@@ -40,15 +40,13 @@ function init(opts) {
 
 function buildThread() {
     var nodes = document.querySelectorAll("."+cm.POST);
-    for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i];
+    asyncIter(nodes, function(node, i) {
         var data = getPostData(node);
-
         var post = intfcore.newPost(data);
         post.node = node;
         addLinkHandlers(post);
         linkToParentNodes(post);
-    }
+    });
 }
 
 function getPostData(node) {
@@ -128,6 +126,18 @@ function mergeObject(dest, src) {
             m[k] = dest[k];
     }
     return m;
+}
+
+function asyncIter(array, fn) {
+    var i = 0;
+    var timerId = setInterval(function() {
+        if (i >= array.length) {
+            clearInterval(timerId);
+        } else {
+            fn(array[i], i)
+            i++;
+        }
+    }, 2);
 }
 
 })(this);
