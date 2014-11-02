@@ -68,6 +68,9 @@ function addLinkHandlers(post) {
 
         if (parent) {
             intfmain.addLinkNodeAttrs(post, parent, linkNode, "parent");
+            if (intfcore.isRoot(parent)) {
+                linkNode.textContent += " (OP)";
+            }
             linkNode.onclick = intfcore.createLinkHandler(postlink);
         } else {
             linkNode.classList.add(cm.POST_VOIDLINK);
