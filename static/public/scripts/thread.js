@@ -19,7 +19,8 @@ var cm = {
 
 }
 
-this.addEventListener("load", init);
+function init(opts) {
+    cm = mergeObject(opts.cm, cm)
 
 function init() {
     intfmain.setClassMap(cm);
@@ -102,3 +103,21 @@ function linkToParentNodes(post) {
         }
     });
 }
+
+function mergeObject(dest, src) {
+    var m = {};
+    for (var k in src) {
+        if (!src.hasOwnProperty(k))
+            continue;
+        m[k] = src[k];
+    }
+    for (var k in dest) {
+        if (!dest.hasOwnProperty(k))
+            continue;
+        if (dest[k])
+            m[k] = dest[k];
+    }
+    return m;
+}
+
+})(this);
