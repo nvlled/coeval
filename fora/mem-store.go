@@ -26,9 +26,9 @@ type memstore struct {
     data *memstoredata
 }
 
-func IdGen() func() string {
+func IdGen(init int) func() string {
     c := make(chan string, 10)
-    id := 0
+    id := init
     go func() {
         for {
             c <- strconv.FormatInt(int64(id), 10)
@@ -40,7 +40,7 @@ func IdGen() func() string {
     }
 }
 
-var pidGen = IdGen()
+var pidGen = IdGen(1000)
 
 func (store *memstore) lookupBoard(bid Bid) *board {
     if b, ok := store.data.boards[bid]; ok {
