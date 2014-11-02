@@ -73,6 +73,14 @@
                 post.node.classList.add(classMap.SUBTHREAD);
             },
 
+            insertBefore: function(post, dest) {
+                insertBefore(post.node, dest.node);
+            },
+
+            insertAfter: function(post, dest) {
+                insertAfter(post.node, dest.node);
+            },
+
             restoreNorder: function(post) {
                 // Root posts (or OP) should
                 // always be placed first.

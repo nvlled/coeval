@@ -481,6 +481,8 @@
         console.log("**visiting parent", postlink)
         var parent = postlink.targetPost;
         var post = postlink.sourcePost;
+        if (!this.isRoot(parent))
+            this.hook("insertBefore", parent, post);
         this.attachToParent(post, parent);
     }
 
@@ -488,6 +490,7 @@
         console.log("**visiting child", postlink);
         var child = postlink.targetPost;
         var post = postlink.sourcePost;
+        this.hook("insertAfter", child, post);
         this.attachChild(post, child);
     }
 
