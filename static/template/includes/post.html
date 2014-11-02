@@ -1,9 +1,7 @@
 
 {{define "sub/thread"}}
 <div id="p{{.Id}}" class='post thread'>
-    <a name="p{{.Id}}" class='post-anchor' href="#p{{.Id}}">No.</a><span class='post-id'>{{.Id}}</span>
-    {{$link :=  url "thread-view" "bid" (str .Board.Id) "tid" (str .Id)}}
-    <p>[<a href='{{$link}}'>reply</a>]</p>
+    <a name="p{{.Id}}" class='post-id post-anchor' href="{{thread_url .}}">{{.Id}}</a>
     {{template "sub/post-body" .GetOp}}
 </div>
 {{end}}
@@ -11,7 +9,7 @@
 {{define "sub/post-preview"}}
 <div id="p{{.Id}}" class='post'>
     <p>
-    <a name="p{{.Id}}" class='post-anchor' href="{{post_url .}}">No.</a><span class='post-id'>{{.Id}}</span>
+    <a name="p{{.Id}}" class='post-id post-anchor' href="{{post_url .}}">{{.Id}}</a>
     {{/*<p>[<a href='{{thread_url .Thread}}'>reply</a>]</p>*/}}
     </p>
     {{template "sub/post-body" .}}
@@ -21,7 +19,7 @@
 {{define "sub/post"}}
 <div id="p{{.Id}}" class='post'>
     <p>
-    <a name="p{{.Id}}" class='post-anchor' href="#p{{.Id}}">No.</a><span class='post-id'>{{.Id}}</span>
+    <a name="p{{.Id}}" class='post-id post-anchor' href="#p{{.Id}}">{{.Id}}</a>
     {{/*<p>[<a href='{{thread_url .Thread}}'>reply</a>]</p>*/}}
     </p>
     {{template "sub/post-body" .}}
