@@ -25,12 +25,15 @@ var cm = {
 }
 
 function init(opts) {
+    opts = opts || {};
     cm = mergeObject(opts.cm, cm)
 
     intfmain.setClassMap(cm);
     intfcore = intf.newModule({
         hooks: intfmain.createHooks(),
     });
+    root.thread.intfcore = intfcore;
+    root.thread.intfmain = intfmain;
 
     buildThread();
 }
