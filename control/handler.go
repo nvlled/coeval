@@ -213,6 +213,8 @@ func returnToForm(w http.ResponseWriter, r *http.Request, err error, form sesion
     if formPath != "" {
         w.Header().Set("Location", formPath)
         w.WriteHeader(301)
+    } else {
+        w.WriteHeader(400)
     }
 
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{

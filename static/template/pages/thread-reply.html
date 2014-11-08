@@ -1,8 +1,14 @@
 {{template "sub/header" .}}
+{{if .__error}}
+<h3>Error: {{.__error}}</h3>
+{{else}}
+
 Post submitted #{{.Id}}
 {{with .post}}
 <a href={{post_url .}}>
     Click here to continue
 </a>
+{{end}}
+
 {{end}}
 {{template "sub/footer"}}
