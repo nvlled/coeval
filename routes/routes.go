@@ -100,10 +100,10 @@ func Handler() http.Handler {
 
 func init() {
     // inject route name on the context
-    routeDef.Map(func(d *def.RouteDef) {
+    routeDef.Iter(func(d *def.RouteDef) {
         d.AddTransformer(def.TransformerFunc(func(r *mux.Route) {
             def.Attach(r, func(req *http.Request) {
-                context.Set(req, key.RouteName, d.Name())
+                context.Set(req, key.RouteName, d.Name)
             })
         }))
     })

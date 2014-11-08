@@ -1,14 +1,14 @@
-
 package roudetef
 
 import (
-	ht "net/http"
-	"github.com/gorilla/mux"
-	"path/filepath"
 	"errors"
-	"strings"
-	"net/url"
 	"fmt"
+	"github.com/gorilla/mux"
+	"math"
+	ht "net/http"
+	"net/url"
+	"path/filepath"
+	"strings"
 )
 
 // TODO:
@@ -17,44 +17,63 @@ import (
 // Remove API leaks
 // Allow route def serialization
 
+// code convention note:
+// Since quotes aren't allowed in identifiers,
+// _ (underscore) is used instead.
+// e.g.
+// somevar  := blah()
+// somevar_ := wah(somevar)
+
 type Entry struct {
-	Name string
-	Path string
+	Name    string
+	Path    string
 	Methods string
 }
 
 type Guard struct {
-	Reject func(*ht.Request)bool
+	Reject  func(*ht.Request) bool
 	Handler ht.HandlerFunc
 }
 
 type pathod struct {
-	path string
+	path    string
 	methods []string
 }
 
 type HandlerT struct {
-	handler ht.HandlerFunc
+	handler     ht.HandlerFunc
 	transformer Transformer
 }
 
 type Hook func(req *ht.Request)
 
 type RouteDef struct {
-	path string
-	methods []string
-	handler ht.HandlerFunc
+	Name        string
+	Path        string
+	methods     []string
+	handler     ht.HandlerFunc
 	transformer Transformer
-	name string // assumed to be same as the path if ommited?
-	guards []Guard
-	hooks []Hook
-	subroutes []*RouteDef
-	parent *RouteDef
+	guards      []Guard
+	hooks       []Hook
+	parent      *RouteDef
+	subroutes   []*RouteDef
 }
 
-func (r *RouteDef) Name() string {
-	return r.name
+type ReRouteDef struct {
+	destName   string
+	pathPrefix string
+	namePrefix string
+	guards     []Guard
+	hooks      []Hook
 }
+
+// solution for safely emulating union/variant types
+type SubRouteDef interface {
+	SubRouteDef()
+}
+
+func (r *RouteDef) SubRouteDef()   {}
+func (r *ReRouteDef) SubRouteDef() {}
 
 func (r *RouteDef) AddTransformer(t Transformer) Transformer {
 	t2 := Group(r.transformer, t)
@@ -90,17 +109,20 @@ func Hooks(hooks ...Hook) []Hook {
 }
 
 func Route(pathmethod interface{}, handlerT interface{}, name string, hooks []Hook,
-	guards []Guard, subroutes ...*RouteDef) *RouteDef {
+	guards []Guard, subroutes ...SubRouteDef) *RouteDef {
 
 	var path string
 	var methods []string
 	switch t := pathmethod.(type) {
-		case string: path = t
-		case pathod: {
+	case string:
+		path = t
+	case pathod:
+		{
 			path = t.path
 			methods = t.methods
 		}
-		default: panic("Invalid path argument")
+	default:
+		panic("Invalid path argument")
 	}
 
 	var handler ht.HandlerFunc
@@ -112,36 +134,61 @@ func Route(pathmethod interface{}, handlerT interface{}, name string, hooks []Ho
 		}
 	case func(ht.ResponseWriter, *ht.Request):
 		handler = t
-		case HandlerT: {
+	case HandlerT:
+		{
 			handler = t.handler
 			transformer = t.transformer
 		}
-	default: panic("Invalid handlerT argument")
+	default:
+		panic("Invalid handlerT argument")
 	}
 
 	r := &RouteDef{
-		path: path,
-		methods: methods,
-		handler: handler,
+		Path:        path,
+		methods:     methods,
+		handler:     handler,
 		transformer: transformer,
-		name: name,
-		hooks: hooks,
-		guards: guards,
-		subroutes: subroutes,
+		Name:        name,
+		hooks:       hooks,
+		guards:      guards,
 	}
+	r.subroutes = expandReRoutes(r, subroutes)
 
-	for _, sub := range subroutes {
+	for _, sub := range r.subroutes {
 		sub.parent = r
 	}
 	return r
 }
 
 func SRoute(pathmethod interface{}, handlerT interface{},
-	name string, subroutes ...*RouteDef) *RouteDef {
-		return Route(pathmethod, handlerT, name, Hooks(), Guards(), subroutes...)
+	name string, subroutes ...SubRouteDef) *RouteDef {
+	return Route(pathmethod, handlerT, name, Hooks(), Guards(), subroutes...)
 }
 
-func (r *RouteDef) Map(f func(r *RouteDef)) *RouteDef {
+func ReRoute(pathPrefix string, namePrefix string, destName string,
+	hooks []Hook, guards []Guard) *ReRouteDef {
+	return &ReRouteDef{
+		pathPrefix: pathPrefix,
+		namePrefix: namePrefix,
+		destName:   destName,
+		hooks:      hooks,
+		guards:     guards,
+	}
+}
+
+func ReSRoute(pathPrefix string, namePrefix string, destName string) *ReRouteDef {
+	return ReRoute(pathPrefix, namePrefix, destName, Hooks(), Guards())
+}
+
+func (r *RouteDef) Search(name string) *RouteDef {
+	return SearchRoute(r, name)
+}
+
+func (r *RouteDef) Iter(f func(r *RouteDef)) *RouteDef {
+	return IterRoute(r, f)
+}
+
+func (r *RouteDef) Map(f func(r RouteDef) RouteDef) *RouteDef {
 	return MapRoute(r, f)
 }
 
@@ -159,17 +206,45 @@ func (r *RouteDef) Print() {
 	PrintRouteDef(r)
 }
 
-func MapRoute(r *RouteDef, f func(r *RouteDef)) *RouteDef {
+func SearchRoute(r *RouteDef, name string) *RouteDef {
+	var result *RouteDef
+	if r.Name == name {
+		result = r
+	} else {
+		for _, sub := range r.subroutes {
+			result = SearchRoute(sub, name)
+			if result != nil {
+				break
+			}
+		}
+	}
+	return result
+}
+
+func IterRoute(r *RouteDef, f func(r *RouteDef)) *RouteDef {
 	f(r)
 	for _, sub := range r.subroutes {
-		MapRoute(sub, f)
+		IterRoute(sub, f)
 	}
 	return r
 }
 
+func MapRoute(r *RouteDef, f func(r RouteDef) RouteDef) *RouteDef {
+	r_ := f(*r) // nil exception?
+	var subroutes []*RouteDef
+	for _, sub := range r_.subroutes {
+		sub := MapRoute(sub, f)
+		sub.parent = &r_
+		subroutes = append(subroutes, sub)
+	}
+	r_.subroutes = subroutes
+	return &r_
+}
+
 func BuildRouter(routeDef *RouteDef, base *mux.Router) *mux.Router {
-	route := base.PathPrefix(routeDef.path).Name(routeDef.name)
-	for _, hook := range  routeDef.hooks {
+	route := base.PathPrefix(routeDef.Path).Name(routeDef.Name)
+
+	for _, hook := range routeDef.hooks {
 		Attach(route, hook)
 	}
 
@@ -178,7 +253,6 @@ func BuildRouter(routeDef *RouteDef, base *mux.Router) *mux.Router {
 	if routeDef.handler != nil {
 		route.HandlerFunc(routeDef.handler)
 	}
-
 	if routeDef.methods != nil {
 		route.Methods(routeDef.methods...)
 	}
@@ -209,32 +283,40 @@ func (r *RouteDef) FullPath() string {
 	var paths []string
 	// A bit inefficient, but it'll do
 	for r != nil {
-		paths = append([]string{r.path}, paths...)
+		paths = append([]string{r.Path}, paths...)
 		r = r.parent
 	}
 	return filepath.Join(paths...)
 }
 
-func(r *RouteDef) String() string {
+func (r *RouteDef) String() string {
 	var lines []string
-	r.Map(func(sub *RouteDef) {
+	col1Len := 0
+	col2Len := 0
+	r.Iter(func(sub *RouteDef) {
 		ms := stringMethods(sub.methods)
-		line := fmt.Sprintf("%-15v\t%v\t%s", sub.name, sub.FullPath(), ms)
+		col1Len = int(math.Max(float64(col1Len), float64(len(ms))))
+		col2Len = int(math.Max(float64(col2Len), float64(len(sub.FullPath()))))
+	})
+	r.Iter(func(sub *RouteDef) {
+		ms := stringMethods(sub.methods)
+		fmts := fmt.Sprintf("%%-%vv  %%-%vv %%v", col1Len, col2Len)
+		line := fmt.Sprintf(fmts, ms, sub.FullPath(), sub.Name)
 		lines = append(lines, line)
 	})
 	return strings.Join(lines, "\n")
 }
 
-func(r *RouteDef) Table() []Entry {
+func (r *RouteDef) Table() []Entry {
 	var table []Entry
-	r.Map(func(sub *RouteDef) {
-		entry := Entry{sub.name, sub.FullPath(), stringMethods(sub.methods)}
+	r.Iter(func(sub *RouteDef) {
+		entry := Entry{sub.Name, sub.FullPath(), stringMethods(sub.methods)}
 		table = append(table, entry)
 	})
 	return table
 }
 
-func(r *RouteDef) CreateUrlFn(returnErrOpt ...bool) UrlFn {
+func (r *RouteDef) CreateUrlFn(returnErrOpt ...bool) UrlFn {
 	routes := r.BuildNewRouter()
 	return CreateUrlFn(routes, returnErrOpt...)
 }
@@ -255,7 +337,7 @@ func CreateUrlFn(routes *mux.Router, returnErrOpt ...bool) UrlFn {
 			// embed error in the url
 			return url.QueryEscape(fmt.Sprint("(%s)", err.Error())), nil
 		}
-		return urlpath.String(),nil
+		return urlpath.String(), nil
 	}
 
 	return func(name string, params ...string) (string, error) {
@@ -270,6 +352,68 @@ func CreateUrlFn(routes *mux.Router, returnErrOpt ...bool) UrlFn {
 
 func PrintRouteDef(routeDef *RouteDef) {
 	fmt.Println(routeDef.String())
+	fmt.Println("----------")
+}
+
+func rootRoute(routeDef *RouteDef) *RouteDef {
+	root := routeDef
+	for root.parent != nil {
+		root = root.parent
+	}
+	return root
+}
+
+func expandReRoutes(base *RouteDef, routes []SubRouteDef) []*RouteDef {
+	var routes_ []*RouteDef
+	for _, r := range routes {
+		var reroute *ReRouteDef
+
+		switch t := r.(type) {
+		case *RouteDef:
+			routes_ = append(routes_, t)
+			continue
+		case *ReRouteDef:
+			reroute = t
+		}
+
+		rebase := searchRoute(reroute.destName, routes)
+
+		if rebase == nil {
+			println("Route not found:", reroute.destName,
+				"Re-route Must be the same level as the destination.")
+			continue
+		}
+		var temp RouteDef
+		temp = *rebase
+		temp.Path = filepath.Join(reroute.pathPrefix, temp.Path)
+
+		rebase = temp.Map(func(route RouteDef) RouteDef {
+			route.Name = reroute.namePrefix + "-" + route.Name
+			return route
+		})
+
+		rebase.hooks = append(rebase.hooks, reroute.hooks...)
+		rebase.guards = append(rebase.guards, reroute.guards...)
+		routes_ = append(routes_, rebase)
+	}
+	return routes_
+}
+
+func searchRoute(name string, routes []SubRouteDef) *RouteDef {
+	for _, r := range routes {
+		var routeDef *RouteDef
+
+		switch t := r.(type) {
+		case *RouteDef:
+			routeDef = t
+		default:
+			continue
+		}
+		if routeDef.Name == name {
+			return routeDef
+		}
+	}
+	return nil
 }
 
 type Transformer interface {
@@ -311,13 +455,15 @@ func Headers(pairs ...string) Transformer {
 }
 
 func With(handler ht.HandlerFunc, ts ...Transformer) HandlerT {
-	return HandlerT{ handler, Group(ts...) }
+	return HandlerT{handler, Group(ts...)}
 }
 
 func Group(transformers ...Transformer) Transformer {
 	var ts []Transformer
 	for _, t := range transformers {
-		if t == nil { continue }
+		if t == nil {
+			continue
+		}
 		ts = append(ts, t)
 	}
 
@@ -330,10 +476,10 @@ func Group(transformers ...Transformer) Transformer {
 	return f
 }
 
-func Methods(methods ...string) func(string)pathod {
+func Methods(methods ...string) func(string) pathod {
 	return func(path string) pathod {
 		return pathod{
-			path: path,
+			path:    path,
 			methods: methods,
 		}
 	}
@@ -342,6 +488,7 @@ func Methods(methods ...string) func(string)pathod {
 var GET = Methods("GET")
 var POST = Methods("POST")
 var HEAD = Methods("HEAD")
+
 //...I'll add the others later
 
 func stringMethods(methods []string) string {
