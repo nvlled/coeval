@@ -24,6 +24,10 @@ import (
 // somevar  := blah()
 // somevar_ := wah(somevar)
 
+const (
+    REROUTE_SEP = "/"
+)
+
 type Entry struct {
 	Name    string
 	Path    string
@@ -51,7 +55,7 @@ type RouteDef struct {
 	Name        string
 	Path        string
 	methods     []string
-	handler     ht.HandlerFunc
+	Handler     ht.HandlerFunc
 	transformer Transformer
 	guards      []Guard
 	hooks       []Hook
@@ -146,7 +150,7 @@ func Route(pathmethod interface{}, handlerT interface{}, name string, hooks []Ho
 	r := &RouteDef{
 		Path:        path,
 		methods:     methods,
-		handler:     handler,
+		Handler:     handler,
 		transformer: transformer,
 		Name:        name,
 		hooks:       hooks,
@@ -250,8 +254,8 @@ func BuildRouter(routeDef *RouteDef, base *mux.Router) *mux.Router {
 
 	Ward(route, routeDef.guards...)
 
-	if routeDef.handler != nil {
-		route.HandlerFunc(routeDef.handler)
+	if routeDef.Handler != nil {
+		route.HandlerFunc(routeDef.Handler)
 	}
 	if routeDef.methods != nil {
 		route.Methods(routeDef.methods...)
@@ -269,8 +273,8 @@ func BuildRouter(routeDef *RouteDef, base *mux.Router) *mux.Router {
 		// Call subrouter() only when there are no
 		// subroutes.
 		router := route.Subrouter()
-		if routeDef.handler != nil {
-			router.HandleFunc("/", routeDef.handler)
+		if routeDef.Handler != nil {
+			router.HandleFunc("/", routeDef.Handler)
 		}
 		for _, subroute := range routeDef.subroutes {
 			BuildRouter(subroute, router)
@@ -388,7 +392,7 @@ func expandReRoutes(base *RouteDef, routes []SubRouteDef) []*RouteDef {
 		temp.Path = filepath.Join(reroute.pathPrefix, temp.Path)
 
 		rebase = temp.Map(func(route RouteDef) RouteDef {
-			route.Name = reroute.namePrefix + "-" + route.Name
+			route.Name = reroute.namePrefix + REROUTE_SEP + route.Name
 			return route
 		})
 
