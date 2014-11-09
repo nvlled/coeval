@@ -79,4 +79,3 @@ func SetEnv(env map[string]interface{}) {
 func init() {
     //env = make(template.FuncMap)
 }
-
