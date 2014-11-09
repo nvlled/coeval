@@ -14,10 +14,19 @@ type T func(string, ht.ResponseWriter, *ht.Request, Data)
 
 var RenderDefault T = RenderHtml
 
-// rend.Render("home", data, w, r)
 func RenderRoute(routeName string, w ht.ResponseWriter, r *ht.Request, data Data) {
-    render := Get(r)
-    render(routeName, w, r, data)
+    var render T
+    pref := getPrefix(r, routeName)
+    if pref != "" {
+        var ok bool
+        render, ok = renderMap[pref]
+        if !ok {
+            render = RenderDefault
+        }
+    } else {
+        render = Get(r)
+    }
+    render(removePrefix(routeName), w, r, data)
 }
 
 func RenderError(w ht.ResponseWriter, r *ht.Request, data Data) {
@@ -53,6 +62,11 @@ func Hook(render T) def.Hook {
     return func(r *ht.Request) {
         context.Set(r, key.Render, render)
     }
+}
+
+var renderMap = map[string]T{
+    "html" : RenderHtml,
+    "json" : RenderJson,
 }
 
 var HookHtmlRender def.Hook = Hook(RenderHtml)
