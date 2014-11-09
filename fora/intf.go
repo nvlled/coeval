@@ -49,6 +49,7 @@ type Board interface {
     GetThreads() []Thread
     GetPage(page int) []Thread
     String() string
+    MarshalJSON() ([]byte, error)
 }
 
 type PostData interface {
@@ -70,6 +71,7 @@ type Thread interface {
     GetPosts() []Post
     RecentPosts() []Post
     String() string
+    MarshalJSON() ([]byte, error)
 }
 
 type Post interface {
@@ -85,6 +87,7 @@ type Post interface {
     ReplyIds() []Pid
     IsParentOf(post Post) bool
     IsChildOf(post Post) bool
+    MarshalJSON() ([]byte, error)
 
     Parents() []Post
     ParentIds() []Pid

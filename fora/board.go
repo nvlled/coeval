@@ -3,6 +3,7 @@ package fora
 import (
     "fmt"
     "sort"
+    "encoding/json"
 )
 
 type board struct {
@@ -42,6 +43,14 @@ func (board *board) GetThread(tid Tid) Thread {
 
 func (b *board) String() string {
     return fmt.Sprintf("board{%v, %v}", b.Id(), b.Desc())
+}
+
+func (b *board) MarshalJSON() ([]byte, error) {
+    return json.Marshal(map[string]interface{}{
+        "id" : b.Id(),
+        "desc" : b.Desc(),
+        "creator" : b.Creator().Name(),
+    })
 }
 
 func (board *board) GetThreads() []Thread {

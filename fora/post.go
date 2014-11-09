@@ -5,6 +5,7 @@ import (
     "strconv"
     "fmt"
     "nvlled/coeval/common"
+    "encoding/json"
 )
 
 // TODO: Make userStore take a UserContainer argument instead
@@ -130,6 +131,15 @@ func (p *post) String() string {
     t := p.Thread()
     return fmt.Sprintf("post{[bid=%v, tid=%v], id=%v, title=%v, body=%v}",
         t.Board().Id(), t.Id(), p.Id(), p.Title(), p.Body())
+}
+
+func (p *post) MarshalJSON() ([]byte, error) {
+    return json.Marshal(map[string]interface{}{
+        "id" : p.Id(),
+        "title" : p.Title(),
+        "body" : p.Body(),
+        "creator" : p.Creator().Name(),
+    })
 }
 
 func createPost(creator User, title string, body string) *post {

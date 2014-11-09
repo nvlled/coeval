@@ -6,6 +6,7 @@ import (
     "sort"
     "strconv"
     "fmt"
+    "encoding/json"
 )
 
 const (
@@ -87,6 +88,15 @@ func (t *thread) String() string {
     op := t.GetOp()
     return fmt.Sprintf("thread{[bid=%v, tid=%v], pid=%v, title=%v, body=%v}",
         t.Board().Id(), t.Id(), op.Id(), op.Title(), op.Body())
+}
+
+func (t *thread) MarshalJSON() ([]byte, error) {
+    return json.Marshal(map[string]interface{}{
+        "id" : t.Id(),
+        "bid" : t.Bid(),
+        "posts" : t.GetPosts(),
+        "creator" : t.Creator().Name(),
+    })
 }
 
 func newThread(board Board, title string, body string) (Thread, error) {
