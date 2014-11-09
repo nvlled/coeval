@@ -12,7 +12,6 @@ import (
     "nvlled/coeval/sesion"
     "nvlled/coeval/routes"
     "nvlled/coeval/rend"
-    "nvlled/coeval/control"
     "nvlled/coeval/urlfor"
 )
 
@@ -37,7 +36,6 @@ var env = map[string]interface{} {
 func createHandler() http.Handler {
     rend.SetEnv(env)
     handler := routes.Handler()
-    handler = control.CatchError(handler)
     handler = sesion.WrapResp(handler)
     return handler
 }

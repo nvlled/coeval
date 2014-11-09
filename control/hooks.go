@@ -39,7 +39,7 @@ var RequireAdmin = def.Guard{
     },
 }
 
-func CatchError(handler ht.Handler) ht.Handler {
+func CatchError(handler ht.Handler) ht.HandlerFunc {
     return ht.HandlerFunc(func(w ht.ResponseWriter, r *ht.Request) {
         defer func() {
             if err := recover(); err != nil {
@@ -63,7 +63,3 @@ func CatchError(handler ht.Handler) ht.Handler {
         handler.ServeHTTP(w, r)
     })
 }
-
-
-
-

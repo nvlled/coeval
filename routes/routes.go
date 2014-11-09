@@ -100,13 +100,17 @@ func Handler() http.Handler {
 }
 
 func init() {
-    // inject route name on the context
     routeDef.Iter(func(d *def.RouteDef) {
+        // inject route name on the context
         d.AddTransformer(def.TransformerFunc(func(r *mux.Route) {
             def.Attach(r, func(req *http.Request) {
                 context.Set(req, key.RouteName, d.Name)
             })
         }))
+        // Do the wrapping here to
+        // let the error handler access the context
+        // before it is cleared.
+        d.Handler = ct.CatchError(d.Handler)
     })
 
     println("Defining routes...")
