@@ -22,6 +22,7 @@ var POST = def.POST
 var routeDef = def.Route(
     "/", ct.Home, "home",
     def.Hooks(rend.HookHtmlRender, ct.AttachUser),
+
     def.Guards(),
     def.SRoute("/login", ct.Login, "login"),
 
@@ -56,11 +57,11 @@ var routeDef = def.Route(
     ),
 
     def.SRoute("/public", ct.ServeStatic, "serve-static"),
-    def.SRoute(
-        "/4chan", ct.ChanThread, "chan-index",
-        def.SRoute("/testdata",    ct.ChanThread, "chan-thread"),
-        def.SRoute("/{bid}/{tid}", ct.ChanThread, "chan-thread"),
-    ),
+    //def.SRoute(
+    //    "/4chan", ct.ChanThread, "chan-index",
+    //    def.SRoute("/testdata",    ct.ChanThread, "chan-thread"),
+    //    def.SRoute("/{bid}/{tid}", ct.ChanThread, "chan-thread"),
+    //),
 )
 
 var routes *mux.Router
