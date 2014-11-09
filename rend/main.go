@@ -41,6 +41,14 @@ func Get(r *ht.Request) T {
     return RenderDefault
 }
 
+func HasRenderer(r *ht.Request) bool {
+    render := context.Get(r, key.Render)
+    switch render.(type) {
+        case T: return true
+    }
+    return false
+}
+
 func Hook(render T) def.Hook {
     return func(r *ht.Request) {
         context.Set(r, key.Render, render)

@@ -7,6 +7,11 @@ import (
     "html/template"
     "nvlled/coeval/fora"
     "nvlled/coeval/urlfor"
+    "nvlled/coeval/sesion/key"
+    "github.com/nvlled/roudetef"
+    "github.com/gorilla/context"
+    "strings"
+    ht "net/http"
 )
 
 const (
@@ -40,4 +45,25 @@ func RenderPostlinks(post fora.Post) template.HTML {
         return buf.Bytes()
     })
     return template.HTML(bs)
+}
+
+func removePrefix(name string) string {
+    sep := roudetef.REROUTE_SEP
+    i := strings.Index(name, sep)
+    return string([]byte(name)[i+1:])
+}
+
+func getPrefix(r *ht.Request, name string) string {
+    sep := roudetef.REROUTE_SEP
+    if i := strings.Index(name, sep); i != -1 {
+        return string([]byte(name)[0:i])
+    }
+    switch t := context.Get(r, key.RouteName).(type) {
+        case string:
+            name = t
+    }
+    if i:= strings.Index(name, sep); i != -1 {
+        return string([]byte(name)[0:i])
+    }
+    return ""
 }
