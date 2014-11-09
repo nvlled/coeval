@@ -45,7 +45,7 @@ func CatchError(handler ht.Handler) ht.Handler {
             if err := recover(); err != nil {
                 var render = func(err interface{}) {
                     rend.RenderRoute("error", w, r, rend.Data{
-                        "__error" : err,
+                        "error" : err,
                     })
                 }
                 w.WriteHeader(401);

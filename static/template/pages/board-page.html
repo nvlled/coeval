@@ -5,7 +5,7 @@
 <h2>/{{.Id}}/ — {{.Desc}}</h2>
 {{end}}
 
-{{$err := .__error}}
+{{$err := .error}}
 {{$f := .__form}}
 <form method="post" action='{{url "thread-create" "bid" (str .bid)}}'>
     <input type="hidden" name="form-path" value="{{.__req.URL.Path}}"/>

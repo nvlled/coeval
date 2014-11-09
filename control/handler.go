@@ -218,6 +218,6 @@ func returnToForm(w http.ResponseWriter, r *http.Request, err error, form sesion
     }
 
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
-        "__error" : err,
+        "error" : err,
     }))
 }

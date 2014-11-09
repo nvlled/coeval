@@ -1,6 +1,6 @@
 {{template "sub/header" .}}
-{{if .__error}}
-<h3>Error: {{.__error}}</h3>
+{{if .error}}
+<h3>Error: {{.error}}</h3>
 {{else}}
 
 Post submitted #{{.Id}}

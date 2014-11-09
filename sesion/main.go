@@ -116,8 +116,8 @@ func Merge(w ht.ResponseWriter, r *ht.Request, data rend.Data) rend.Data {
     data["__username"] = Username(r)
     data["__user"] = context.Get(r, key.User)
     data["__notifications"] = GetNotifications(w, r)
-    data["__error"] = GetErrors(w, r)
     data["__form"] = GetForm(w, r)
+    data["error"] = GetErrors(w, r)
     return data
 }
 
