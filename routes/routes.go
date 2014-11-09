@@ -55,6 +55,11 @@ var routeDef = def.Route(
             ),
         ),
     ),
+    def.ReRoute(
+        "/api/", "json", "board-view",
+        def.Hooks(rend.HookJsonRender),
+        def.Guards(),
+    ),
 
     def.SRoute("/public", ct.ServeStatic, "serve-static"),
     //def.SRoute(
