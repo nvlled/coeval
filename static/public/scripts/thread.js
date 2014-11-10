@@ -4,6 +4,7 @@
 
 root.thread = {
     init: init,
+    addPost: addPost,
 }
 
 var intfcore = root.intf;
@@ -40,13 +41,15 @@ function init(opts) {
 
 function buildThread() {
     var nodes = document.querySelectorAll("."+cm.POST);
-    asyncIter(nodes, function(node, i) {
-        var data = getPostData(node);
-        var post = intfcore.newPost(data);
-        post.node = node;
-        addLinkHandlers(post);
-        linkToParentNodes(post);
-    });
+    asyncIter(nodes, addPost);
+}
+
+function addPost(node) {
+    var data = getPostData(node);
+    var post = intfcore.newPost(data);
+    post.node = node;
+    addLinkHandlers(post);
+    linkToParentNodes(post);
 }
 
 function getPostData(node) {
