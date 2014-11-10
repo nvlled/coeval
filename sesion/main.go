@@ -111,13 +111,20 @@ func User(r *ht.Request) fora.User {
 }
 
 func Merge(w ht.ResponseWriter, r *ht.Request, data rend.Data) rend.Data {
-    data["__resp"] = w
-    data["__req"] = r
-    data["__username"] = Username(r)
-    data["__user"] = context.Get(r, key.User)
-    data["__notifications"] = GetNotifications(w, r)
-    data["__form"] = GetForm(w, r)
-    data["error"] = GetErrors(w, r)
+    m := rend.Data{
+        "__resp": w,
+        "__req": r,
+        "__username": Username(r),
+        "__user": context.Get(r, key.User),
+        "__notifications": GetNotifications(w, r),
+        "__form": GetForm(w, r),
+        "error": GetErrors(w, r),
+    }
+    for k, v := range m {
+        if _, ok := data[k]; !ok {
+            data[k] = v
+        }
+    }
     return data
 }
 
