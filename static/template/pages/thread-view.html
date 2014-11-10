@@ -14,11 +14,14 @@
 	</p>
     <input type="submit" value="post reply"/>
 </form>
-<div>
+<div id="thread-container">
     {{template "sub/thread" .thread}}
     {{range .thread.GetPosts}}
         {{template "sub/post" .}}
     {{end}}
+</div>
+<div id="template">
+    {{template "sub/post" .thread.GetOp}}
 </div>
 <script src="/public/scripts/intf-core.js"></script>
 <script src="/public/scripts/intf-main.js"></script>

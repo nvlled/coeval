@@ -83,3 +83,7 @@ textarea {
 a {
     display: inline-block;
 }
+
+#template {
+    display: none;
+}
