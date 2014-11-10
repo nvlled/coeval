@@ -11,6 +11,7 @@ function load() {
     var form = document.querySelector("form");
     var threadContainer = document.querySelector("#thread-container");
     util.asynchronizeForm(form, {
+        successMsg: "Post submitted",
         handler : function(responseText) {
             var postData = JSON.parse(responseText);
             var node = newPostNode(postData);

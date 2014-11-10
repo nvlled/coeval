@@ -10,12 +10,13 @@
 <form method="post" action='{{url "thread-create" "bid" (str .bid)}}'>
     <input type="hidden" name="form-path" value="{{.__req.URL.Path}}"/>
     <p>title: <input name="post-title" value="{{$f.title}}"/>
-        <span class='error'>{{$err.title}}</span>
+        <span class='title error'>{{$err.title}}</span>
 	</p>
     <p>comment:
-    <span class='error'>{{$err.body}}</span>
+    <span class='body error'>{{$err.body}}</span>
     <textarea name="post-body">{{$f.body}}</textarea>
 	</p>
+    <p class="info"></p>
     <input type="submit" value="create new thread"/>
 </form>
 <p>page {{.pageno}}</p>
@@ -30,4 +31,6 @@
 {{else}}
 <h2>(No threads)</h2>
 {{end}}
+<script src="/public/scripts/board-page.js"></script>
+
 {{template "sub/footer"}}

@@ -97,6 +97,7 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
     sesion.AddNotification(w, r, "thread created")
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
         "thread" : thread,
+        "url" : urlfor.Thread(thread),
     }))
 }
 

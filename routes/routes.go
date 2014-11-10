@@ -76,7 +76,7 @@ var customUrlMap = map[string]func(name string, params ...string) string {
         pid, ok := common.ToMap(params...)["pid"]
         if !ok { panic("missing arg: pid") }
         url := createUrl("thread-view", params...)
-        return url+"#p"+pid
+        return url+"/#p"+pid
     },
 }
 

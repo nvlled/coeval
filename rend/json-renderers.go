@@ -5,6 +5,7 @@ import (
     "encoding/json"
     "nvlled/coeval/fora"
 )
+
 func ThreadReply(_ string, w ht.ResponseWriter, r *ht.Request, data Data) {
     var post fora.Post
     switch t := data["post"].(type) {
@@ -20,6 +21,25 @@ func ThreadReply(_ string, w ht.ResponseWriter, r *ht.Request, data Data) {
         "title" : post.Title(),
         "body" : RenderPostlinks(post),
         "creator" : post.Creator().Name(),
+    }, "", "    ")
+    w.Write(bytes)
+}
+
+func ThreadCreate(_ string, w ht.ResponseWriter, r *ht.Request, data Data) {
+    var thread fora.Thread
+    switch t := data["thread"].(type) {
+        case fora.Thread:
+            thread = t
+        default:
+            w.Write([]byte("{}"))
+            return
+    }
+    bytes, _ := json.MarshalIndent(Data{
+        "id" : thread.Id(),
+        "title" : thread.Title(),
+        "body" : thread.Body(),
+        "creator" : thread.Creator().Name(),
+        "url" : data["url"],
     }, "", "    ")
     w.Write(bytes)
 }
