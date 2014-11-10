@@ -5,12 +5,12 @@
 {{$f := .__form}}
 <form method="POST" action='{{with_thread_url "thread-reply" .thread}}'>
     <input type="hidden" name="form-path" value="{{.__req.URL.Path}}"/>
-    <p>title: <input name="post-title" value="{{$f.title}}"/>
-        <span class='error'>{{$err.title}}</span>
+    <p>title: <input name="title" value="{{$f.title}}"/>
+        <span class='error title'>{{$err.title}}</span>
 	</p>
     <p>comment:
-    <span class='error'>{{$err.body}}</span>
-    <textarea name="post-body">{{$f.body}}</textarea>
+    <span class='error body'>{{$err.body}}</span>
+    <textarea name="body">{{$f.body}}</textarea>
 	</p>
     <input type="submit" value="post reply"/>
 </form>

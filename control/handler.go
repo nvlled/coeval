@@ -122,8 +122,8 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
     bid, tid, _ := getIdsFromMuxVars(r)
     user := sesion.User(r)
 
-    title := r.FormValue("post-title")
-    body  := r.FormValue("post-body")
+    title := r.FormValue("title")
+    body  := r.FormValue("body")
     parentIds := fora.ParseIds(body)
 
     board := user.GetBoard(bid)
@@ -203,10 +203,10 @@ func readInt(n string, defVal int) int {
 
 func returnToForm(w http.ResponseWriter, r *http.Request, err error, form sesion.FormVal) {
     formPath := r.FormValue("form-path")
-    sesion.SetErrors(w, r, err)
-    sesion.SaveForm(w, r, form)
 
     if formPath != "" {
+        sesion.SetErrors(w, r, err)
+        sesion.SaveForm(w, r, form)
         w.Header().Set("Location", formPath)
         w.WriteHeader(301)
     } else {
