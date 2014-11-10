@@ -3,11 +3,22 @@
 <h3>Error: {{.error}}</h3>
 {{else}}
 
-Post submitted #{{.Id}}
+<p id="msg">
 {{with .post}}
+Post submitted #{{.Id}}
 <a href={{post_url .}}>
     Click here to continue
 </a>
+</p>
+
+<script>
+    var p = document.createElement("p");
+    p.textContent = "Redirecting...";
+    document.querySelector("#msg").appendChild(p);
+    setTimeout(function() {
+        window.location = {{post_url .}};
+    }, 2000);
+</script>
 {{end}}
 
 {{end}}

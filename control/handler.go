@@ -95,8 +95,6 @@ func ThreadCreate(w http.ResponseWriter, r *http.Request) {
     }
 
     sesion.AddNotification(w, r, "thread created")
-    w.Header().Set("Location", urlfor.Thread(thread))
-    w.WriteHeader(301)
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
         "thread" : thread,
     }))
@@ -145,8 +143,6 @@ func ThreadReply(w http.ResponseWriter, r *http.Request) {
     }
 
     sesion.AddNotification(w, r, "post submitted")
-    w.Header().Set("Location", urlfor.Post(post))
-    w.WriteHeader(301)
     rend.Render(w, r, sesion.Merge(w, r, rend.Data{
         "post" : post,
     }))

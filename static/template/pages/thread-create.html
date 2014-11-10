@@ -1,8 +1,25 @@
 {{template "sub/header" .}}
+{{if .error}}
+<h3>Error: {{.error}}</h3>
+{{else}}
 
-<div>
-    <p>error</p>
-    {{.error}}
-</div>
+<p id="msg">
+{{with .thread}}
+Post submitted #{{.Id}}
+<a href={{thread_url .}}>
+    Click here to continue
+</a>
+</p>
 
+<script>
+    var p = document.createElement("p");
+    p.textContent = "Redirecting...";
+    document.querySelector("#msg").appendChild(p);
+    setTimeout(function() {
+        window.location = {{thread_url .}};
+    }, 2000);
+</script>
+{{end}}
+
+{{end}}
 {{template "sub/footer" .}}
