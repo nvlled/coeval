@@ -49,11 +49,8 @@
             clearErrors(form);
 
             var data = M.formValues(form);
-            console.log("submitting form", M.encodeFormData(data));
+            showInfo("submiting...");
 
-            if (info) {
-                info.textContent = "submitting..."
-            }
             var req = new XMLHttpRequest();
             req.open(method, url.toString());
             req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -61,14 +58,14 @@
                 if (req.status / 100 != 2)
                     showError(req);
                 else {
-                    info.textContent = "Done";
+                    showInfo(opts.successMsg);
                     form.reset();
                     if (typeof opts.handler === "function")
                         opts.handler(req.responseText);
                 }
             }
             req.onerror = function() {
-                info.textContent = "submission failed";
+                showInfo("submission failed");
             }
             req.send(M.encodeFormData(data));
             return false;
@@ -94,8 +91,13 @@
                     }
                 }
             } catch (e) { }
-            info.textContent = "submission failed";
+            showInfo("submission failed");
         }
+
+        function showInfo(msg) {
+            if (info) info.textContent = msg;
+        }
+
     }
 
     root.util = M;
