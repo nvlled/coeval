@@ -37,6 +37,7 @@ func initRenderers() {
     renderers = make(map[string]T)
     renderers["thread-view"] = ThreadView
     renderers["board-page"] = BoardPage
+    renderers["thread-reply"] = ThreadReply
 }
 
 func init() {

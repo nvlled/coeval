@@ -5,6 +5,24 @@ import (
     "encoding/json"
     "nvlled/coeval/fora"
 )
+func ThreadReply(_ string, w ht.ResponseWriter, r *ht.Request, data Data) {
+    var post fora.Post
+    switch t := data["post"].(type) {
+        case fora.Post:
+            post = t
+        default:
+            bytes,_ := json.Marshal(filterPrivate(data))
+            w.Write(bytes)
+            return
+    }
+    bytes, _ := json.MarshalIndent(Data{
+        "id" : post.Id(),
+        "title" : post.Title(),
+        "body" : RenderPostlinks(post),
+        "creator" : post.Creator().Name(),
+    }, "", "    ")
+    w.Write(bytes)
+}
 
 func ThreadView(_ string, w ht.ResponseWriter, r *ht.Request, data Data) {
     var thread fora.Thread
